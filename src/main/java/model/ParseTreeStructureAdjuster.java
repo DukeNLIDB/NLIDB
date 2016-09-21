@@ -1,11 +1,29 @@
 package model;
 
-public class ParseTreeStructureAdjuster {
+import java.util.ArrayList;
 
-	public ParseTree adjustStructure(ParseTree inTree) {
-		ParseTree outTree = new ParseTree();
+import app.Controller;
+
+public class ParseTreeStructureAdjuster {
+	private Controller ctrl;
+	public ParseTreeStructureAdjuster(Controller ctrl) {
+		this.ctrl = ctrl;
+	}
+
+	public ParseTree adjustStructure(ParseTree tree, SchemaGraph schemaGraph) {
 		// TODO
-		return outTree;
+		while (! tree.nodesMapped() ) {
+			ctrl.showNodes(getPossibleStructures(tree, schemaGraph));
+			// TODO: wait for user to choose.
+			tree = ctrl.getUserChoiceStructure();
+		}
+		return tree;
+	}
+	
+	private ArrayList<ParseTree> getPossibleStructures(
+			ParseTree tree, SchemaGraph schemaGraph) {
+		// TODO:
+		return null;
 	}
 	
 	public QueryTree parseTreeToQueryTree(ParseTree parseTree) {

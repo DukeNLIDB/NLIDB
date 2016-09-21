@@ -1,6 +1,7 @@
 package app;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 
 import model.ParseTree;
 import model.ParseTreeNodeMapper;
@@ -13,29 +14,30 @@ import ui.UserView;
 
 
 /**
- * The controller to control database and UI.
+ * The controller between model and view.
  * @author keping
  */
 public class Controller {
-	private SchemaGraph schemaGraph;
-	private Connection connection; 
+	private Connection connection;
 	private ParseTreeNodeMapper nodeMapper;
 	private ParseTreeStructureAdjuster adjuster;
 	private QueryTreeTranslator translator;
+	private SchemaGraph schemaGraph;
 	
 	/**
 	 * Initialize the Controller.
 	 */
 	public Controller() {
-		nodeMapper = new ParseTreeNodeMapper();
-		adjuster   = new ParseTreeStructureAdjuster();
+		nodeMapper = new ParseTreeNodeMapper(this);
+		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
 	}
 	/**
-	 * Start connection with the database.
+	 * Start connection with the database and read schema graph
 	 */
 	public void startConnection() {
 		// TODO
+		getSchemaGraphFromDB();
 	}
 	/**
 	 * Close connection with the database.
@@ -63,8 +65,8 @@ public class Controller {
 		SQLQuery  query;
 		// TODO: process the natural language.
 		parseTree = new ParseTree(nl);
-		parseTree = nodeMapper.mapTreeNode(parseTree);
-		parseTree = adjuster.adjustStructure(parseTree);
+		parseTree = nodeMapper.mapTreeNode(parseTree, schemaGraph);
+		parseTree = adjuster.adjustStructure(parseTree, schemaGraph);
 		queryTree = adjuster.parseTreeToQueryTree(parseTree);
 		query = translator.queryTreeToQuery(queryTree);
 		// below just a test implementation
@@ -81,9 +83,28 @@ public class Controller {
 	/**
 	 * Get schema graph from data base.
 	 */
-	public void getSchemaGraphFromDB() {
+	private SchemaGraph getSchemaGraphFromDB() {
+		// TODO
+		return new SchemaGraph();
+	}
+	
+	
+	//0---- Methods for interactive communication ----
+	public void showNodes(ArrayList<ParseTree> trees) {
+		// TODO: show possible nodes to user
+	}
+	public ParseTree getUserChoiceNode() {
+		// TODO
+		return new ParseTree("User's choice tree nodes");
+	}
+	public void showStructures(ArrayList<ParseTree> trees) {
 		// TODO
 	}
+	public ParseTree getUserChoiceStructure() {
+		// TODO
+		return new ParseTree("User's choice tree structure");
+	}
+	//0-----------------------------------------------
 	
 	public static void main(String[] args) {
 		Controller ctrl = new Controller();

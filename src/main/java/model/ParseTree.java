@@ -11,9 +11,15 @@ public class ParseTree {
 		// TODO: call stanford nlp parser
 	}
 	/**
-	 * Emptry constructor.
+	 * Empty constructor.
 	 */
 	public ParseTree() {
 		// TODO
 	}
+
+	public boolean nodesMapped() {
+		// false;
+		return true;
+	}
+	
 }

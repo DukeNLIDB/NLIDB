@@ -33,6 +33,9 @@ public class UserView extends Application {
 		TextField fieldSQL = new TextField();
 		fieldSQL.setPrefHeight(100);
 		
+		// TODO: create a frame to show database query output to user.
+		// TODO: create bindings to show output
+		
 		// Define action of the translate button.
 		btnTranslate.setOnAction(e -> {
 			String queryMsg = ctrl.processNaturalLanguage(fieldIn.getText()).get();
