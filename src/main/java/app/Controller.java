@@ -2,6 +2,11 @@ package app;
 
 import java.sql.Connection;
 
+import model.ParseTree;
+import model.ParseTreeNodeMapper;
+import model.ParseTreeStructureAdjuster;
+import model.QueryTree;
+import model.QueryTreeTranslator;
 import model.SQLQuery;
 import model.SchemaGraph;
 import ui.UserView;
@@ -14,7 +19,18 @@ import ui.UserView;
 public class Controller {
 	private SchemaGraph schemaGraph;
 	private Connection connection; 
+	private ParseTreeNodeMapper nodeMapper;
+	private ParseTreeStructureAdjuster adjuster;
+	private QueryTreeTranslator translator;
 	
+	/**
+	 * Initialize the Controller.
+	 */
+	public Controller() {
+		nodeMapper = new ParseTreeNodeMapper();
+		adjuster   = new ParseTreeStructureAdjuster();
+		translator = new QueryTreeTranslator();
+	}
 	/**
 	 * Start connection with the database.
 	 */
@@ -42,8 +58,18 @@ public class Controller {
 	 * @return
 	 */
 	public SQLQuery processNaturalLanguage(String nl) {
+		ParseTree parseTree;
+		QueryTree queryTree;
+		SQLQuery  query;
 		// TODO: process the natural language.
-		return new SQLQuery("Hello I'm an sql query");
+		parseTree = new ParseTree(nl);
+		parseTree = nodeMapper.mapTreeNode(parseTree);
+		parseTree = adjuster.adjustStructure(parseTree);
+		queryTree = adjuster.parseTreeToQueryTree(parseTree);
+		query = translator.queryTreeToQuery(queryTree);
+		// below just a test implementation
+		query = new SQLQuery(nl+" to sql query...");
+		return query;
 	}
 	/**
 	 * Show an sql query in view.
@@ -59,8 +85,8 @@ public class Controller {
 		// TODO
 	}
 	
-	
 	public static void main(String[] args) {
+		Controller ctrl = new Controller();
 		System.out.println("Hello World!~");
 		System.out.println("and open window...");
 		javafx.application.Application.launch(UserView.class);
