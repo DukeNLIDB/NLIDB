@@ -10,7 +10,6 @@ import model.QueryTree;
 import model.QueryTreeTranslator;
 import model.SQLQuery;
 import model.SchemaGraph;
-import ui.UserView;
 
 
 /**
@@ -105,12 +104,5 @@ public class Controller {
 		return new ParseTree("User's choice tree structure");
 	}
 	//0-----------------------------------------------
-	
-	public static void main(String[] args) {
-		Controller ctrl = new Controller();
-		System.out.println("Hello World!~");
-		System.out.println("and open window...");
-		javafx.application.Application.launch(UserView.class);
-	}
 	
 }
