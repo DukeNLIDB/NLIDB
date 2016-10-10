@@ -3,6 +3,7 @@ package app;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import model.NLParser;
 import model.ParseTree;
 import model.ParseTreeNodeMapper;
 import model.ParseTreeStructureAdjuster;
@@ -22,6 +23,7 @@ public class Controller {
 	private ParseTreeStructureAdjuster adjuster;
 	private QueryTreeTranslator translator;
 	private SchemaGraph schemaGraph;
+	private NLParser parser;
 	
 	/**
 	 * Initialize the Controller.
@@ -30,6 +32,7 @@ public class Controller {
 		nodeMapper = new ParseTreeNodeMapper(this);
 		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
+		parser     = new NLParser();
 	}
 	/**
 	 * Start connection with the database and read schema graph
@@ -63,7 +66,7 @@ public class Controller {
 		QueryTree queryTree;
 		SQLQuery  query;
 		// TODO: process the natural language.
-		parseTree = new ParseTree(nl);
+		parseTree = new ParseTree(nl, parser);
 		parseTree = nodeMapper.mapTreeNode(parseTree, schemaGraph);
 		parseTree = adjuster.adjustStructure(parseTree, schemaGraph);
 		queryTree = adjuster.parseTreeToQueryTree(parseTree);
@@ -94,14 +97,14 @@ public class Controller {
 	}
 	public ParseTree getUserChoiceNode() {
 		// TODO
-		return new ParseTree("User's choice tree nodes");
+		return new ParseTree("User's choice tree nodes", parser);
 	}
 	public void showStructures(ArrayList<ParseTree> trees) {
 		// TODO
 	}
 	public ParseTree getUserChoiceStructure() {
 		// TODO
-		return new ParseTree("User's choice tree structure");
+		return new ParseTree("User's choice tree structure", parser);
 	}
 	//0-----------------------------------------------
 	

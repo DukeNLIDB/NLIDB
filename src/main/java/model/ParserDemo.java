@@ -48,6 +48,7 @@ public class ParserDemo {
 			// Print typed dependencies
 			log.info(gs);
 		}
+		
 	}
 
 }
