@@ -2,6 +2,7 @@ package ui;
 
 import app.Controller;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,7 +18,7 @@ public class UserView extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		ctrl = new Controller();
+		ctrl = new Controller(this);
 		stage = primaryStage;
 		stage.setTitle("Window for NLIDB");
 		
@@ -57,5 +58,18 @@ public class UserView extends Application {
 		stage.show();
 	}
 	
+	@Override
+	public void stop() throws Exception {
+		super.stop();
+		if (ctrl != null) {
+			ctrl.closeConnection();
+		}
+		Platform.exit();
+		System.exit(0);
+	}
+	
+	public static void main(String[] args) {
+		Application.launch(args);
+	}
 
 }

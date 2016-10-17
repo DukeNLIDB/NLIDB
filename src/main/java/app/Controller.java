@@ -1,6 +1,8 @@
 package app;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import model.NLParser;
@@ -11,6 +13,7 @@ import model.QueryTree;
 import model.QueryTreeTranslator;
 import model.SQLQuery;
 import model.SchemaGraph;
+import ui.UserView;
 
 
 /**
@@ -28,24 +31,44 @@ public class Controller {
 	/**
 	 * Initialize the Controller.
 	 */
-	public Controller() {
+	public Controller(UserView view) {
+//		parser     = new NLParser();
 		nodeMapper = new ParseTreeNodeMapper(this);
 		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
-		parser     = new NLParser();
+		connection = null;
+		startConnection();
 	}
 	/**
 	 * Start connection with the database and read schema graph
 	 */
 	public void startConnection() {
 		// TODO
+		try { Class.forName("org.postgresql.Driver"); } 
+		catch (ClassNotFoundException e1) { }
+		
+		System.out.println("PostgreSQL JDBC Driver Registered!");
+
+		try {
+			connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/dblp", "dblpuser", "dblpuser");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Connection successful!");
+		
+		
 		getSchemaGraphFromDB();
 	}
 	/**
 	 * Close connection with the database.
 	 */
 	public void closeConnection() {
-		// TODO
+		try {
+			if (connection != null) { connection.close(); }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Connection closed.");
 	}
 	/**
 	 * Get user input from the view.
