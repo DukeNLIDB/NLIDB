@@ -6,8 +6,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import model.NLParser;
+import model.Node;
 import model.ParseTree;
 import model.ParseTreeNodeMapper;
 import model.ParseTreeStructureAdjuster;
@@ -24,26 +28,39 @@ import ui.UserView;
  */
 public class Controller {
 	private Connection connection;
-	private ParseTreeNodeMapper nodeMapper;
+	private String input;
 	private ParseTreeStructureAdjuster adjuster;
 	private QueryTreeTranslator translator;
-	private SchemaGraph schemaGraph;
+	private SchemaGraph schema;
 	private NLParser parser;
+	private ParseTree parseTree;
 	private UserView view;
+	private ParseTreeNodeMapper mapper;
+	private boolean inMappingProcess = false;
+	private boolean processing = false;
 	
 	/**
 	 * Initialize the Controller.
 	 */
 	public Controller(UserView view) {
 		this.view = view;
-//		parser     = new NLParser(); // initialize parser, takes some time
-		nodeMapper = new ParseTreeNodeMapper(this);
+		parser     = new NLParser(); // initialize parser, takes some time
 		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
 		connection = null;
 		
 		startConnection();
+		
+		System.out.println("controller initialized");
 	}
+	
+	/**
+	 * ONLY FOR TESTING. An empty constructor.
+	 */
+	public Controller() {
+		
+	}
+	
 	/**
 	 * Start connection with the database and read schema graph
 	 */
@@ -61,13 +78,54 @@ public class Controller {
 		}
 		System.out.println("Connection successful!");
 		
-		try {
-			schemaGraph = new SchemaGraph(connection);
-		} catch (SQLException e) {
-			e.printStackTrace();
+//		try {
+//			schemaGraph = new SchemaGraph(connection);
+//			view.setDisplay("Database Schema:\n\n"+schemaGraph.toString());
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+		
+	}
+	
+	public boolean isProcessing() { return processing; }
+	public String getInput() { return input; }
+	public void setInput(String input) { this.input = input; }
+	
+	
+	public void nodesMappingStart() {
+		inMappingProcess = true;
+		mapper = new ParseTreeNodeMapper(parseTree, schema);
+		if (mapper.hasNextChoices()) {
+			List<Node> choices = mapper.nextChoices();
+			view.setDisplay("Mapping nodes: \n"+parseTree.sentenceToString());
+			int index = choices.get(0).getIndex();
+			view.appendDisplay("\nindex: "+index+"\n");
+			view.setChoices(FXCollections.observableArrayList(choices));
+			// Here waiting for the button to call chooseNode
+		} else {
+			finishNodesMapping();
 		}
-
-		view.setDisplay("Database Schema:\n\n"+schemaGraph.toString());
+	}
+	
+	public void chooseNode() {
+		if (inMappingProcess) {
+			mapper.chooseNode(view.getChoice());
+			if (mapper.hasNextChoices()) {
+				List<Node> choices = mapper.nextChoices();
+				view.setDisplay("Mapping nodes: \n"+parseTree.sentenceToString());
+				int index = choices.get(0).getIndex();
+				view.appendDisplay("\nindex: "+index+"\n");
+				view.setChoices(FXCollections.observableArrayList(choices));
+			} else {
+				finishNodesMapping();
+			}
+		}
+	}
+	
+	private void finishNodesMapping() {
+		parseTree = mapper.getMappedTree();
+		view.setDisplay("Nodes mapped.\n"+parseTree.nodesToString());
+		inMappingProcess = false;
 	}
 	
 	/**
@@ -95,20 +153,19 @@ public class Controller {
 	 * @param nl
 	 * @return
 	 */
-	public SQLQuery processNaturalLanguage(String nl) {
-		ParseTree parseTree;
-		QueryTree queryTree;
-		SQLQuery  query;
-		// TODO: process the natural language.
-//		parseTree = new ParseTree(nl, parser);
-//		parseTree = nodeMapper.mapTreeNode(parseTree, schemaGraph);
-//		parseTree = adjuster.adjustStructure(parseTree, schemaGraph);
-//		queryTree = adjuster.parseTreeToQueryTree(parseTree);
-//		query = translator.queryTreeToQuery(queryTree);
-		// below just a test implementation
-		query = new SQLQuery(nl+" to sql query...");
+	public void processNaturalLanguage() {
+		processing = true;
+		parseTree = new ParseTree(input, parser);
+		nodesMappingStart();
+	}
+	
+	public SQLQuery getQuery() {
+		// TODO
+		SQLQuery query;
+		query = new SQLQuery(parseTree.sentenceToString()+" to sql query...");
 		return query;
 	}
+	
 	/**
 	 * Show an sql query in view.
 	 * @param query

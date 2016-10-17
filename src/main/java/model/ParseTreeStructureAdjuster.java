@@ -12,12 +12,8 @@ public class ParseTreeStructureAdjuster {
 
 	public ParseTree adjustStructure(ParseTree tree, SchemaGraph schemaGraph) {
 		// TODO
-		while (! tree.nodesMapped() ) {
-			ctrl.showNodes(getPossibleStructures(tree, schemaGraph));
-			// TODO: wait for user to choose.
-			tree = ctrl.getUserChoiceStructure();
-		}
-		return tree;
+
+		return null;
 	}
 	
 	private ArrayList<ParseTree> getPossibleStructures(

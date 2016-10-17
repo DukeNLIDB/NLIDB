@@ -2,6 +2,7 @@ package model;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.stanford.nlp.ling.HasWord;
@@ -30,6 +31,7 @@ public class ParseTree {
 			this.label = label;
 		}
 	}
+
 	
 	/**
 	 * Length including ROOT.
@@ -42,6 +44,10 @@ public class ParseTree {
 	private ArrayList<String> tags;
 	private ArrayList<List<Dep>> children;
 	private ArrayList<Dep> parent;
+	/**
+	 * If this is not null, then nodes have already been mapped.
+	 */
+	private ArrayList<Node> nodes; 
 	
 	/**
 	 * Construct a parse tree using the stanford NLP parser. Only one sentence.
@@ -84,6 +90,17 @@ public class ParseTree {
 			}
 			children.get(from).add(dep);
 		}
+		
+		nodes = new ArrayList<>(Arrays.asList(new Node[N]));
+	}
+	
+	public int length() { return N; }
+	
+	public void setNode(int i, Node node) { this.nodes.set(i, node); }
+	public void setNodes(ArrayList<Node> nodes) { this.nodes = nodes; }
+	
+	public String getWord(int i) {
+		return words.get(i);
 	}
 	
 	/**
@@ -103,12 +120,24 @@ public class ParseTree {
 		}
 		return s;
 	}
-
-	public boolean nodesMapped() {
-		// false;
-		return true;
+	
+	
+	public String sentenceToString() {
+		String s = "";
+		if (N >= 2) { s += words.get(1); }
+		for (int i = 2; i < N; i++) {
+			s += " "+words.get(i);
+		}
+		return s;
 	}
 	
+	public String nodesToString() {
+		String s = "";
+		for (int i = 1; i < N; i++) {
+			s += "("+i+")"+words.get(i)+"("+nodes.get(i)+")\n";
+		}
+		return s;
+	}
 	
 	public static void main(String[] args) {
 		NLParser parser = new NLParser();
