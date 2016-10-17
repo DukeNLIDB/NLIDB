@@ -3,8 +3,8 @@ Natural Language Interface to DataBases
 
 To work on the development, import it into eclipse, but first make sure you've installed the following eclipse plugins:
 
-1.  m2eclipse
-2.  e(fx)clipse
+1.  m2eclipse (for using maven in eclipse)
+2.  e(fx)clipse (for using javafx smoothly in eclipse)
 
 The next steps are:
 
