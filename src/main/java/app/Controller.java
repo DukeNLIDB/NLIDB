@@ -1,7 +1,9 @@
 package app;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -27,16 +29,19 @@ public class Controller {
 	private QueryTreeTranslator translator;
 	private SchemaGraph schemaGraph;
 	private NLParser parser;
+	private UserView view;
 	
 	/**
 	 * Initialize the Controller.
 	 */
 	public Controller(UserView view) {
-//		parser     = new NLParser();
+		this.view = view;
+//		parser     = new NLParser(); // initialize parser, takes some time
 		nodeMapper = new ParseTreeNodeMapper(this);
 		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
 		connection = null;
+		
 		startConnection();
 	}
 	/**
@@ -56,9 +61,15 @@ public class Controller {
 		}
 		System.out.println("Connection successful!");
 		
-		
-		getSchemaGraphFromDB();
+		try {
+			schemaGraph = new SchemaGraph(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		view.setDisplay("Database Schema:\n\n"+schemaGraph.toString());
 	}
+	
 	/**
 	 * Close connection with the database.
 	 */
@@ -89,11 +100,11 @@ public class Controller {
 		QueryTree queryTree;
 		SQLQuery  query;
 		// TODO: process the natural language.
-		parseTree = new ParseTree(nl, parser);
-		parseTree = nodeMapper.mapTreeNode(parseTree, schemaGraph);
-		parseTree = adjuster.adjustStructure(parseTree, schemaGraph);
-		queryTree = adjuster.parseTreeToQueryTree(parseTree);
-		query = translator.queryTreeToQuery(queryTree);
+//		parseTree = new ParseTree(nl, parser);
+//		parseTree = nodeMapper.mapTreeNode(parseTree, schemaGraph);
+//		parseTree = adjuster.adjustStructure(parseTree, schemaGraph);
+//		queryTree = adjuster.parseTreeToQueryTree(parseTree);
+//		query = translator.queryTreeToQuery(queryTree);
 		// below just a test implementation
 		query = new SQLQuery(nl+" to sql query...");
 		return query;
@@ -104,13 +115,6 @@ public class Controller {
 	 */
 	public void viewQuery(SQLQuery query) {
 		// TODO
-	}
-	/**
-	 * Get schema graph from data base.
-	 */
-	private SchemaGraph getSchemaGraphFromDB() {
-		// TODO
-		return new SchemaGraph();
 	}
 	
 	
