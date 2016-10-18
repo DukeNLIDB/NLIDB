@@ -71,6 +71,8 @@ public class UserView extends Application {
 			if (!ctrl.isProcessing()) {
 				ctrl.setInput(fieldIn.getText());
 				ctrl.processNaturalLanguage();
+			} else {
+				this.appendDisplay("Currently processing a sentence...");
 			}
 		});
 		

@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,16 +14,18 @@ public class ParseTreeNodeMapper {
 	private SchemaGraph schema;
 	private ArrayList<Node> nodes;
 	private Queue<List<Node>> choicesQueue;
+	private WordNet wordNet;
 	
 	/**
 	 * Create a shallow copy, only deep of the nodes part.
 	 * @param tree
 	 * @param schema
 	 */
-	public ParseTreeNodeMapper(ParseTree tree, SchemaGraph schema) {
+	public ParseTreeNodeMapper(ParseTree tree, SchemaGraph schema, WordNet wordNet) {
 		this.schema = schema;
 		this.tree = tree;
 		this.N = tree.length();
+		this.wordNet = wordNet;
 		this.nodes = new ArrayList<Node>(Arrays.asList(new Node[tree.length()]));
 		choicesQueue = new LinkedList<>();
 		
@@ -53,6 +56,8 @@ public class ParseTreeNodeMapper {
 		choices.add(new Node (i, "HAHBType", "HAHBValue"));
 		choices.add(new Node (i, "HAHCType", "HAHCValue"));
 		
+		
+		Collections.sort(choices, new Node.ReverseScoreComparator());
 		choicesQueue.add(choices);
 		// TODO
 	}

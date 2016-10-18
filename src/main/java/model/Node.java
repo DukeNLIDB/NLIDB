@@ -11,24 +11,24 @@ public class Node {
 	int index;
 	String type;
 	String value;
-	double prob = 2; // 2 means no probability
+	double score = 2; // higher score means higher certainty
 	public Node(int index, String type, String value) {
 		this.index = index;
 		this.type = type;
 		this.value = value;
 	}
 	public int getIndex() { return index; }
-	public double getProb() { return prob; }
-	public void setProb(double prob) { this.prob = prob; }
+	public double getProb() { return score; }
+	public void setProb(double prob) { this.score = prob; }
 	@Override
 	public String toString() {
 		return type+": "+value;
 	}
 	
-	public class ReverseProbComparator implements Comparator<Node> {
+	public static class ReverseScoreComparator implements Comparator<Node> {
 		@Override
 		public int compare(Node a, Node b) {
-			return - (int) (a.prob - b.prob);
+			return - (int) (a.score - b.score);
 		}
 	}
 

@@ -1,24 +1,21 @@
 package app;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import model.NLParser;
 import model.Node;
 import model.ParseTree;
 import model.ParseTreeNodeMapper;
 import model.ParseTreeStructureAdjuster;
-import model.QueryTree;
 import model.QueryTreeTranslator;
 import model.SQLQuery;
 import model.SchemaGraph;
+import model.WordNet;
 import ui.UserView;
 
 
@@ -36,6 +33,7 @@ public class Controller {
 	private ParseTree parseTree;
 	private UserView view;
 	private ParseTreeNodeMapper mapper;
+	private WordNet wordNet;
 	private boolean inMappingProcess = false;
 	private boolean processing = false;
 	
@@ -45,6 +43,8 @@ public class Controller {
 	public Controller(UserView view) {
 		this.view = view;
 		parser     = new NLParser(); // initialize parser, takes some time
+		try { wordNet = new WordNet();
+		} catch (Exception e) { e.printStackTrace(); }
 		adjuster   = new ParseTreeStructureAdjuster(this);
 		translator = new QueryTreeTranslator();
 		connection = null;
@@ -94,7 +94,7 @@ public class Controller {
 	
 	public void nodesMappingStart() {
 		inMappingProcess = true;
-		mapper = new ParseTreeNodeMapper(parseTree, schema);
+		mapper = new ParseTreeNodeMapper(parseTree, schema, wordNet);
 		if (mapper.hasNextChoices()) {
 			List<Node> choices = mapper.nextChoices();
 			view.setDisplay("Mapping nodes: \n"+parseTree.sentenceToString());

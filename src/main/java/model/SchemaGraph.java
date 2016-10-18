@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 
 public class SchemaGraph {
 	
@@ -47,6 +49,14 @@ public class SchemaGraph {
 		}
 		if (stmt != null) { stmt.close(); }
 		System.out.println("Schema graph retrieved.");
+	}
+
+	public Set<String> getTableNames() {
+		return tables.keySet();
+	}
+	
+	public Set<String> getColumns(String tableName) {
+		return tables.get(tableName).keySet();
 	}
 	
 
