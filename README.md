@@ -1,10 +1,21 @@
 # NLIDB
 Natural Language Interface to DataBases
 
-To work on the development, import it into eclipse, but first make sure you've installed the following eclipse plugins:
+This is a project managed using maven. Just in case, if you don't know about maven, checkout this wonderful [tutorial](https://www.udemy.com/apachemaven/), which you have to pay for though...
 
-1.  m2eclipse (for using maven in eclipse)
-2.  e(fx)clipse (for using javafx smoothly in eclipse)
+To get hands on the development, import it into eclipse, but first make sure you've installed the following eclipse plugins:
+
+1. m2eclipse (for using maven in eclipse)
+2. e(fx)clipse (for using javafx smoothly in eclipse)
+
+To use WordNet inside the project (I'm using MIT JWI as the interface, which is already included in maven `pom.xml`):
+
+1. Create a folder "lib" in the project base directory.
+2. Download [WordNet](https://wordnet.princeton.edu/wordnet/download/) into that "lib" directory just created.
+3. Extract the downloaded WordNet. 
+4. Finally just make sure "$(basedir)/lib/WordNet-3.0/dict/" exists. (Or you have to modify the path inside class `model.WordNet`.)
+
+*****
 
 The next steps are:
 
@@ -12,10 +23,11 @@ The next steps are:
 2. [done] Use _Stanford NLP_ to parse a natural language sentence.
 3. [done] According the data structure in _Stanford NLP_, design the data structure for class **ParseTree**. For now let's just make it feasible, without thinking about memory and time efficiency.
 4. [done] A basic implementation of SchemaGraph.
-5. Write the three most important classes, write test cases first!
-  * **ParseTreeNodeMapper**
-  * **ParseTreeStructureAdjuster**
-  * **QueryTreeTranslator**
-6. ...
+5. [keping-working] **ParseTreeNodeMapper**:
+  * Completed a basic interactive UI
+  * Wrote the class to calculate WordNet WUP word similarity
+6. **ParseTreeStructureAdjuster**
+8. **QueryTreeTranslator**
+7. ...
 
-* UI prettifying can be conducted along with other tasks.
+* UI design is conducted in parallel with the requirements of the above tasks.
