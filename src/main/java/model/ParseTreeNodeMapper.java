@@ -3,9 +3,11 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 
 public class ParseTreeNodeMapper {
@@ -48,18 +50,60 @@ public class ParseTreeNodeMapper {
 	
 	/**
 	 * Search the word over database table and column names.
+	 * Add the first 5 choices to a bucket in choicesQueue.
 	 * @param word
 	 */
 	private void searchName(int i) {
 		List<Node> choices = new ArrayList<>();
-		choices.add(new Node (i, "HAHAType", "HAHAValue"));
-		choices.add(new Node (i, "HAHBType", "HAHBValue"));
-		choices.add(new Node (i, "HAHCType", "HAHCValue"));
+		String word = tree.getWord(i);
 		
+		for (String tableName : schema.getTableNames()) {
+			choices.add(new Node(i,"NN",tableName,similarity(word, tableName)));
+			for (String colName : schema.getColumns(tableName)) {
+				choices.add(new Node(i,"NN",tableName+"."+colName,
+						similarity(word, colName)));
+			}
+		}
 		
 		Collections.sort(choices, new Node.ReverseScoreComparator());
-		choicesQueue.add(choices);
-		// TODO
+		List<Node> shortlistedChoices = new ArrayList<>();
+		for (int j = 0; j < Math.min(5, choices.size()); j++) {
+			shortlistedChoices.add(choices.get(j));
+		}
+		choicesQueue.add(shortlistedChoices);
+	}
+	
+	/**
+	 * WordNet WUP similarity.
+	 * @param word1
+	 * @param word2
+	 * @return
+	 */
+	private double semanticalSimilarity(String word1, String word2) {
+		return wordNet.similarity(word1, word2);
+	}
+	/**
+	 * Jaccord Coefficient
+	 * @param word1
+	 * @param word2
+	 * @return
+	 */
+	private double lexicalSimilarity(String word1, String word2) {
+		Set<Character> charSet1 = new HashSet<>();
+		Set<Character> charSet2 = new HashSet<>();
+		Set<Character> commonSet= new HashSet<>();
+		for (char c : word1.toCharArray()) { charSet1.add(c); }
+		for (char c : word2.toCharArray()) { charSet2.add(c); }
+		for (char c : charSet1) {
+			if (charSet2.contains(c)) { commonSet.add(c); }
+		}
+		double jaccord = commonSet.size() / (double) (charSet1.size() +
+				charSet2.size() + commonSet.size());
+		return Math.sqrt(jaccord);
+	}
+	private double similarity(String word1, String word2) {
+		return Math.max(semanticalSimilarity(word1, word2),
+				lexicalSimilarity(word1, word2));
 	}
 	
 	/**

@@ -40,7 +40,7 @@ public class WordNet {
 	public double similarity(String word1, String word2) {
 		if (dict.getIndexWord(word1, POS.NOUN) == null ||
 			dict.getIndexWord(word2, POS.NOUN) == null) {
-			System.out.println("One word cannot be identified in WordNet");
+//			System.out.println("One word cannot be identified in WordNet");
 			return 0.0;
 		}
 		
@@ -104,7 +104,7 @@ public class WordNet {
 				}
 			}
 		}
-		
+	
 //		System.out.println("Common ancestor synset found: ");
 //		System.out.println(commonSynset.getWord(1).getLemma());
 //		System.out.println(commonSynset.getGloss());
@@ -169,8 +169,8 @@ public class WordNet {
 	 */
 	public static void main(String[] args) throws Exception {
 		WordNet net = new WordNet();
-		String word1 = "journal";
-		String word2 = "conference";
+		String word1 = "area";
+		String word2 = "field";
 		System.out.printf("WUP similarity between %s and %s is: %f\n", word1, word2, net.similarity(word1, word2));
 		
 	}

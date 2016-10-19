@@ -24,7 +24,7 @@ import ui.UserView;
  * @author keping
  */
 public class Controller {
-	private Connection connection;
+	private Connection connection = null;
 	private String input;
 	private ParseTreeStructureAdjuster adjuster;
 	private QueryTreeTranslator translator;
@@ -42,16 +42,15 @@ public class Controller {
 	 */
 	public Controller(UserView view) {
 		this.view = view;
-		parser     = new NLParser(); // initialize parser, takes some time
-		try { wordNet = new WordNet();
-		} catch (Exception e) { e.printStackTrace(); }
-		adjuster   = new ParseTreeStructureAdjuster(this);
-		translator = new QueryTreeTranslator();
-		connection = null;
-		
 		startConnection();
 		
-		System.out.println("controller initialized");
+		try { wordNet = new WordNet();
+		} catch (Exception e) { e.printStackTrace(); }
+		parser     = new NLParser(); // initialize parser, takes some time
+		adjuster   = new ParseTreeStructureAdjuster(this);
+		translator = new QueryTreeTranslator();
+		
+		System.out.println("Controller initialized.");
 	}
 	
 	/**
@@ -78,12 +77,12 @@ public class Controller {
 		}
 		System.out.println("Connection successful!");
 		
-//		try {
-//			schemaGraph = new SchemaGraph(connection);
-//			view.setDisplay("Database Schema:\n\n"+schemaGraph.toString());
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			schema = new SchemaGraph(connection);
+			view.setDisplay("Database Schema:\n\n"+schema.toString());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	

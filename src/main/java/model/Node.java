@@ -17,6 +17,10 @@ public class Node {
 		this.type = type;
 		this.value = value;
 	}
+	public Node(int index, String type, String value, double score) {
+		this(index, type, value);
+		this.score = score;
+	}
 	public int getIndex() { return index; }
 	public double getProb() { return score; }
 	public void setProb(double prob) { this.score = prob; }
@@ -28,7 +32,9 @@ public class Node {
 	public static class ReverseScoreComparator implements Comparator<Node> {
 		@Override
 		public int compare(Node a, Node b) {
-			return - (int) (a.score - b.score);
+			if (a.score < b.score) { return 1; }
+			else if (a.score > b.score) { return -1; }
+			else { return 0; }
 		}
 	}
 
