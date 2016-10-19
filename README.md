@@ -25,7 +25,7 @@ The next steps are:
 2. [done] Use _Stanford NLP_ to parse a natural language sentence.
 3. [done] According the data structure in _Stanford NLP_, design the data structure for class **ParseTree**. For now let's just make it feasible, without thinking about memory and time efficiency.
 4. [done] A basic implementation of SchemaGraph.
-5. [basically-done] **ParseTreeNodeMapper**:
+5. [framework-done] **ParseTreeNodeMapper**:
   * Completed a basic interactive UI
   * Wrote the class to calculate WordNet WUP word similarity
   * Map words to table and column names according to similarity
