@@ -17,9 +17,11 @@ To use WordNet inside the project (I'm using MIT JWI as the interface, which is 
 3. Extract the downloaded WordNet. 
 4. Finally just make sure "$(basedir)/lib/WordNet-3.0/dict/" exists. (Or you have to modify the path inside class `model.WordNet`.)
 
+The entry point of the application is the `main()` method in `ui.UserView` class. 
+
 *****
 
-The next steps are:
+### The next steps:
 
 1. [done] ~~Download the _Microsoft Academic Search Database_ and try connecting to it.~~ I(Keping) just couldn't find how to get that database downloaded and used in SQL, so I decided to first just use our dblp database in hw1.
 2. [done] Use _Stanford NLP_ to parse a natural language sentence.
