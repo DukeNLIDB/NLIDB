@@ -10,8 +10,6 @@ import model.NLParser;
 import model.Node;
 import model.ParseTree;
 import model.ParseTree.ParseTreeIterator;
-import model.ParseTreeStructureAdjuster;
-import model.QueryTreeTranslator;
 import model.SQLQuery;
 import model.SchemaGraph;
 import model.WordNet;
@@ -25,8 +23,6 @@ import ui.UserView;
 public class Controller {
 	private Connection connection = null;
 	private String input;
-	private ParseTreeStructureAdjuster adjuster;
-	private QueryTreeTranslator translator;
 	private SchemaGraph schema;
 	private NLParser parser;
 	private WordNet wordNet;
@@ -55,8 +51,6 @@ public class Controller {
 		try { wordNet = new WordNet();
 		} catch (Exception e) { e.printStackTrace(); }
 		parser     = new NLParser(); // initialize parser, takes some time
-		adjuster   = new ParseTreeStructureAdjuster(this);
-		translator = new QueryTreeTranslator();
 		
 		System.out.println("Controller initialized.");
 	}
