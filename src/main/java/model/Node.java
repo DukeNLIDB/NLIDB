@@ -1,41 +1,57 @@
 package model;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Node to indicate SQL component.
+ * Interface for a parse tree node.
  * @author keping
  *
  */
 public class Node {
-	int index;
-	String type;
-	String value;
-	double score = 2; // higher score means higher certainty
-	public Node(int index, String type, String value) {
+	
+	/**
+	 * Index of the node in the sentence corresponding to 
+	 * the ParseTree.
+	 */
+	private int index;
+	/**
+	 * Information indicating the corresponding SQL component of the Node.
+	 */
+	private NodeInfo info = null;
+	/**
+	 * The natural language word of the Node. This is the only field of 
+	 * the Node object that is immutable.
+	 */
+	private String word;
+	/**
+	 * Part-of-speech tag for the Node.
+	 */
+	private String posTag;
+	
+	/**
+	 * Parent of the node can be directly modified by ParseTree.
+	 */
+	Node parent = null; // package private
+	/**
+	 * Children of the node can be directly modified by ParseTree.
+	 */
+	List<Node> children = new ArrayList<Node>(); // package private
+	
+	public Node(int index, String word, String posTag) {
 		this.index = index;
-		this.type = type;
-		this.value = value;
-	}
-	public Node(int index, String type, String value, double score) {
-		this(index, type, value);
-		this.score = score;
-	}
-	public int getIndex() { return index; }
-	public double getProb() { return score; }
-	public void setProb(double prob) { this.score = prob; }
-	@Override
-	public String toString() {
-		return type+": "+value;
+		this.word = word;
+		this.posTag = posTag;
 	}
 	
-	public static class ReverseScoreComparator implements Comparator<Node> {
-		@Override
-		public int compare(Node a, Node b) {
-			if (a.score < b.score) { return 1; }
-			else if (a.score > b.score) { return -1; }
-			else { return 0; }
-		}
-	}
+	public int getIndex() { return index; }
+	public void setIndex(int index) { this.index = index; }
+	public NodeInfo getInfo() { return info; }
+	public void setInfo(NodeInfo info) { this.info = info; }
+	public String getWord() { return word; }
+	public String getPosTag() { return posTag; }
 
+	public String toString() {
+		return "("+index+", "+word+")";
+	}
 }

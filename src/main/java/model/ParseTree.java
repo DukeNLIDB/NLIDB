@@ -1,8 +1,7 @@
 package model;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import edu.stanford.nlp.ling.HasWord;
@@ -11,138 +10,137 @@ import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.TypedDependency;
 
-/**
- * Immutable class for parseTree.
- * @author keping
- *
- */
-public class ParseTree {
-	/**
-	 * Immutable inner class representing a dependency relation.
-	 * @author keping
-	 */
-	class Dep {
-		int from;
-		int to;
-		String label;
-		Dep(int from, int to, String label) {
-			this.from = from;
-			this.to = to;
-			this.label = label;
-		}
-	}
-
+public class ParseTree implements IParseTree {
 	
 	/**
-	 * Length including ROOT.
+	 * Number of nodes in the ParseTree, including root Node.
 	 */
 	private int N;
 	/**
-	 * words.get(0).equals("ROOT")
+	 * An array of nodes, with the order in the sentence.
 	 */
-	private ArrayList<String> words;
-	private ArrayList<String> tags;
-	private ArrayList<List<Dep>> children;
-	private ArrayList<Dep> parent;
+	private Node[] nodes;
 	/**
-	 * If this is not null, then nodes have already been mapped.
+	 * Root Node
 	 */
-	private ArrayList<Node> nodes; 
+	private Node root;
 	
 	/**
 	 * Construct a parse tree using the stanford NLP parser. Only one sentence.
+	 * Here we are omitting the information of dependency labels (tags).
 	 * @param text input text.
 	 */
 	public ParseTree(String text, NLParser parser) {
+		// pre-processing the input text
 		DocumentPreprocessor tokenizer = new DocumentPreprocessor(new StringReader(text));
 		List<HasWord> sentence = null;
 		for (List<HasWord> sentenceHasWord : tokenizer) {
 			sentence = sentenceHasWord;
 			break;
 		}
+		// part-of-speech tagging
 		List<TaggedWord> tagged = parser.tagger.tagSentence(sentence);
+		// dependency syntax parsing
 		GrammaticalStructure gs = parser.parser.predict(tagged);
-		this.N = sentence.size()+1;
-		words = new ArrayList<String>(N+1);
-		tags = new ArrayList<String>(N+1);
-		words.add("ROOT");
-		tags.add("ROOT");
+		
+		// Reading the parsed sentence into ParseTree
+		N = sentence.size()+1;
+		nodes = new Node[N];
+		root = new Node(0, "ROOT", "ROOT");
+		nodes[0] = root;
 		for (int i = 0; i < N-1; i++) {
-			words.add(sentence.get(i).word());
-			tags.add(tagged.get(i).tag());
+			nodes[i+1] = new Node(i+1, 
+					sentence.get(i).word(), tagged.get(i).tag());
 		}
-		
-		children = new ArrayList<>(N+1);
-		parent   = new ArrayList<>(N+1);
-		for (int i = 0; i < N+1; i++) {
-			children.add(null);
-			parent.add(null);
-		}
-		
 		for (TypedDependency typedDep : gs.allTypedDependencies()) {
 			int from = typedDep.gov().index();
 			int to   = typedDep.dep().index();
-			String label = typedDep.reln().getShortName();
-			Dep dep = new Dep(from, to, label);
-			parent.set(to, dep);
-			if (children.get(from) == null) {
-				children.set(from, new ArrayList<Dep>());
-			}
-			children.get(from).add(dep);
+			// String label = typedDep.reln().getShortName(); // omitting the label
+			nodes[to].parent = nodes[from];
+			nodes[from].children.add(nodes[to]);
 		}
-		
-		nodes = new ArrayList<>(Arrays.asList(new Node[N]));
+
+	}
+
+	@Override
+	public int size() {
+		return N;
+	}
+
+	@Override
+	public void removeMeaninglessNodes() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void insertImplicitNodes() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<IParseTree> getAdjustedTrees() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getScore() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public SQLQuery translateToSQL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean equals(IParseTree other) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
-	public int length() { return N; }
-	
-	public void setNode(int i, Node node) { this.nodes.set(i, node); }
-	public void setNodes(ArrayList<Node> nodes) { this.nodes = nodes; }
-	
-	public String getWord(int i) {
-		return words.get(i);
+	public class ParseTreeIterator implements Iterator<Node> {
+		int i = 1;
+		@Override
+		public boolean hasNext() {
+			System.out.println("Inside hasNext():");
+			System.out.println("i = "+i);
+			System.out.println("N = "+N);
+			return i < N; 
+		}
+		@Override
+		public Node next() { return nodes[i++]; }
 	}
 	
 	/**
-	 * Don't print out ROOT;
+	 * The default iterator in ParseTree returns the Nodes
+	 * using their order in the sentence.
 	 */
 	@Override
-	public String toString() {
-		String s = "";
-		for (int i = 1; i < N; i++) {
-			s += "("+i+")" + words.get(i)+"/"+tags.get(i)+" ";
-		}
-		s += "\nDependencies:\n";
-		for (Dep dep : parent) {
-			if (dep != null) {
-				s += dep.label+"("+dep.from+"->"+dep.to+")"+" ";
-			}
-		}
-		return s;
-	}
+	public ParseTreeIterator iterator() { return new ParseTreeIterator(); }
 	
-	
-	public String sentenceToString() {
+	/**
+	 * Get the natural language sentence corresponding to this
+	 * parse tree.
+	 * @return sentence
+	 */
+	public String getSentence() {
 		String s = "";
-		if (N >= 2) { s += words.get(1); }
+		s += nodes[1].getWord();
 		for (int i = 2; i < N; i++) {
-			s += " "+words.get(i);
+			s += " "+nodes[i].getWord();
 		}
 		return s;
 	}
 	
-	public String nodesToString() {
-		String s = "";
-		for (int i = 1; i < N; i++) {
-			s += "("+i+")"+words.get(i)+"("+nodes.get(i)+")\n";
-		}
-		return s;
+	@Override
+	public String toString() {
+		// TODO
+		return "";
 	}
 	
-	public static void main(String[] args) {
-		NLParser parser = new NLParser();
-		String text = "I can almost always tell when movies use fake dinosaurs.";
-		ParseTree tree = new ParseTree(text, parser);
-		System.out.println(tree);
-	}
 }
