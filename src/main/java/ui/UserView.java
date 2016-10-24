@@ -83,7 +83,7 @@ public class UserView extends Application {
 		
 		Button btnConfirm = new Button("confirm choice");
 		btnConfirm.setOnAction(e -> {
-			ctrl.chooseNode();
+			ctrl.chooseNode(getChoice());
 		});
 		
 		VBox vb1 = new VBox();

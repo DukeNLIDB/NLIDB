@@ -3,16 +3,17 @@ package app;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import model.NLParser;
 import model.Node;
+import model.NodeInfo;
+import model.NodeMapper;
 import model.ParseTree;
 import model.ParseTree.ParseTreeIterator;
 import model.SQLQuery;
 import model.SchemaGraph;
-import model.WordNet;
 import ui.UserView;
 
 
@@ -25,7 +26,7 @@ public class Controller {
 	private String input;
 	private SchemaGraph schema;
 	private NLParser parser;
-	private WordNet wordNet;
+	private NodeMapper nodeMapper;
 	private ParseTree parseTree;
 	private UserView view;
 	
@@ -48,7 +49,7 @@ public class Controller {
 		this.view = view;
 		startConnection();
 		
-		try { wordNet = new WordNet();
+		try { nodeMapper = new NodeMapper();
 		} catch (Exception e) { e.printStackTrace(); }
 		parser     = new NLParser(); // initialize parser, takes some time
 		
@@ -66,7 +67,7 @@ public class Controller {
 	 * Start connection with the database and read schema graph
 	 */
 	public void startConnection() {
-		// TODO
+		
 		try { Class.forName("org.postgresql.Driver"); } 
 		catch (ClassNotFoundException e1) { }
 		
@@ -93,45 +94,63 @@ public class Controller {
 	public void setInput(String input) { this.input = input; }
 	
 	
-	
-	private void setChoicesOnView() {
+	/**
+	 * Helper method for nodes mapping, displaying the currently mapping Node
+	 * and the choices on the view.
+	 * @param choices
+	 */
+	private void setChoicesOnView(List<NodeInfo> choices) {
 		view.setDisplay("Mapping nodes: \n"+parseTree.getSentence());
 		view.appendDisplay("Currently on: "+node);
-		view.setChoices(FXCollections.observableArrayList(
-				node.getNodeInfoChoices(schema, wordNet)
-				));
+		view.setChoices(FXCollections.observableArrayList(choices));
 	}
 	
-	public void startMappingNodes() {
-		mappingNodes = true;
-		iter = parseTree.iterator();
-		
-		if (iter.hasNext()) {
-			node = iter.next();
-			setChoicesOnView();
-			// Here waiting for the button to call chooseNode
-		} else {
-			finishNodesMapping();
-		}
-	}
-	
-	public void chooseNode() {
-		if (!mappingNodes) { return; }
-		node.setNodeInfo(view.getChoice());
-		
-		if (iter.hasNext()) {
-			node = iter.next();
-			setChoicesOnView();
-			// Here waiting for the button to call chooseNode
-		} else {
-			finishNodesMapping();
-		}
-	}
-	
+	/**
+	 * Terminates the mapping Nodes process by setting the boolean mappingNodes false;
+	 */
 	private void finishNodesMapping() {
 		view.setDisplay("Nodes mapped.\n"+parseTree.getSentence());
 		mappingNodes = false;
 	}
+	
+	/**
+	 * Start the nodes mapping process. A boolean will be set to indicate that
+	 * the application is in the process of mapping Nodes. Cannot call startMappingNodes
+	 * again during mapping Nodes. After this is called, the view shows the choices
+	 * of NodeInfos for a node, waiting for the user to choose one.
+	 */
+	public void startMappingNodes() {
+		if (mappingNodes) { return; }
+		mappingNodes = true;
+		iter = parseTree.iterator();
+		if (!iter.hasNext()) { finishNodesMapping(); }
+		
+		node = iter.next();
+		List<NodeInfo> choices = nodeMapper.getNodeInfoChoices(node, schema);
+		if (choices.size() == 1) { chooseNode(choices.get(0)); }
+		else { setChoicesOnView(choices); }
+		// After this wait for the button to call chooseNode
+	}
+	
+	/**
+	 * Choose NodeInfo for the current Node. This method is called when the user
+	 * clicked the confirmChoice button, or automatically called when the choices
+	 * of NodeInfo contains only one element. 
+	 * @param info
+	 */
+	public void chooseNode(NodeInfo info) {
+		if (!mappingNodes) { return; }
+		node.setInfo(info);
+		if (!iter.hasNext()) { finishNodesMapping(); }
+		
+		node = iter.next();
+		List<NodeInfo> choices = nodeMapper.getNodeInfoChoices(node, schema);
+		if (choices.size() == 1) { chooseNode(choices.get(0)); }
+		else { setChoicesOnView(choices); }
+		// After this wait for the button to call chooseNode
+	}
+	
+
 	
 	/**
 	 * Close connection with the database.
@@ -179,22 +198,5 @@ public class Controller {
 		// TODO
 	}
 	
-	
-	//0---- Methods for interactive communication ----
-	public void showNodes(ArrayList<ParseTree> trees) {
-		// TODO: show possible nodes to user
-	}
-	public ParseTree getUserChoiceNode() {
-		// TODO
-		return new ParseTree("User's choice tree nodes", parser);
-	}
-	public void showStructures(ArrayList<ParseTree> trees) {
-		// TODO
-	}
-	public ParseTree getUserChoiceStructure() {
-		// TODO
-		return new ParseTree("User's choice tree structure", parser);
-	}
-	//0-----------------------------------------------
-	
+
 }
