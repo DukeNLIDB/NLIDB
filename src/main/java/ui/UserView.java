@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import model.NodeInfo;
 
 public class UserView extends Application {
+	private static final String TEST_TEXT = "haha hoho return all my papers in area";
 	
 	Stage stage; // the window
 	Scene scene; // the main content in the window
@@ -54,7 +55,7 @@ public class UserView extends Application {
 		fieldIn.setPrefHeight(100);
 		fieldIn.setPrefWidth(100);
 		fieldIn.setWrapText(true);
-		fieldIn.setText("Haha return my lord.");
+		fieldIn.setText(TEST_TEXT);
 		
 		Button btnTranslate = new Button("translate");
 

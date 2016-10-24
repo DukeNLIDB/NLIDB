@@ -10,7 +10,7 @@ import java.util.List;
 public interface IParseTree extends Iterable<Node> {
 
 	/**
-	 * Get size of the ParseTree.
+	 * Get size of the ParseTree, including the root Node.
 	 * @return number of nodes
 	 */
 	public int size();

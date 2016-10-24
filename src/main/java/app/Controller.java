@@ -100,7 +100,7 @@ public class Controller {
 	 * @param choices
 	 */
 	private void setChoicesOnView(List<NodeInfo> choices) {
-		view.setDisplay("Mapping nodes: \n"+parseTree.getSentence());
+		view.setDisplay("Mapping nodes: \n"+parseTree.getSentence()+"\n");
 		view.appendDisplay("Currently on: "+node);
 		view.setChoices(FXCollections.observableArrayList(choices));
 	}
@@ -123,7 +123,10 @@ public class Controller {
 		if (mappingNodes) { return; }
 		mappingNodes = true;
 		iter = parseTree.iterator();
-		if (!iter.hasNext()) { finishNodesMapping(); }
+		if (!iter.hasNext()) {
+			finishNodesMapping();
+			return; 
+		}
 		
 		node = iter.next();
 		List<NodeInfo> choices = nodeMapper.getNodeInfoChoices(node, schema);
@@ -136,12 +139,15 @@ public class Controller {
 	 * Choose NodeInfo for the current Node. This method is called when the user
 	 * clicked the confirmChoice button, or automatically called when the choices
 	 * of NodeInfo contains only one element. 
-	 * @param info
+	 * @param info {@link NodeInfo}
 	 */
 	public void chooseNode(NodeInfo info) {
 		if (!mappingNodes) { return; }
 		node.setInfo(info);
-		if (!iter.hasNext()) { finishNodesMapping(); }
+		if (!iter.hasNext()) {
+			finishNodesMapping(); 
+			return;
+		}
 		
 		node = iter.next();
 		List<NodeInfo> choices = nodeMapper.getNodeInfoChoices(node, schema);

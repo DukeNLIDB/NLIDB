@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +24,10 @@ public class Node {
 	 * the Node object that is immutable.
 	 */
 	private String word;
+	/**
+	 * Part-of-speech tag for the Node.
+	 */
+	private String posTag;
 	
 	/**
 	 * Parent of the node can be directly modified by ParseTree.
@@ -31,11 +36,12 @@ public class Node {
 	/**
 	 * Children of the node can be directly modified by ParseTree.
 	 */
-	List<Node> children = null; // package private
+	List<Node> children = new ArrayList<Node>(); // package private
 	
-	public Node(int index, String word) {
+	public Node(int index, String word, String posTag) {
 		this.index = index;
 		this.word = word;
+		this.posTag = posTag;
 	}
 	
 	public int getIndex() { return index; }
@@ -43,6 +49,9 @@ public class Node {
 	public NodeInfo getInfo() { return info; }
 	public void setInfo(NodeInfo info) { this.info = info; }
 	public String getWord() { return word; }
+	public String getPosTag() { return posTag; }
 
-	
+	public String toString() {
+		return "("+index+", "+word+")";
+	}
 }

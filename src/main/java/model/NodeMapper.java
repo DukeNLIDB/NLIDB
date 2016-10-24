@@ -44,6 +44,7 @@ public class NodeMapper {
 	 * <p>The length of the list of NodeInfos is at least 1. We will have special type
 	 * in NodeInfo if the Node doesn't correspond to any SQL component (the Node is
 	 * meaningless).</p>
+	 * <p>The returned list contains at most 6 elements.</p>
 	 * @param node
 	 * @param schema
 	 * @return a ranked of NodeInfo
@@ -70,7 +71,8 @@ public class NodeMapper {
 		
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
-		return result;
+		if (result.size() <= 6) { return result; }
+		else { return result.subList(0, 6); }
 	}
 
 }
