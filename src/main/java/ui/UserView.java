@@ -3,9 +3,7 @@ package ui;
 import app.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -15,7 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Node;
+import model.NodeInfo;
 
 public class UserView extends Application {
 	
@@ -24,7 +22,7 @@ public class UserView extends Application {
 	Controller ctrl;
 	Text display;
 	TextArea fieldSQL;
-	ChoiceBox<Node> choiceBox;
+	ChoiceBox<NodeInfo> choiceBox;
 	
 	public void setDisplay(String text) {
 		display.setText(text);
@@ -34,12 +32,12 @@ public class UserView extends Application {
 		display.setText(display.getText()+text);
 	}
 	
-	public void setChoices(ObservableList<Node> choices) {
+	public void setChoices(ObservableList<NodeInfo> choices) {
 		choiceBox.setItems(choices);
 		choiceBox.setValue(choices.get(0));
 	}
 	
-	public Node getChoice() {
+	public NodeInfo getChoice() {
 		return choiceBox.getValue();
 	}
 	
@@ -81,8 +79,7 @@ public class UserView extends Application {
 		display.prefHeight(300);
 		display.setText("Default display text");
 
-		choiceBox = new ChoiceBox<Node>();
-		
+		choiceBox = new ChoiceBox<NodeInfo>();
 		
 		Button btnConfirm = new Button("confirm choice");
 		btnConfirm.setOnAction(e -> {

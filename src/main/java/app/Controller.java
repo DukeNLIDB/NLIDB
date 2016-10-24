@@ -4,13 +4,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javafx.collections.FXCollections;
 import model.NLParser;
 import model.Node;
 import model.ParseTree;
-import model.ParseTreeNodeMapper;
+import model.ParseTree.ParseTreeIterator;
 import model.ParseTreeStructureAdjuster;
 import model.QueryTreeTranslator;
 import model.SQLQuery;
@@ -30,11 +29,20 @@ public class Controller {
 	private QueryTreeTranslator translator;
 	private SchemaGraph schema;
 	private NLParser parser;
+	private WordNet wordNet;
 	private ParseTree parseTree;
 	private UserView view;
-	private ParseTreeNodeMapper mapper;
-	private WordNet wordNet;
-	private boolean inMappingProcess = false;
+	
+	/**
+	 * Iterator for nodes mapping.
+	 */
+	private ParseTreeIterator iter;
+	
+	/**
+	 * Attribute for nodes mapping, to indicate the current Node.
+	 */
+	private Node node;
+	private boolean mappingNodes = false;
 	private boolean processing = false;
 	
 	/**
@@ -91,15 +99,22 @@ public class Controller {
 	public void setInput(String input) { this.input = input; }
 	
 	
-	public void nodesMappingStart() {
-		inMappingProcess = true;
-		mapper = new ParseTreeNodeMapper(parseTree, schema, wordNet);
-		if (mapper.hasNextChoices()) {
-			List<Node> choices = mapper.nextChoices();
-			view.setDisplay("Mapping nodes: \n"+parseTree.sentenceToString());
-			int index = choices.get(0).getIndex();
-			view.appendDisplay("\nindex: "+index+"\n");
-			view.setChoices(FXCollections.observableArrayList(choices));
+	
+	private void setChoicesOnView() {
+		view.setDisplay("Mapping nodes: \n"+parseTree.getSentence());
+		view.appendDisplay("Currently on: "+node);
+		view.setChoices(FXCollections.observableArrayList(
+				node.getNodeInfoChoices(schema, wordNet)
+				));
+	}
+	
+	public void startMappingNodes() {
+		mappingNodes = true;
+		iter = parseTree.iterator();
+		
+		if (iter.hasNext()) {
+			node = iter.next();
+			setChoicesOnView();
 			// Here waiting for the button to call chooseNode
 		} else {
 			finishNodesMapping();
@@ -107,24 +122,21 @@ public class Controller {
 	}
 	
 	public void chooseNode() {
-		if (inMappingProcess) {
-			mapper.chooseNode(view.getChoice());
-			if (mapper.hasNextChoices()) {
-				List<Node> choices = mapper.nextChoices();
-				view.setDisplay("Mapping nodes: \n"+parseTree.sentenceToString());
-				int index = choices.get(0).getIndex();
-				view.appendDisplay("\nindex: "+index+"\n");
-				view.setChoices(FXCollections.observableArrayList(choices));
-			} else {
-				finishNodesMapping();
-			}
+		if (!mappingNodes) { return; }
+		node.setNodeInfo(view.getChoice());
+		
+		if (iter.hasNext()) {
+			node = iter.next();
+			setChoicesOnView();
+			// Here waiting for the button to call chooseNode
+		} else {
+			finishNodesMapping();
 		}
 	}
 	
 	private void finishNodesMapping() {
-		parseTree = mapper.getMappedTree();
-		view.setDisplay("Nodes mapped.\n"+parseTree.nodesToString());
-		inMappingProcess = false;
+		view.setDisplay("Nodes mapped.\n"+parseTree.getSentence());
+		mappingNodes = false;
 	}
 	
 	/**
@@ -155,13 +167,13 @@ public class Controller {
 	public void processNaturalLanguage() {
 		processing = true;
 		parseTree = new ParseTree(input, parser);
-		nodesMappingStart();
+		startMappingNodes();
 	}
 	
 	public SQLQuery getQuery() {
 		// TODO
 		SQLQuery query;
-		query = new SQLQuery(parseTree.sentenceToString()+" to sql query...");
+		query = new SQLQuery(parseTree.getSentence()+" to sql query...");
 		return query;
 	}
 	
