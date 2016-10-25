@@ -74,15 +74,15 @@ public class ParseTree implements IParseTree {
 	}
 
 	@Override
-	public void insertImplicitNodes() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public List<IParseTree> getAdjustedTrees() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public void insertImplicitNodes() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
