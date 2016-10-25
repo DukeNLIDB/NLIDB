@@ -1,5 +1,5 @@
 /target/
 lib/
-report/**/*.log
-report/**/*.aux
-report/**/auto/
+report/**
+!report/**/*.bib
+!report/**/*.tex
