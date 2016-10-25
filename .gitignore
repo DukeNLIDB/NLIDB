@@ -1,2 +1,5 @@
 /target/
 lib/
+.log
+.aux
+auto/
