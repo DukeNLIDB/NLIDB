@@ -118,7 +118,8 @@ We will cover more algorithms for the tree adjusting and SQL translating phases 
 \section{System Design}
 
 \begin{figure*}[ht]
-  \centerline{\includegraphics[width=0.8\linewidth]{figures/nlidb_system_diagram.pdf}}
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/nlidb_system_diagram.pdf}
   \caption{System Diagram}
 \end{figure*}
 
@@ -137,7 +138,8 @@ A ParseTree consists of an array of Nodes. Each Node has information about the n
 Then we map each of the Node into an SQL component. We iterate over the tree and map each Node according to a certain Node Type in Figure 2, according to predefined rules. There are 7 node types in total, and 5 of them, SN, ON, FN, QN, and LN have hard-coded mapping rules. For example, map word “return” or “Return” to an “SN” node with value “SELECT”. A word will first be searched against these five Node Types. If there is no match, the search will go on to the remaining two types, NN and VN.
 
 \begin{figure}[ht]
-  \centerline{\includegraphics[width=0.9\linewidth]{figures/nodes_mapping_rules.png}}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/nodes_mapping_rules.png}
   \caption[caption for nodes mapping rules]{Nodes Mapping Rules\protect\footnotemark}
 \end{figure}
 \footnotetext{Taken from \cite{li2014}.}
@@ -171,7 +173,8 @@ Once we have the word similarity scores of one word to names and values in datab
 Figure 4 is an example of a parse tree with nodes mapped to SQL components. The left part is a parse tree, and the right part is the mappings of all its nodes.
 
 \begin{figure}[ht]
-  \centerline{\includegraphics[width=0.9\linewidth]{figures/nodes_mapping_example.png}}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/nodes_mapping_example.png}
   \caption[caption for nodes mapping example]{Node Mapping Example.\protect\footnotemark }
 \end{figure}
 \footnotetext{Taken from \cite{li2014}.}
@@ -185,16 +188,19 @@ The JavaFX application runs on JVM, and we’ve tested it on an Ubuntu 16.04 mac
 Our program has already finished part of final target. 
 
 \begin{figure}[ht]
-	\centerline{\includegraphics[width=0.8\linewidth]{figures/program_structure.png}}
-	\caption{Program Structure}
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/program_structure.png}
+  \caption{Program Structure}
 \end{figure}
+  
 Figure 5 is a detailed structure on programs that we have already finished or at least conceived.
 
 We have programmed a GUI in \textit{UserView.java} and a connection between database and GUI in \textit{Controller.java}. To realize natural language query, our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined natural language parser called Stanford NLP. The parsing process is written in \textit{NLParser.java} and \textit{ParserTree.java}. After we get the parser tree, we map each tree node (word in initial natural language input) to certain component of SQL and database. The mapping is written in \textit{NodeMapper.java}.
 
 \begin{figure*}[ht]
-	\centerline{\includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}}
-	\caption{GUI during Node Mapping}
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}
+  \caption{GUI during Node Mapping}
 \end{figure*}
 
 Figure 6 is a screenshot of our application during the nodes mapping stage. The upper left part is where the user input comes. The bottom left part is supposed to be the translated SQL query (which hasn’t been completed). The upper left part shows the current information on nodes mapping. The choice box showing “NN: inproceedings.title” contains a drop down list of node types and values for the user to choose from. Once the user confirms the choice by pressing the “confirm choice” button, the app will go on to map the next word. The mapping choices will only be shown to the user if the word doesn’t match with the five predefined node types.
