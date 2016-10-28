@@ -107,9 +107,6 @@ public class ParseTree implements IParseTree {
 		int i = 1;
 		@Override
 		public boolean hasNext() {
-			System.out.println("Inside hasNext():");
-			System.out.println("i = "+i);
-			System.out.println("N = "+N);
 			return i < N; 
 		}
 		@Override
