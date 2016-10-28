@@ -46,19 +46,31 @@ People have been working on this for decades, but it is really more about the un
     
 In the past, many natural language interfaces to databases (NLIDBs) has been built to better translate natural language into database queries. NLIDBs have many advantages over other widely used accepted query interfaces, but they have not been adopted widely. This is because understanding natural language is hard. It is important for NLIDBs to improve its parsing and transformation systems, and interact with users more effectively. \cite{li2014}
       
-      We intend to closely follow the paper \cite{li2014}. The main steps of translating a natural language to an SQL query are as follows:
+We intend to closely follow the paper \cite{li2014}. The main steps of translating a natural language to an SQL query are as follows:
 
-\begin{enumerate}
+\begin{itemize}
       \item Parse the natural language using a dependency parser (Stanford NLP Parser).
       \item Map the parse tree nodes to SQL keywords and table and attribute names.
       \item Adjust the structure of the parse tree to make it follow the structure of an SQL query. The result of this procedure is then called a query tree.
       \item Translate the query tree to an SQL query.
       \item During step 2 and 3 there is interactive communication with the user to let the user choose the desired mappings or structures out of ranked choices.
-\end{enumerate}
+\end{itemize}
         
-Steps 2 - 4 are the most complicated parts, because we need to code up the grammatical rules that the parse trees should follow to get translated to SQL queries, which requires deep understanding of the SQL language. \textbf{Each member of our group will focus on one step among steps 2 - 4.} Also there will be a user interface in our system coded with Java.
+Steps 2 - 4 are the most complicated parts, because we need to code up the grammatical rules that the parse trees should follow to get translated to SQL queries, which requires deep understanding of the SQL language. \textbf{Each member of our group will focus on one step among steps 2 - 4.} Also there will be a user interface in our system coded with JavaFX.
 
 We plan to use \textit{Microsoft Academic Search Database} for testing as in \textit{Fei Li 2014}, but PostgreSQL as our database (since we've learned to use it in CS516).
+
+Up to midterm report, we have finished following tasks in this program:
+
+\begin{itemize}
+	\item We have programmed a simple GUI with JavaFX. 
+	\item Because we still have problem using the \textit{Microsoft Academic Search Database}, we currently use the database \textit{dblp} in homework1 for testing purpose.
+	\item We have programmed a connection controller between the dblp database and the GUI.
+	\item We have successfully retrieved database schema into program for future analysis.
+	\item We have used the Stanford Natural Language Parser to parse natural language inputs, and formed results into a data structure ParseTree.
+	\item We have written classes to calculate word similarity.
+	\item We have mapped each ParseTree node to certain SQL component based on word similarity.
+\end{itemize}
 	
 Possible obstacles we might encounter are:
 \begin{itemize}
@@ -81,9 +93,9 @@ Our problem differs from previous literature in that, we mainly focus on how to 
 \section{Problem Definition}
 NLIDBS - Natural Language Interfaces to Databases, a computer human interface that is capable of understanding varieties of ambiguous input and executing corresponding actions on database.
       
-Parse tree structure adjustor - It is used to adjust the sequence of the SQL keywords that are parsed from mapper to correctly understand and execute the intended query.  Once the natural language keywords have been matched with SQL keywords, it will inserted some keywords if missing to better interpret the input and  generate valid SQL query.
+Parse tree structure adjuster - It is used to adjust the sequence of the SQL keywords that are parsed from mapper to correctly understand and execute the intended query.  Once the natural language keywords have been matched with SQL keywords, it will inserted some keywords if missing to better interpret the input and  generate valid SQL query.
       
-Parse tree node mapper - This is a mapper that maps keywords in natural language to SQL keywords. The mapper will try to output the most accurate match between natural language keyword and SQL keyword. If no match is found, it will ignore the word. Our current strategy is to mapping keywords based on its neighbour words (i.e. if two words are adjacent, they are considered as relevant and it will affect the interpret of words that have multiple interpretations).
+Parse tree node mapper - This is a mapper that maps keywords in natural language to SQL keywords. The mapper will try to output the most accurate match between natural language keyword and SQL keyword. If no match is found, it will ignore the word. Our current strategy is to mapping keywords based on its neighbor words (i.e. if two words are adjacent, they are considered as relevant and it will affect the interpret of words that have multiple interpretations).
       
 Dependency parser - Dependencies that is used to parse natural language query linguistically.  We will be using Stanford Parser to perform the task.
       
@@ -96,8 +108,11 @@ Currently, there is not many easy-to-use NLIDBS available. Our goal is to create
 
 %%%================================================================%%%
 \section{Algorithms}
-Our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined mapping. Our mapping is written in NodeMapper.java. Since we are still testing the parse, the mapping only limits to a few keywords, such as: return, equals, all, etc. If there is no exact match in our predefined maps, the mapping will try to match word with the column name based on similarity. The similarity composes of two parts. First part is lexical similarity, which is the similarity of the appearance of characters. We are using Jaccord coefficient to compute the lexical similarity. Second part is semantic similarity. We are using libraries from wordNet to compute it. After we have both similarity, we use the higher one in these two as the similarity score between word and column name. In case, the words is meaningless, we also add a meaningless option after the computation of similarity is finished. User will need to choose the most similar option from the list generated from similarity computation. 
+In the parsing phase, we borrowed the sophisticated Standford Natural Language Parser. 
 
+In the node mapping phase, we calculated similarity between the node word and words in the database. The similarity measure is based on two methods. The first method is lexical similarity, which is the similarity of the appearance of characters. We are using Jaccord coefficient to compute the lexical similarity. The second method is semantic similarity. We are using libraries from WordNet to compute it. After we have both similarities, we use the higher one of these two as the similarity score between input word and database word. In case that the word is meaningless (like haha, hoho, etc), we also add a meaningless option after the computation of similarity is finished. Users will need to choose the correct option in their opinions from the list generated from similarity computation. Detailed algorithms for computing similarities are explained in Section 5.
+
+We will cover more algorithms for the tree adjusting and SQL translating phases in the final report.  
 
 %%%================================================================%%%
 \section{System Design}
@@ -107,11 +122,11 @@ Our first step in implementing the translation process is to parse the natural l
   \caption{System Diagram}
 \end{figure*}
 
-Our current system is implemented in java, using maven as the project management tool. The source code are divided into three parts: model, view, and control. The controller here wraps many models as attribute variables, and it takes charge of the interaction between database and the view (GUI). We use JavaFX for the GUI.
+Our current system is implemented in Java, using maven as the project management tool. The source code are divided into three parts: model, control, and view. The model part takes care of how to realize major functions of the natural language database interface, like parsing natural language, mapping nodes, adjusting node tree structure, and translating the tree into SQL query. The controller wraps many models as attribute variables, and it takes charge of the interaction between database and the view (GUI). And the view part uses JavaFX to design a GUI.
 
-Figure 1 is a diagram of our system. The boxes with solid frame lines are the ones we've already written, and the boxes with dashed frame lines are to be completed in the future.
+Figure 1 is a diagram of our system. The boxes with solid frame lines are the ones we've already written, and the boxes with dashed frame lines are to be completed in the future. 
 
-Below we’ll introduce the two steps that we’ve completed: parsing natural language into a parse tree, and mapping the nodes of the parse tree to SQL components.
+Below we’ll introduce the design ideas on two steps that we’ve completed: parsing natural language into a parse tree, and mapping the nodes of the parse tree to SQL components.
 
 \subsection{Natural Language Parser}
 We write the NLParser class to parse natural language from the user input in GUI to a dependency parse tree. The NLParser is just a wrapper of the Standford NLP pos-tagger and dependency syntax parser. A natural language sentence is first tagged with part-of-speech labels, and then parsed with dependency parser to a ParseTree.
@@ -140,13 +155,14 @@ $$ Sim_{WUP} = \frac{2*N3}{N1+N2+2*N3} $$
 \end{figure}
 \footnotetext{Taken from \cite{wu1994verbs}.}
 
-One thing to note about WordNet is that each word can be in multiple synsets, and each synset can have multiple parents, so we use breadth-first-seach to find the lowest of all possible common parents of two words.
+One thing to note about WordNet is that each word can be in multiple synsets, and each synset can have multiple parents, so we use breadth-first-search to find the lowest of all possible common parents of two words.
+
 
 For lexical similarity between two words, we use the Jaccard coefficient:
 
 $$ J(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
 
-where $A$ and $B$ are the set of characters of the two words respectively. The Jaccard coefficient may not be as good for measuring the lexical similarity of two words (as edit distance), but it is currently still used because it is a measrure in range (0,1), which makes it easily compared with the WUP semantic similarity.
+where $A$ and $B$ are the set of characters of the two words respectively. The Jaccard coefficient may not be as good for measuring the lexical similarity of two words (as edit distance), but it is currently still used because it is a measure in range (0,1), which makes it easily compared with the WUP semantic similarity.
 
 To search over the database, we first visit the database, retrieve its schema, and store the Schema Graph as an attribute variable in the Controller class, so that each node mapping task don’t have to go through the slow database query. The Schema contains the table names, the column names of each column, and some sample distinct values of each column, such that they can be searched over to map Name Node or Value Node.
 
@@ -164,17 +180,28 @@ Figure 4 is an example of a parse tree with nodes mapped to SQL components. The 
 
 %%%================================================================%%%
 \section{Experiments}
-
-\begin{figure*}[ht]
-  \centerline{\includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}}
-  \caption{GUI during Node Mapping}
-\end{figure*}
-
 The JavaFX application runs on JVM, and we’ve tested it on an Ubuntu 16.04 machine. We are using JDBC to connect to the PostgreSQL database of dblp, which we used in homework 1.
 
-Figure 5 is a screenshot of our application during the nodes mapping stage. The upper left part is where the user input comes. The bottom left part is supposed to be the translated SQL query (which hasn’t been completed). The upper left part shows the current information on nodes mapping. The choice box showing “NN: inproceedings.title” contains a drop down list of node types and values for the user to choose from. Once the user confirms the choice by pressing the “confirm choice” button, the app will go on to map the next word. The mapping choices will only be shown to the user if the word doesn’t match with the five predefined node types.
+Our program has already finished part of final target. 
 
-Currently we’ve only defined very limited number of explicit rules for nodes mapping. We plan to tune the app after we’ve completed writing the whole process of translation. The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices.
+\begin{figure}[ht]
+	\centerline{\includegraphics[width=0.8\linewidth]{figures/program_structure.png}}
+	\caption{Program Structure}
+\end{figure}
+Figure 5 is a detailed structure on programs that we have already finished or at least conceived.
+
+We have programmed a GUI in \textit{UserView.java} and a connection between database and GUI in \textit{Controller.java}. To realize natural language query, our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined natural language parser called Stanford NLP. The parsing process is written in \textit{NLParser.java} and \textit{ParserTree.java}. After we get the parser tree, we map each tree node (word in initial natural language input) to certain component of SQL and database. The mapping is written in \textit{NodeMapper.java}.
+
+\begin{figure*}[ht]
+	\centerline{\includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}}
+	\caption{GUI during Node Mapping}
+\end{figure*}
+
+Figure 6 is a screenshot of our application during the nodes mapping stage. The upper left part is where the user input comes. The bottom left part is supposed to be the translated SQL query (which hasn’t been completed). The upper left part shows the current information on nodes mapping. The choice box showing “NN: inproceedings.title” contains a drop down list of node types and values for the user to choose from. Once the user confirms the choice by pressing the “confirm choice” button, the app will go on to map the next word. The mapping choices will only be shown to the user if the word doesn’t match with the five predefined node types.
+
+As for the node mapper, currently we’ve only defined very limited number of explicit rules for nodes mapping. There are only a few predefined keywords, such as return, equals, all, etc (thus limited SQL query functions as well). We plan to tune the app after we’ve completed writing the whole process of translation. The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices. 
+
+As for basic GUI functions, currently we defined the initial input natural language sentence in \textit{UserView.java}, and we haven't programmed how to deal with user inputs in the GUI TextArea component (the left upper part in the UI). We will refine this in out future work. Moreover, we may need to design a much fancier GUI as the last step of our program.
 
 %%%================================================================%%%
 \section{Contributions of Project Members}
@@ -183,17 +210,14 @@ Currently we’ve only defined very limited number of explicit rules for nodes m
 \item {\bf Author-1}
 \begin{itemize}
 \item {\bf Midterm:}
-\item {\bf Final:}
 \end{itemize}
 \item {\bf Author-2}
 \begin{itemize}
 \item {\bf Midterm:}
-\item {\bf Final:}
 \end{itemize}
 \item {\bf Author-3}
 \begin{itemize}
 \item {\bf Midterm:}
-\item {\bf Final:}
 \end{itemize}
 \end{enumerate}
 
