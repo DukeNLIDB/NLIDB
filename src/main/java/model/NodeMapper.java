@@ -34,6 +34,10 @@ public class NodeMapper {
 		map.put("FN",     new NodeInfo("FN", "AVG"));	 // Function Node
 		map.put("all",    new NodeInfo("QN", "ALL"));	 // Quantifier Node
 		map.put("and",    new NodeInfo("FN", "AND"));	 // Logic Node
+		map.put("or",    new NodeInfo("FN", "OR"));
+		map.put("less",    new NodeInfo("FN", "<"));
+		map.put("greater",    new NodeInfo("FN", ">"));
+		map.put("not",    new NodeInfo("FN", "!="));
 	}
 	
 	/**
