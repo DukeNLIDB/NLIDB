@@ -38,48 +38,28 @@
 %%%================================================================%%%
 \section{Introduction}\label{sec:introduction}
 
-This project is going to build a natural language interface for relational databases, following the ideas of Li et al. (2014)\cite{li2014}. Constructing an Interactive Natural Language Interface for Relational Databases. Here we only focus on how to select data (no insert, add, drop).
-	
-This project is of course meaningful. Since SQL queries are not easy for everyone to learn, this interface will be an excellent tool for everyone to query data from relational databases. For example, users of a searching engine are very likely type in a question like "Which river is the longest river in the world?", and the searching engine should transform this question into SQL queries and execute it against its huge database. If the searching engine is not able to understand the meaning of the question correctly, it will fail to provide users with correct answer.
-    
-People have been working on this for decades, but it is really more about the understanding of natural language rather than the generating of SQL queries. Because SQL queries have well defined grammars and all the tricky ambiguities lie in natural languages. Thankfully, nowadays we have high accuracy dependency syntax parser to make NLIDB really feasible. In this course project, we are both interested in natural language processing and its application in database application.
-    
-In the past, many natural language interfaces to databases (NLIDBs) has been built to better translate natural language into database queries. NLIDBs have many advantages over other widely used accepted query interfaces, but they have not been adopted widely. This is because understanding natural language is hard. It is important for NLIDBs to improve its parsing and transformation systems, and interact with users more effectively. \cite{li2014}
-      
-We intend to closely follow the paper \cite{li2014}. The main steps of translating a natural language to an SQL query are as follows:
+Writing SQL queries can be difficult, especially when it involves complex logic. As more and more non-expert users are accessing relational databases, it is very important to simplify their process of writing SQL queries. This project is going to build a Natural Language Interface for relational DataBases (NLIDB), closely following Li and Jagadish (2014)\cite{li2014}. NLIDB will be a tool for everyone to query data easily from relational databases.
 
-\begin{itemize}
-      \item Parse the natural language using a dependency parser (Stanford NLP Parser).
-      \item Map the parse tree nodes to SQL keywords and table and attribute names.
-      \item Adjust the structure of the parse tree to make it follow the structure of an SQL query. The result of this procedure is then called a query tree.
-      \item Translate the query tree to an SQL query.
-      \item During step 2 and 3 there is interactive communication with the user to let the user choose the desired mappings or structures out of ranked choices.
-\end{itemize}
-        
-Steps 2 - 4 are the most complicated parts, because we need to code up the grammatical rules that the parse trees should follow to get translated to SQL queries, which requires deep understanding of the SQL language. \textbf{Each member of our group will focus on one step among steps 2 - 4.} Also there will be a user interface in our system coded with JavaFX.
+Translating natural language into an SQl query isn't an easy job. Not only because of the disambiguity of natural language, but also that users may make mistakes in writing natural language input, such as mis-spelling. We want the users to feel at ease using our interface, not afraid of being mis-interpreted by the NLIDB, even if they cannot remember the exact names of the database column names. So we follow Li and Jagadish (2014)\cite{li2014} to use an interactive interface to let user make choices in several ambiguous phases of the translation.
 
-We plan to use \textit{Microsoft Academic Search Database} for testing as in \textit{Fei Li 2014}, but PostgreSQL as our database (since we've learned to use it in CS516).
+The main components for translating a natural language to an SQL query are as follows:
 
-Up to midterm report, we have finished following tasks in this program:
+\begin{enumerate}
+  \item Parse the natural language input into a parse tree using dependency syntax parser.
+  \item Map the nodes in the parse tree to SQL keywords, table names, column names, and values. Here users may choose the desired mapping from ranked options.
+  \item Adjust the structure of the parse tree to make it follow the structure of an SQL query. Here users may choose the desired structure from ranked options.
+  \item Translate the parse tree to an SQL query.
+\end{enumerate}
 
-\begin{itemize}
-	\item We have programmed a simple GUI with JavaFX. 
-	\item Because we still have problem using the \textit{Microsoft Academic Search Database}, we currently use the database \textit{dblp} in homework1 for testing purpose.
-	\item We have programmed a connection controller between the dblp database and the GUI.
-	\item We have successfully retrieved database schema into program for future analysis.
-	\item We have used the Stanford Natural Language Parser to parse natural language inputs, and formed results into a data structure ParseTree.
-	\item We have written classes to calculate word similarity.
-	\item We have mapped each ParseTree node to certain SQL component based on word similarity.
-\end{itemize}
-	
-Possible obstacles we might encounter are:
-\begin{itemize}
-\item The system is really complicated, and except for the available Standford NLP Parser, we need to code the user interface, parser tree node mapper, parser tree structure adjuster and the query tree translator by ourselves.
-\item We are not very familiar with NLP, and have no experience in translating natural language into SQL language, so we should study related knowledge by ourselves.
-\end{itemize}
+Up until this midterm report, we have completed steps 1 - 2 above. We have built an interactive graphical user interface (GUI), and established connection with a database to experiment with the two steps. Now the user can already choose the desired node mappings from the choices offered by our application. 
+
+Before the final report, we will finish steps 3 - 4 and tune the model with some hand-written natural language and SQL query pairs. 
 
 %%%================================================================%%%
 \section{Related Work}
+
+People have been working on this for decades, but it is really more about the understanding of natural language rather than the generating of SQL queries. Because SQL queries have well defined grammars and all the tricky ambiguities lie in natural languages. Thankfully, nowadays we have high accuracy dependency syntax parser to make NLIDB really feasible. In this course project, we are both interested in natural language processing and its application in database application.
+
 NLIDBs which we will study belongs to QA systems. Modern QA systems have developed into many categories, like natural language, visual questions, and AI ability test. Here we focus on the development of natural language QA systems. These systems can develop on structured data like databases and semi-structured or unstructured data like web information. \cite{QATutorial}
       
 Early work in natural language database systems is usually based on small scale database. These databases are of simple schema and small numbers of entities, thus can only answer a small set of questions. Moreover, their natural language parsing systems can only support ad-hoc methods and semantic parsing. In other words, early work will produce ambiguity if database is scalable and natural language queries are "open-domain". And without the help of machine learning methods, early QA systems cannot update their parsing methods as they accumulate more data.
@@ -91,28 +71,24 @@ Our problem differs from previous literature in that, we mainly focus on how to 
 
 %%%================================================================%%%
 \section{Problem Definition}
-NLIDBS - Natural Language Interfaces to Databases, a computer human interface that is capable of understanding varieties of ambiguous input and executing corresponding actions on database.
-      
-Parse tree structure adjuster - It is used to adjust the sequence of the SQL keywords that are parsed from mapper to correctly understand and execute the intended query.  Once the natural language keywords have been matched with SQL keywords, it will inserted some keywords if missing to better interpret the input and  generate valid SQL query.
-      
-Parse tree node mapper - This is a mapper that maps keywords in natural language to SQL keywords. The mapper will try to output the most accurate match between natural language keyword and SQL keyword. If no match is found, it will ignore the word. Our current strategy is to mapping keywords based on its neighbor words (i.e. if two words are adjacent, they are considered as relevant and it will affect the interpret of words that have multiple interpretations).
-      
-Dependency parser - Dependencies that is used to parse natural language query linguistically.  We will be using Stanford Parser to perform the task.
-      
-NV node - Every node in the parse tree, which has one or more candidate map is an NV node.
-	
-In Fei Li’s research, he states several methods that he used in building the NLIDBS. First of all, he defined different types of nodes. Every node type has a specified pool of corresponding natural language words. With the definition of these types, keywords in natural language can be organized more accurately. Second, he proposed that in order for mapping to work more accurately, database schema should be meaningful and human-legible. When similar meaning words present, they will be more likely to be matched with corresponding SQL keywords correctly. Third, after all keywords have been translated into SQL keywords, there will be more than one candidate maps returned for user to choose. Once user chooses the one that fits user’s intended query the best, the candidate map is finalized. Li’s paper proposed procedures for handling and parsing natural language into SQL.\cite{li2014} Follow the idea, we will implement our own algorithm for solving similar problems.
 
-Currently, there is not many easy-to-use NLIDBS available. Our goal is to create an interface that allows user to input natural language and process it into SQL. Users can type in query in natural language in the text box. Parser will validate the input and execute corresponding query.
+NLIDB
+
+Parse Tree
+
+Node
+
+Our problem: translate parse tree to SQL
 
 
 %%%================================================================%%%
 \section{Algorithms}
-In the parsing phase, we borrowed the sophisticated Standford Natural Language Parser. 
 
-In the node mapping phase, we calculated similarity between the node word and words in the database. The similarity measure is based on two methods. The first method is lexical similarity, which is the similarity of the appearance of characters. We are using Jaccord coefficient to compute the lexical similarity. The second method is semantic similarity. We are using libraries from WordNet to compute it. After we have both similarities, we use the higher one of these two as the similarity score between input word and database word. In case that the word is meaningless (like haha, hoho, etc), we also add a meaningless option after the computation of similarity is finished. Users will need to choose the correct option in their opinions from the list generated from similarity computation. Detailed algorithms for computing similarities are explained in Section 5.
+In the natural language parsing phase, we use the feature based pos-tagger\cite{toutanova2003feature} and the neural network dependency parser\cite{chen2014fast} from the Stanford NLP package.
 
-We will cover more algorithms for the tree adjusting and SQL translating phases in the final report.  
+In the node mapping phase, other than mapping words with hard coded rules, we compare words with table and column names in the database, which requires a word similarity score. The similarity score is the maximum of two subscores. The first is lexical similarity (similarity in spelling), which is Jaccord coeffcient here. The second is semantic similarity, for which we use WUP similarity\cite{wu1994verbs}. To compute WUP similarity, we have to do a breadth-first-search to find the lowest common ancestor of two words in the WordNet. The calculation of word similarity will be explained in detail in the next secion.
+
+More algorithms will be needed for parse tree adjustment and SQL query generation in the future.
 
 %%%================================================================%%%
 \section{System Design}
@@ -146,7 +122,7 @@ Then we map each of the Node into an SQL component. We iterate over the tree and
 
 The remaining two types, Name Node and Value Node, are decided by searching over the database for matching names or values. The matching of word to names or values are decided by the word similarity score of two words.The word similarity score here is the maximum of semantic similarity and lexical similarity.
 
-Semantic similarity is the WUP similarity function using WordNet. WordNet is a net of synonym sets (synsets) connected with semantic and lexical pointers. Two most important semantic pointers are hypernym and hyponym, which connect the synsets to the tree that we are interested here, as Figure 3. In Figure 3, the WUP similarity between $C1$ and $C2$ is:
+Semantic similarity is the WUP similarity\cite{wu1994verbs} function using WordNet. WordNet is a net of synonym sets (synsets) connected with semantic and lexical pointers. Two most important semantic pointers are hypernym and hyponym, which connect the synsets to the tree that we are interested here, as Figure 3. In Figure 3, the WUP similarity between $C1$ and $C2$ is:
 
 $$ Sim_{WUP} = \frac{2*N3}{N1+N2+2*N3} $$
 
