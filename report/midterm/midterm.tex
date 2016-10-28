@@ -10,6 +10,7 @@
 \usepackage{comment, cite, wrapfig}
 \usepackage[utf8]{inputenc}
 \usepackage[hidelinks]{hyperref}
+\usepackage{courier}
 %\usepackage{geometry}
 \hypersetup{breaklinks=true}
 \urlstyle{same}
@@ -190,7 +191,7 @@ Our program has already finished part of final target.
 \end{figure}
 Figure 5 is a detailed structure on programs that we have already finished or at least conceived.
 
-We have programmed a GUI in \textit{UserView.java} and a connection between database and GUI in \textit{Controller.java}. To realize natural language query, our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined natural language parser called Stanford NLP. The parsing process is written in \textit{NLParser.java} and \textit{ParserTree.java}. After we get the parser tree, we map each tree node (word in initial natural language input) to certain component of SQL and database. The mapping is written in \textit{NodeMapper.java}.
+We have programmed a GUI in \texttt{UserView.java} and a connection between database and GUI in \texttt{Controller.java}. To realize natural language query, our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined natural language parser called Stanford NLP. The parsing process is written in \texttt{NLParser.java} and \texttt{ParserTree.java}. After we get the parser tree, we map each tree node (word in initial natural language input) to certain component of SQL and database. The mapping is written in \texttt{NodeMapper.java}.
 
 \begin{figure*}[ht]
 	\centerline{\includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}}
@@ -201,7 +202,7 @@ Figure 6 is a screenshot of our application during the nodes mapping stage. The 
 
 As for the node mapper, currently we’ve only defined very limited number of explicit rules for nodes mapping. There are only a few predefined keywords, such as return, equals, all, etc (thus limited SQL query functions as well). We plan to tune the app after we’ve completed writing the whole process of translation. The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices. 
 
-As for basic GUI functions, currently we defined the initial input natural language sentence in \textit{UserView.java}, and we haven't programmed how to deal with user inputs in the GUI TextArea component (the left upper part in the UI). We will refine this in out future work. Moreover, we may need to design a much fancier GUI as the last step of our program.
+As for basic GUI functions, we may need to design a much fancier GUI as the last step of our program.
 
 %%%================================================================%%%
 \section{Contributions of Project Members}
