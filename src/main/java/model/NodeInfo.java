@@ -27,6 +27,10 @@ public class NodeInfo {
 		return type+": "+value;
 	}
 	
+	public String getValue() {
+		return value;
+	}
+	
 	public static class ReverseScoreComparator implements Comparator<NodeInfo> {
 		@Override
 		public int compare(NodeInfo a, NodeInfo b) {

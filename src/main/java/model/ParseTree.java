@@ -60,6 +60,7 @@ public class ParseTree implements IParseTree {
 			nodes[from].children.add(nodes[to]);
 		}
 
+		
 	}
 
 	@Override
@@ -69,10 +70,32 @@ public class ParseTree implements IParseTree {
 
 	@Override
 	public void removeMeaninglessNodes() {
-		// TODO Auto-generated method stub
-
+		
+		for (int i = 0; i < N; i ++) {
+			NodeInfo temp = nodes[i].getInfo();
+			if(temp.getValue().equals("meaningless")) {
+				
+				deleteNode(i);
+			}
+		}
 	}
 
+	public void deleteNode (int index) {
+	
+		if (index == N - 1) {
+		
+			nodes[index] = null;
+		}
+
+		else {
+			for (int i = index + 1; i < N; i ++) {
+			
+				nodes[i - 1] = nodes[i];
+			}
+		}
+		N --;
+	}
+	
 	@Override
 	public List<IParseTree> getAdjustedTrees() {
 		// TODO Auto-generated method stub
