@@ -4,6 +4,7 @@ import app.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -101,6 +102,7 @@ public class UserView extends Application {
 		vb2.getChildren().addAll(display, choiceBox, btnConfirm);
 		
 		HBox hb = new HBox();
+		hb.setPadding(new Insets(15, 12, 15, 12));
 		hb.setSpacing(10);
 		hb.getChildren().addAll(vb1, vb2);
 		
