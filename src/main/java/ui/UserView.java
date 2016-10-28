@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import model.NodeInfo;
 
 public class UserView extends Application {
-	private static final String TEST_TEXT = "haha hoho return all my papers in area";
+	private static final String TEST_TEXT = "Sandy haha hoho return all my papers in area";
 	
 	Stage stage; // the window
 	Scene scene; // the main content in the window
