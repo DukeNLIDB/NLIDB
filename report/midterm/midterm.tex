@@ -73,14 +73,9 @@ Our problem differs from previous literature in that, we mainly focus on how to 
 %%%================================================================%%%
 \section{Problem Definition}
 
-NLIDB
+For this NLIDB, we have to first develop a GUI, and then design the \texttt{ParseTree} class. Then we need to develop parse tree node mapper, parse tree structure adjuster, and SQL query translater.
 
-Parse Tree
-
-Node
-
-Our problem: translate parse tree to SQL
-
+There are three main problems that we face. The first one is the use of data structure in \texttt{ParseTree}. The second is what algorithms to use for each phase of the translation. The last problem is to specify the rules for different phases, such as what word should be mapped to the ``SELECT'' key word, and what rules should a legal parse tree follow before being translated to an SQL query.
 
 %%%================================================================%%%
 \section{Algorithms}
