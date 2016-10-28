@@ -75,26 +75,31 @@ public class ParseTree implements IParseTree {
 			NodeInfo temp = nodes[i].getInfo();
 			if(temp.getValue().equals("meaningless")) {
 				
-				deleteNode(i);
+				configureDeletingNode(i);
 			}
 		}
-	}
-
-	public void deleteNode (int index) {
-	
-		if (index == N - 1) {
 		
-			nodes[index] = null;
-		}
-
-		else {
-			for (int i = index + 1; i < N; i ++) {
-			
-				nodes[i - 1] = nodes[i];
+		int Ntemp = N;
+		for (int i = 0; i < Ntemp; i ++) {
+			if (nodes[i] == null) {
+				if (i != Ntemp - 1) {
+					nodes[i] = nodes[i + 1];
+				}
+				N --; 
 			}
 		}
-		N --;
 	}
+
+	public void configureDeletingNode (int index) {
+	
+		nodes[index].parent.children.remove(nodes[index]);
+		for (int i = 0; i < nodes[index].children.size(); i ++) {
+			nodes[index].children.get(i).parent = nodes[index].parent; 
+		}
+		nodes[index] = null;
+	}
+	
+	
 	
 	@Override
 	public List<IParseTree> getAdjustedTrees() {
