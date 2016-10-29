@@ -68,7 +68,7 @@ NLIDB here is a concrete application of the natural language QA systems.\cite{QA
 %%%================================================================%%%
 \section{Problem Definition}
 
-For this NLIDB, we have to first develop a GUI, and then design the \texttt{ParseTree} class. Then we need to develop parse tree node mapper, parse tree structure adjuster, and SQL query translater.
+For this NLIDB, we have to first develop a GUI, and then design the \texttt{ParseTree} class. Then we need to develop parse tree node mapper, parse tree structure adjuster, and SQL query translator.
 
 There are three main problems that we face. The first one is the use of data structure in \texttt{ParseTree}. The second is what algorithms to use for each phase of the translation. The last problem is to specify the rules for different phases, such as what word should be mapped to the ``SELECT'' key word, and what rules should a legal parse tree follow before being translated to an SQL query.
 
@@ -77,7 +77,7 @@ There are three main problems that we face. The first one is the use of data str
 
 In the natural language parsing phase, we use the feature based pos-tagger\cite{toutanova2003feature} and the neural network dependency parser\cite{chen2014fast} from the Stanford NLP package.
 
-In the node mapping phase, other than mapping words with hard coded rules, we compare words with table and column names in the database, which requires a word similarity score. The similarity score is the maximum of two subscores. The first is lexical similarity (similarity in spelling), which is Jaccord coeffcient here. The second is semantic similarity, for which we use WUP similarity\cite{wu1994verbs}. To compute WUP similarity, we have to do a breadth-first-search to find the lowest common ancestor of two words in the WordNet. The calculation of word similarity will be explained in detail in the next secion.
+In the node mapping phase, other than mapping words with hard coded rules, we compare words with table and column names in the database, which requires a word similarity score. The similarity score is the maximum of two subscores. The first is lexical similarity (similarity in spelling), which is Jaccord coefficient here. The second is semantic similarity, for which we use WUP similarity\cite{wu1994verbs}. To compute WUP similarity, we have to do a breadth-first-search to find the lowest common ancestor of two words in the WordNet. The calculation of word similarity will be explained in detail in the next section.
 
 More algorithms will be needed for parse tree adjustment and SQL query generation in the future.
 
