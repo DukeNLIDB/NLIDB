@@ -68,10 +68,15 @@ public class NodeMapper {
 			for (String colName : schema.getColumns(tableName)) {
 				result.add(new NodeInfo("NN", tableName+"."+colName,
 						WordSimilarity.getSimilarity(word, colName, wordNet)));
+				for (String value: schema.getValues(tableName, colName)){
+					result.add(new NodeInfo("VN", tableName+"."+colName+":"+value,
+							WordSimilarity.getSimilarity(word, value, wordNet)));
+				}
 			}
 		}
 		
 		// TODO: search for Value Node (VN).
+		
 		
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
