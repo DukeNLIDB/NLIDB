@@ -26,9 +26,13 @@ public class NodeInfo {
 	public String toString() {
 		return type+": "+value;
 	}
-	
+
 	public String getValue() {
 		return value;
+	}
+	
+	public double getScore(){
+		return score;
 	}
 	
 	public static class ReverseScoreComparator implements Comparator<NodeInfo> {

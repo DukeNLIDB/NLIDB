@@ -54,7 +54,8 @@ public class NodeMapper {
 	 * @return a ranked of NodeInfo
 	 */
 	public List<NodeInfo> getNodeInfoChoices(Node node, SchemaGraph schema) {
-		List<NodeInfo> result = new ArrayList<NodeInfo>();
+		List<NodeInfo> result = new ArrayList<NodeInfo>();   //final output
+		List<NodeInfo> valueNodes = new ArrayList<NodeInfo>();  //used to store (type, value, score) of 100 sample values for every column in every table
 		String word = node.getWord();
 		
 		if (map.containsKey(word)) {
@@ -64,19 +65,21 @@ public class NodeMapper {
 				
 		for (String tableName : schema.getTableNames()) {
 			result.add(new NodeInfo("NN", tableName,
-					WordSimilarity.getSimilarity(word, tableName, wordNet)));
+					WordSimilarity.getSimilarity(word, tableName, wordNet)));    //map name nodes(table names)
 			for (String colName : schema.getColumns(tableName)) {
 				result.add(new NodeInfo("NN", tableName+"."+colName,
-						WordSimilarity.getSimilarity(word, colName, wordNet)));
+						WordSimilarity.getSimilarity(word, colName, wordNet)));    //map name nodes (attribute names)
 				for (String value: schema.getValues(tableName, colName)){
-					result.add(new NodeInfo("VN", tableName+"."+colName+":"+value,
-							WordSimilarity.getSimilarity(word, value, wordNet)));
+					valueNodes.add(new NodeInfo("VN", tableName+"."+colName,
+							WordSimilarity.getSimilarity(word, value, wordNet)));    //add every sample value into valueNodes
 				}
 			}
 		}
 		
-		// TODO: search for Value Node (VN).
-		
+		//map value nodes (table values), to get the value node with highest similarity, add its (type, value, score) into result
+		Collections.sort(valueNodes, new NodeInfo.ReverseScoreComparator());
+		NodeInfo maxVN = valueNodes.get(0);
+		result.add(new NodeInfo("VN", maxVN.getValue(), maxVN.getScore()));
 		
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
