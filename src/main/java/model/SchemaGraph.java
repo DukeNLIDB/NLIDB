@@ -3,7 +3,7 @@ package model;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-//import java.sql.ResultSetMetaData;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -47,19 +47,12 @@ public class SchemaGraph {
 			
 			Map<String, String> table = tables.get(tableName);
 			Map<String, List<String>> tableRow = tableRows.get(tableName);
-			/*
-			ResultSet cols = stmt.executeQuery("SELECT * FROM "+tableName);
-			ResultSetMetaData rsmd = cols.getMetaData();
-			int colCount = rsmd.getColumnCount();
-			for (int i = 1; i <= colCount; i++) {
-				table.put(rsmd.getColumnName(i), rsmd.getColumnTypeName(i));
-			}
-			*/
+			
 			ResultSet rsColumn = meta.getColumns(null, null, tableName, null);
 			while (rsColumn.next()){
 				/*retrieve column info for each table, insert into tables*/
 				String columnName = rsColumn.getString("COLUMN_NAME");
-				String columnType = rsColumn.getString("DATA_TYPE");
+				String columnType = rsColumn.getString("TYPE_NAME");
 				table.put(columnName, columnType); 
 				/*draw random sample of size 100 from each table, insert into tableRows*/
 				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 100;";
