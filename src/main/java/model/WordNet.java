@@ -10,17 +10,20 @@ import java.util.Set;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
+import edu.mit.jwi.item.IIndexWord;
 import edu.mit.jwi.item.ISynset;
 import edu.mit.jwi.item.ISynsetID;
 import edu.mit.jwi.item.IWordID;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.item.Pointer;
+import edu.mit.jwi.morph.WordnetStemmer;
 
 public class WordNet {
 	String sep = File.separator;
 	String wordNetDir = "lib" + sep + "WordNet-3.0" + sep + "dict";
 	URL url;
 	IRAMDictionary dict;
+	WordnetStemmer stemmer;
 	
 	public WordNet() throws Exception {
 		url = new URL("file", null, wordNetDir);
@@ -29,6 +32,8 @@ public class WordNet {
 		System.out.println("Loading wordNet...");
 		dict.load(true); // load dictionary into memory
 		System.out.println("WordNet loaded.");
+		
+		stemmer = new WordnetStemmer(dict);
 	}
 	
 	/**
@@ -38,8 +43,10 @@ public class WordNet {
 	 * @return
 	 */
 	public double similarity(String word1, String word2) {
-		if (dict.getIndexWord(word1, POS.NOUN) == null ||
-			dict.getIndexWord(word2, POS.NOUN) == null) {
+		List<String> stems1 = stemmer.findStems(word1, POS.NOUN);
+		List<String> stems2 = stemmer.findStems(word2, POS.NOUN);
+		
+		if (stems1.isEmpty() || stems2.isEmpty()) {
 //			System.out.println("One word cannot be identified in WordNet");
 			return 0.0;
 		}
@@ -48,12 +55,26 @@ public class WordNet {
 		visited1 = new ArrayList<>();
 		visited2 = new ArrayList<>();
 
-		List<IWordID> wordIDs1 = dict.getIndexWord(word1, POS.NOUN).getWordIDs();
+		List<IWordID> wordIDs1 = new ArrayList<>();
+		for (String stem : stems1) {
+			IIndexWord indexWord = dict.getIndexWord(stem, POS.NOUN);
+			if (indexWord != null) {
+				wordIDs1.addAll(dict.getIndexWord(stem, POS.NOUN).getWordIDs());
+			}
+		}
+		if (wordIDs1.isEmpty()) { return 0.0; }
 		List<ISynset> synsets1 = new ArrayList<>();
 		for (IWordID wID : wordIDs1) { synsets1.add(dict.getWord(wID).getSynset());	}
 		visited1.add(new HashSet<ISynset> (synsets1));
 		
-		List<IWordID> wordIDs2 = dict.getIndexWord(word2, POS.NOUN).getWordIDs();
+		List<IWordID> wordIDs2 = new ArrayList<>();
+		for (String stem : stems2) {
+			IIndexWord indexWord = dict.getIndexWord(stem, POS.NOUN);
+			if (indexWord != null) {
+				wordIDs2.addAll(dict.getIndexWord(stem, POS.NOUN).getWordIDs());
+			}
+		}
+		if (wordIDs2.isEmpty()) { return 0.0; }
 		List<ISynset> synsets2 = new ArrayList<>();
 		for (IWordID wID : wordIDs2) { synsets2.add(dict.getWord(wID).getSynset()); }
 		visited2.add(new HashSet<ISynset> (synsets2));
@@ -104,14 +125,16 @@ public class WordNet {
 				}
 			}
 		}
-	
+		
+		if (commonSynset == null) { return 0.0; }
+				
 //		System.out.println("Common ancestor synset found: ");
 //		System.out.println(commonSynset.getWord(1).getLemma());
 //		System.out.println(commonSynset.getGloss());
 //		System.out.println("Common synset pos1: "+commonSynsetPos1);
 //		System.out.println("Common synset pos2: "+commonSynsetPos2);
 //		System.out.println("Depth of this common ancestor is:"+findDepth(commonSynset));
-		
+
 		int N1 = commonSynsetPos1;
 		int N2 = commonSynsetPos2;
 		int N3 = findDepth(commonSynset);
@@ -169,9 +192,25 @@ public class WordNet {
 	 */
 	public static void main(String[] args) throws Exception {
 		WordNet net = new WordNet();
-		String word1 = "area";
-		String word2 = "field";
+		String word1 = "scopes";
+		String word2 = "book";
 		System.out.printf("WUP similarity between %s and %s is: %f\n", word1, word2, net.similarity(word1, word2));
+//		String word = "SCOPES";
+//		List<IWordID> wordIDs = net.dict.getIndexWord(word, POS.NOUN).getWordIDs();
+//		List<ISynset> synsets = new ArrayList<>();
+//		for (IWordID wID : wordIDs) { synsets.add(net.dict.getWord(wID).getSynset());	}
+//		
+//		for (ISynset syn : synsets) {
+//			System.out.println(syn.getGloss());
+//			System.out.println("Words in this synset:");
+//			for (IWord w : syn.getWords()) {
+//				System.out.println(w.getLemma());
+//			}
+//		}
+//		
+//		ISynset hyper = net.dict.getSynset(synsets.get(0).getRelatedSynsets(Pointer.HYPERNYM).get(0));
+//		System.out.println(hyper.getGloss());;
+//		System.out.println(hyper.getWords().get(0).getLemma());
 		
 	}
 
