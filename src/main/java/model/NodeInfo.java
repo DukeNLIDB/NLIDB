@@ -8,12 +8,14 @@ import java.util.Comparator;
  *
  */
 public class NodeInfo {
-	private String type;
-	private String value;
+	// TODO: all fields should be private in final version.
+	String type; 
+	String value;
 	/**
 	 * Similarity score of the Node to the column/table name in schema.
 	 */
-	private double score = 1.0;
+	double score = 1.0;
+	
 	public NodeInfo(String type, String value) {
 		this.type = type;
 		this.value = value;

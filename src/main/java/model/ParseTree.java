@@ -11,19 +11,20 @@ import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.TypedDependency;
 
 public class ParseTree implements IParseTree {
+	// TODO: all fields should be private in final version.
 	
 	/**
 	 * Number of nodes in the ParseTree, including root Node.
 	 */
-	private int N;
+	int N;
 	/**
 	 * An array of nodes, with the order in the sentence.
 	 */
-	private Node[] nodes;
+	Node[] nodes;
 	/**
 	 * Root Node
 	 */
-	private Node root;
+	Node root;
 	
 	/**
 	 * Construct a parse tree using the stanford NLP parser. Only one sentence.

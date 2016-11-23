@@ -9,25 +9,26 @@ import java.util.List;
  *
  */
 public class Node {
+	// TODO: all fields should be private in final version
 	
 	/**
 	 * Index of the node in the sentence corresponding to 
 	 * the ParseTree.
 	 */
-	private int index;
+	int index;
 	/**
 	 * Information indicating the corresponding SQL component of the Node.
 	 */
-	private NodeInfo info = null;
+	NodeInfo info = null;
 	/**
 	 * The natural language word of the Node. This is the only field of 
 	 * the Node object that is immutable.
 	 */
-	private String word;
+	String word;
 	/**
 	 * Part-of-speech tag for the Node.
 	 */
-	private String posTag;
+	String posTag;
 	
 	/**
 	 * Parent of the node can be directly modified by ParseTree.
