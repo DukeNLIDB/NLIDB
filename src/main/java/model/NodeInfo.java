@@ -28,7 +28,7 @@ public class NodeInfo {
 	public String toString() {
 		return type+": "+value;
 	}
-
+	public String getType() { return type; }
 	public String getValue() {
 		return value;
 	}

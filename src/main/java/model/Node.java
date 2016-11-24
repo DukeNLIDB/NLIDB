@@ -51,6 +51,7 @@ public class Node {
 	public void setInfo(NodeInfo info) { this.info = info; }
 	public String getWord() { return word; }
 	public String getPosTag() { return posTag; }
+	public List<Node> getChildren() { return children; }
 
 	public String toString() {
 		return "("+index+", "+word+")";

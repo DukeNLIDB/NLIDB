@@ -35,7 +35,7 @@ public class ParserDemo {
 			}
 		}
 
-		String text = "I can almost always tell when movies use fake dinosaurs.";
+		String text = "Return authors who have more papers than Bob in VLDB after 2000";
 
 		MaxentTagger tagger = new MaxentTagger(taggerPath);
 		DependencyParser parser = DependencyParser.loadFromModelFile(modelPath);

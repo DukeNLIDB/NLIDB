@@ -27,6 +27,11 @@ public class ParseTree implements IParseTree {
 	Node root;
 	
 	/**
+	 * Empty constructor, only for testing.
+	 */
+	public ParseTree() { }
+	
+	/**
 	 * Construct a parse tree using the stanford NLP parser. Only one sentence.
 	 * Here we are omitting the information of dependency labels (tags).
 	 * @param text input text.
@@ -122,8 +127,25 @@ public class ParseTree implements IParseTree {
 
 	@Override
 	public SQLQuery translateToSQL() {
-		// TODO Auto-generated method stub
-		return null;
+		SQLQuery query = new SQLQuery();
+		if (!root.getInfo().getType().equals("SN")) { return query; }
+		for (Node NN : root.getChildren()) {
+			if (!NN.getInfo().getType().equals("NN")) { continue; }
+			query.add("SELECT", NN.getInfo().getValue());
+			query.add("FROM", NN.getInfo().getValue().split(":")[0]);
+			for (Node VN : NN.getChildren()) {
+				String compareSymbol = "=";
+				if (!VN.getChildren().isEmpty()) {
+					Node ON = VN.getChildren().get(0);
+					if (ON.getInfo().getType().equals("ON")) {
+						compareSymbol = ON.getInfo().getValue();
+					}
+				}
+				query.add("WHERE", VN.getInfo().getValue() + " " +
+						compareSymbol + " " + VN.getWord());
+			}
+		}
+		return query;
 	}
 
 	@Override
