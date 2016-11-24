@@ -23,16 +23,25 @@ The entry point of the application is the `main()` method in `ui.UserView` class
 
 ### The next steps:
 
+**NOTE** Whatever functionality you are writing, be sure to provide the **test cases**.
+
 1. [done] ~~Download the _Microsoft Academic Search Database_ and try connecting to it.~~ I(Keping) just couldn't find how to get that database downloaded and used in SQL, so I decided to first just use our dblp database in hw1.
 2. [done] Use _Stanford NLP_ to parse a natural language sentence.
 3. [done] According the data structure in _Stanford NLP_, design the data structure for class **ParseTree**. For now let's just make it feasible, without thinking about memory and time efficiency.
 4. [done] A basic implementation of SchemaGraph.
-5. [framework-done] **ParseTreeNodeMapper**:
-  * Completed a basic interactive UI
-  * Wrote the class to calculate WordNet WUP word similarity
-  * Map words to table and column names according to similarity
-6. **ParseTreeStructureAdjuster**
-8. **QueryTreeTranslator**
-7. ...
+5. [done] **ParseTreeNodeMapper**
+6. [in-progress]**ParseTreeStructureAdjuster**:
+    * [tests needed] Remove meaningless nodes.
+    * Reorder the nodes.
+    * Insert implicit nodes.
+7. [in-progress] **QueryTreeTranslator**:
+    * [done] A basic translator for a single table. "SELECT ... FROM ... WHERE ...;"
+    * Add "AND", "OR" logic for "WHERE".
+    * Add function without groupby for "SELECT".
+    * Add group by.
+    * Add join for multiple tables.
+    * Add quantifier: all, each, any.
+    * ...
+8. ...
 
 * UI design is conducted in parallel with the requirements of the above tasks.
