@@ -14,7 +14,7 @@ public class ParseTree implements IParseTree {
 	// TODO: all fields should be private in final version.
 	
 	/**
-	 * Number of nodes in the ParseTree, including root Node.
+	 * Number of nodes in the ParseTree.
 	 */
 	int N;
 	
@@ -27,7 +27,7 @@ public class ParseTree implements IParseTree {
 	 */
 	Node[] nodes;
 	/**
-	 * Root Node
+	 * Root Node. Supposed to be "return" or some other word corresponding to "SELECT".
 	 */
 	Node root;
 	
@@ -55,20 +55,20 @@ public class ParseTree implements IParseTree {
 		GrammaticalStructure gs = parser.parser.predict(tagged);
 		
 		// Reading the parsed sentence into ParseTree
-		N = sentence.size()+1;
+		N = sentence.size();
 		nodes = new Node[N];
-		root = new Node(0, "ROOT", "ROOT");
-		nodes[0] = root;
-		for (int i = 0; i < N-1; i++) {
-			nodes[i+1] = new Node(i+1, 
+		for (int i = 0; i < N; i++) {
+			nodes[i] = new Node(i, 
 					sentence.get(i).word(), tagged.get(i).tag());
 		}
+		root = nodes[0];
 		for (TypedDependency typedDep : gs.allTypedDependencies()) {
 			int from = typedDep.gov().index();
+			if (from == 0) { continue; } // skip ROOT
 			int to   = typedDep.dep().index();
 			// String label = typedDep.reln().getShortName(); // omitting the label
-			nodes[to].parent = nodes[from];
-			nodes[from].children.add(nodes[to]);
+			nodes[to-1].parent = nodes[from-1];
+			nodes[from-1].children.add(nodes[to-1]);
 		}
 
 		
@@ -191,7 +191,7 @@ public class ParseTree implements IParseTree {
 	}
 	
 	public class ParseTreeIterator implements Iterator<Node> {
-		int i = 1;
+		int i = 0;
 		@Override
 		public boolean hasNext() {
 			return i < N; 
@@ -213,18 +213,30 @@ public class ParseTree implements IParseTree {
 	 * @return sentence
 	 */
 	public String getSentence() {
-		String s = "";
-		s += nodes[1].getWord();
-		for (int i = 2; i < N; i++) {
-			s += " "+nodes[i].getWord();
+		StringBuilder sb = new StringBuilder();
+		sb.append(nodes[0].getWord());
+		for (int i = 1; i < N; i++) {
+			sb.append(" ").append(nodes[i].getWord());
+		}
+		return sb.toString();
+	}
+	
+	private String nodeToString(Node curr) {
+		if (curr == null) { return ""; }
+		String s = curr.toString() + " -> ";
+		s += curr.getChildren().toString() + "\n";
+		for (Node child : curr.getChildren()) {
+			s += nodeToString(child);
 		}
 		return s;
 	}
 	
 	@Override
 	public String toString() {
-		// TODO
-		return "";
+		StringBuilder sb = new StringBuilder();
+		sb.append("Sentence: ").append(getSentence()).append("\n");
+		sb.append(nodeToString(root));
+		return sb.toString();
 	}
 	
 }
