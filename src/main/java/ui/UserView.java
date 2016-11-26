@@ -22,9 +22,13 @@ public class UserView extends Application {
 	Stage stage; // the window
 	Scene scene; // the main content in the window
 	Controller ctrl;
+	Button btnTranslate;
 	Text display;
 	TextArea fieldSQL;
 	ChoiceBox<NodeInfo> choiceBox;
+	Button btnConfirmChoice;
+	HBox hb;
+	VBox vb1, vb2;
 	
 	public void setDisplay(String text) {
 		display.setText(text);
@@ -32,6 +36,11 @@ public class UserView extends Application {
 	
 	public void appendDisplay(String text) {
 		display.setText(display.getText()+text);
+	}
+	
+	public void removeChoiceBoxButton() {
+		vb2.getChildren().remove(choiceBox);
+		vb2.getChildren().remove(btnConfirmChoice);
 	}
 	
 	public void setChoices(ObservableList<NodeInfo> choices) {
@@ -58,7 +67,7 @@ public class UserView extends Application {
 		fieldIn.setWrapText(true);
 		fieldIn.setText(TEST_TEXT);
 		
-		Button btnTranslate = new Button("translate");
+		btnTranslate = new Button("translate");
 
 		Label lblSQL = new Label("SQL query:");
 		fieldSQL = new TextArea();
@@ -83,12 +92,12 @@ public class UserView extends Application {
 
 		choiceBox = new ChoiceBox<NodeInfo>();
 		
-		Button btnConfirm = new Button("confirm choice");
-		btnConfirm.setOnAction(e -> {
+		btnConfirmChoice = new Button("confirm choice");
+		btnConfirmChoice.setOnAction(e -> {
 			ctrl.chooseNode(getChoice());
 		});
 		
-		VBox vb1 = new VBox();
+		vb1 = new VBox();
 		vb1.setSpacing(10);
 		vb1.getChildren().addAll(
 				label1,
@@ -97,11 +106,11 @@ public class UserView extends Application {
 				lblSQL, fieldSQL
 				);
 		
-		VBox vb2 = new VBox();
+		vb2 = new VBox();
 		vb2.setSpacing(20);
-		vb2.getChildren().addAll(display, choiceBox, btnConfirm);
+		vb2.getChildren().addAll(display, choiceBox, btnConfirmChoice);
 		
-		HBox hb = new HBox();
+		hb = new HBox();
 		hb.setPadding(new Insets(15, 12, 15, 12));
 		hb.setSpacing(10);
 		hb.getChildren().addAll(vb1, vb2);
