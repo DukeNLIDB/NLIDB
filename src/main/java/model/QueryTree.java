@@ -42,6 +42,7 @@ public class QueryTree {
 		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
 		//TODO: generate all possible parse trees in one subtree move operation
+		
 		return treeList;
 	}
 	

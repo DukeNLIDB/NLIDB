@@ -1,8 +1,11 @@
 package model;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -132,7 +135,7 @@ public class ParseTree implements IParseTree {
 		}
 	}
 
-	public void configureDeletingNode (int index) {
+	void configureDeletingNode (int index) {
 	
 		nodes[index].parent.children.remove(nodes[index]);
 		for (int i = 0; i < nodes[index].children.size(); i ++) {
@@ -145,8 +148,157 @@ public class ParseTree implements IParseTree {
 	
 	@Override
 	public List<IParseTree> getAdjustedTrees() {
-		// TODO Auto-generated method stub
-		return null;
+		List<IParseTree> results = new ArrayList<IParseTree>();
+		PriorityQueue<ParseTree> Q = new PriorityQueue<ParseTree>();
+		Q.add(this);
+		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
+		H.put(hashing(this), this);
+		this.setEdit(0);
+		
+		while (Q.size() > 0){
+			ParseTree oriTree = Q.poll();
+			List<ParseTree> treeList = adjustor(oriTree);
+			double treeScore = numberOfInvalidNodes(oriTree);
+			
+			for (int i = 0; i < treeList.size(); i++){
+				ParseTree currentTree = treeList.get(i);
+				int hashValue = hashing(currentTree);
+				if (oriTree.getEdit()<10 && !H.containsKey(hashValue)){
+					H.put(hashValue, currentTree);
+					currentTree.setEdit(oriTree.getEdit()+1);
+					if (numberOfInvalidNodes(currentTree) <= treeScore){
+						Q.add(currentTree);
+						results.add(currentTree);
+					}
+				}
+			}
+		}
+		return results;
+	}
+	
+	
+	List<ParseTree> adjustor (ParseTree T){
+		List<ParseTree> treeList = new ArrayList<ParseTree>();
+		
+		
+		return treeList;
+	}
+	
+	/**
+	 * Number of invalid tree nodes according to the grammar:
+	 * Q -> (SClause)(ComplexCindition)*
+	 * SClause -> SELECT + GNP
+	 * ComplexCondition -> ON + (LeftSubTree*RightSubTree)
+	 * LeftSubTree -> GNP
+	 * RightSubTree -> GNP | VN | FN
+	 * GNP -> (FN + GNP) | NP
+	 * NP -> NN + (NN)*(Condition)*
+	 * Condition -> VN | (ON + VN)
+	 * 
+	 * +: parent-child relationship
+	 * *: sibling relationship
+	 * |: or
+	 */	
+	int numberOfInvalidNodes (ParseTree T){	
+		int numOfInv = 0;   //number of invalid tree nodes
+		for (int i=0; i<T.size(); i++){
+			Node curNode = T.nodes[i];
+			String curType = curNode.getInfo().getType();
+			String parentType = curNode.parent.getInfo().getType();
+			List<Node> children = curNode.children;
+			int sizeOfChildren = children.size();
+			if (curType.equals("SN")){ // select node
+				//SN can only be child of root
+				if (!parentType.equals("ROOT"))   
+					numOfInv++;
+				//SN can only have one child from FN or NN
+				else if (sizeOfChildren != 1)
+					numOfInv++;
+				else{
+					String childType = children.get(0).getInfo().getType();
+					if (!(childType.equals("NN") || childType.equals("FN")))
+						numOfInv++;
+				}
+			}
+			else if (curType.equals("ON")){  //operator node
+				if (parentType.equals("ROOT")){
+					if (sizeOfChildren == 0)
+						numOfInv++;
+					else{
+						for (int j = 0; j<sizeOfChildren; j++){
+							String childType = children.get(j).getInfo().getType();
+							if (childType.equals("ON")){
+								numOfInv++;
+								break;
+							}
+						}
+					}
+				}
+				else if (parentType.equals("NN")){
+					if (sizeOfChildren != 1)
+						numOfInv++;
+					else if (!children.get(0).getInfo().getType().equals("VN"))
+						numOfInv++;
+				}
+			}
+			else if (curType.equals("NN")){  //name node
+				//NP=NN+NN*Condition. Second NN has no child.
+				if (parentType.equals("NN")){
+					if (sizeOfChildren != 0)
+						numOfInv++;
+				}
+				//SN+GNP, or ON+GNP, or FN+GNP. and GNP=NP=NN+NN*Condition. First NN can have any number of children from NN,ON,VN.
+				else if (parentType.equals("SN") || parentType.equals("FN") || parentType.equals("ON")){
+					if (sizeOfChildren != 0){
+						for (int j = 0; j < sizeOfChildren; j++){
+							String childType = children.get(j).getInfo().getType();
+							if (!(childType.equals("NN") || childType.equals("VN") || childType.equals("ON"))){
+								numOfInv++;
+								break;
+							}
+						}
+					}
+				}
+				//NN cannot be a child of VN
+				else if (parentType.equals("VN")){
+					numOfInv++;
+				}
+			}
+			else if (curType.equals("VN")){  //value node
+				if (curNode.children != null)  //VN cannot have children
+					numOfInv++;
+				else if (!(parentType.equals("ON") || parentType.equals("NN")))  //VN can only be child of ON and NN
+					numOfInv++;
+			}
+			else if (curType.equals("FN")){  //function nodes
+				//ON+FN, or ON+GNP, or SN+GNP, or FN+GNP. and GNP=FN+GNP
+				//FN can be child of ON, without children or only 1 child of NN or FN
+				//FN can be child of SN, wih only 1 child of NN or FN
+				//FN can be child of FN, wih only 1 child of NN or FN
+				if (sizeOfChildren == 0){
+					if (!parentType.equals("ON"))
+						numOfInv++;
+				}
+				else if (sizeOfChildren == 1){
+					String childType = children.get(0).getInfo().getType();
+					if (!(parentType.equals("ON") || parentType.equals("SN") || parentType.equals("FN")))
+						numOfInv++;
+					else if (!(childType.equals("NN") || childType.equals("FN")))
+						numOfInv++;
+				}
+				else
+					numOfInv++;
+			}
+		}
+		
+		return numOfInv;
+	}
+	
+	int hashing (ParseTree T){
+		int hashValue = 0;
+		
+		//TODO: how to get a reasonable hash value for each parse tree (with different node orders)
+		return hashValue;
 	}
 	
 	@Override
