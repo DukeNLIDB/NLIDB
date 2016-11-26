@@ -16,6 +16,16 @@ public interface IParseTree extends Iterable<Node> {
 	public int size();
 	
 	/**
+	 * Return the number of edit of the ParseTree.
+	 */
+	public int getEdit();
+	
+	/**
+	 * Set the number of edit of the ParseTree.
+	 */
+	public void setEdit(int edit);
+	
+	/**
 	 * Restructure the parse tree by removing meaningless nodes.
 	 * The Node object should contain information indicating whether
 	 * it is meaningful. It is meaningful if it corresponds to an SQL component.

@@ -17,6 +17,11 @@ public class ParseTree implements IParseTree {
 	 * Number of nodes in the ParseTree, including root Node.
 	 */
 	int N;
+	
+	/**
+	 * Order of parse tree reformulation (used in QueryTree)
+	 */
+	int edit;
 	/**
 	 * An array of nodes, with the order in the sentence.
 	 */
@@ -74,6 +79,16 @@ public class ParseTree implements IParseTree {
 		return N;
 	}
 
+	@Override
+	public int getEdit() {
+		return edit;
+	}
+	
+	@Override
+	public void setEdit(int edit){
+		this.edit = edit;
+	}
+	
 	@Override
 	public void removeMeaninglessNodes() {
 		
