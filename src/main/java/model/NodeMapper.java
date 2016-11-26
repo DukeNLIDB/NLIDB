@@ -31,7 +31,9 @@ public class NodeMapper {
 		map = new HashMap<String, NodeInfo>();
 		map.put("return", new NodeInfo("SN", "SELECT")); // Select Node
 		map.put("equals", new NodeInfo("ON", "="));		 // Operator Node
-		map.put("FN",     new NodeInfo("FN", "AVG"));	 // Function Node
+		map.put("before", new NodeInfo("ON", "<"));
+		map.put("after", new NodeInfo("ON", ">"));
+		map.put("fn",     new NodeInfo("FN", "AVG"));	 // Function Node
 		map.put("all",    new NodeInfo("QN", "ALL"));	 // Quantifier Node
 		map.put("and",    new NodeInfo("FN", "AND"));	 // Logic Node
 		map.put("or",    new NodeInfo("FN", "OR"));
@@ -49,6 +51,7 @@ public class NodeMapper {
 	 * in NodeInfo if the Node doesn't correspond to any SQL component (the Node is
 	 * meaningless).</p>
 	 * <p>The returned list contains at most 6 elements.</p>
+	 * <p>Treat all input as lower case.</p>
 	 * @param node
 	 * @param schema
 	 * @return a ranked of NodeInfo
@@ -56,7 +59,7 @@ public class NodeMapper {
 	public List<NodeInfo> getNodeInfoChoices(Node node, SchemaGraph schema) {
 		List<NodeInfo> result = new ArrayList<NodeInfo>();   //final output
 		List<NodeInfo> valueNodes = new ArrayList<NodeInfo>();  //used to store (type, value, score) of 100 sample values for every column in every table
-		String word = node.getWord();
+		String word = node.getWord().toLowerCase(); // all words as lower case
 		
 		if (map.containsKey(word)) {
 			result.add(map.get(word));
