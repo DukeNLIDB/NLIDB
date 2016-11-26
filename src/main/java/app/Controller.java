@@ -28,13 +28,11 @@ public class Controller {
 	private NLParser parser;
 	private NodeMapper nodeMapper;
 	private ParseTree parseTree;
-	private UserView view;
-	
+	private UserView view;	
 	/**
 	 * Iterator for nodes mapping.
 	 */
 	private ParseTreeIterator iter;
-	
 	/**
 	 * Attribute for nodes mapping, to indicate the current Node.
 	 */
@@ -93,7 +91,6 @@ public class Controller {
 	public String getInput() { return input; }
 	public void setInput(String input) { this.input = input; }
 	
-	
 	/**
 	 * Helper method for nodes mapping, displaying the currently mapping Node
 	 * and the choices on the view.
@@ -111,6 +108,7 @@ public class Controller {
 	private void finishNodesMapping() {
 		view.setDisplay("Nodes mapped.\n"+parseTree.getSentence());
 		mappingNodes = false;
+		view.removeChoiceBoxButton();
 	}
 	
 	/**
@@ -155,8 +153,6 @@ public class Controller {
 		else { setChoicesOnView(choices); }
 		// After this wait for the button to call chooseNode
 	}
-	
-
 	
 	/**
 	 * Close connection with the database.

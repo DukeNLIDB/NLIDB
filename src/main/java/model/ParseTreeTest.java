@@ -30,7 +30,7 @@ public class ParseTreeTest {
 	 * <p><pre>
 	 *  return(SN:SELECT)
 	 *      |
-	 *  (all)titles(NN:in.title)
+	 *  titles(NN:in.title)
 	 *      | `-------------\
 	 *  theory(VN:in.area)  1970(VN:in.year)
 	 *                       |
@@ -74,11 +74,42 @@ public class ParseTreeTest {
 		
 		// (3) Print out the query and see.
 		System.out.println(query);
+	}
+	
+	/**
+	 * Using natural language input "Return all titles of theory papers before 1970."
+	 */
+	public static void removeMeaninglessNodesTest() {
+		String input = "Return all titles of theory papers before 1970.";
+		NLParser parser = new NLParser();
+		ParseTree tree = new ParseTree(input, parser);
+		System.out.println("ParseTree: ");
+		System.out.println(tree);
 		
+		// Set NodeInfo
+		Node[] nodes = tree.nodes;
+		nodes[0].info = new NodeInfo("SN", "SELECT");
+		nodes[1].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[2].info = new NodeInfo("NN", "in.title");
+		nodes[3].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[4].info = new NodeInfo("VN", "in.area");
+		nodes[5].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[6].info = new NodeInfo("ON", "<");
+		nodes[7].info = new NodeInfo("VN", "in.year");
+		nodes[8].info = new NodeInfo("UNKNOWN", "meaningless");
+		
+		System.out.println("After setting nodeinfo:");
+		System.out.println(tree);
+		
+		tree.removeMeaninglessNodes();
+		
+		System.out.println("After removing meaningless nodes");
+		System.out.println(tree);
 	}
 	
 	public static void main(String[] args) {
 		testTranslation1();
+		removeMeaninglessNodesTest();
 	}
 	
 }

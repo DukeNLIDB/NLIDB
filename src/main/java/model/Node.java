@@ -55,6 +55,10 @@ public class Node {
 	public List<Node> getChildren() { return children; }
 
 	public String toString() {
-		return "("+index+", "+word+")";
+		String s = word;
+		if (info != null) {
+			s += "("+info.getType()+":"+info.getValue()+")";
+		}
+		return s;
 	}
 }
