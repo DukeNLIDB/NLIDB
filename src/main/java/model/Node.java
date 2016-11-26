@@ -50,6 +50,7 @@ public class Node {
 	public NodeInfo getInfo() { return info; }
 	public void setInfo(NodeInfo info) { this.info = info; }
 	public String getWord() { return word; }
+	public void setWord(String word) {this.word = word;}
 	public String getPosTag() { return posTag; }
 	public List<Node> getChildren() { return children; }
 

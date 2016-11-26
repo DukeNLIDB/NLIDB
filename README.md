@@ -32,6 +32,7 @@ The entry point of the application is the `main()` method in `ui.UserView` class
 5. [done] **ParseTreeNodeMapper**
 6. [in-progress]**ParseTreeStructureAdjuster**:
     * [tests needed] Remove meaningless nodes.
+    * Merge logic nodes and quantifier nodes with their parents.
     * Reorder the nodes.
     * Insert implicit nodes.
 7. [in-progress] **QueryTreeTranslator**:

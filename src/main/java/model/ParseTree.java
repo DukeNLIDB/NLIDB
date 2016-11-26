@@ -80,7 +80,28 @@ public class ParseTree implements IParseTree {
 		for (int i = 0; i < N; i ++) {
 			NodeInfo temp = nodes[i].getInfo();
 			if(temp.getValue().equals("meaningless")) {
-				
+				configureDeletingNode(i);
+			}
+		}
+		
+		int Ntemp = N;
+		for (int i = 0; i < Ntemp; i ++) {
+			if (nodes[i] == null) {
+				if (i != Ntemp - 1) {
+					nodes[i] = nodes[i + 1];
+				}
+				N --; 
+			}
+		}
+	}
+	
+	@Override
+	public void mergeLNQN(){
+		for (int i=0; i<N; i++){
+			if (nodes[i].getInfo().getValue().equals("LN") || nodes[i].getInfo().getValue().equals("QN")){
+				String word = "("+nodes[i].getWord()+")";
+				String parentWord = nodes[i].parent.getWord()+word;
+				nodes[i].parent.setWord(parentWord);
 				configureDeletingNode(i);
 			}
 		}
