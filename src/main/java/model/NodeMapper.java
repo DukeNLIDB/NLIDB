@@ -13,6 +13,7 @@ import java.util.Map;
  *
  */
 public class NodeMapper {
+	final static private int LIST_SIZE = 10;
 	private WordNet wordNet;
 	/**
 	 * Key is the word. Value is the corresponding SQL component.
@@ -78,7 +79,11 @@ public class NodeMapper {
 			for (String colName : schema.getColumns(tableName)) {
 				result.add(new NodeInfo("NN", tableName+"."+colName,
 						WordSimilarity.getSimilarity(word, colName, wordNet)));    //map name nodes (attribute names)
-				for (String value: schema.getValues(tableName, colName)){
+				for (String value : schema.getValues(tableName, colName)) {
+					if (word == null || value == null) {
+						System.out.println("Comparing "+word+" and "+value);
+						System.out.println("In table "+tableName+", column "+colName);
+					}
 					valueNodes.add(new NodeInfo("VN", tableName+"."+colName,
 							WordSimilarity.getSimilarity(word, value, wordNet)));    //add every sample value into valueNodes
 				}
@@ -92,8 +97,8 @@ public class NodeMapper {
 		
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
-		if (result.size() <= 6) { return result; }
-		else { return result.subList(0, 6); }
+		if (result.size() <= LIST_SIZE) { return result; }
+		else { return result.subList(0, LIST_SIZE); }
 	}
 
 }

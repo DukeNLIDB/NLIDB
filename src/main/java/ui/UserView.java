@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import model.NodeInfo;
 
 public class UserView extends Application {
-	private static final String TEST_TEXT = "Sandy haha hoho return all my papers in area";
+	private static final String TEST_TEXT = "Return all titles of theory papers before 1970.";
 	
 	Stage stage; // the window
 	Scene scene; // the main content in the window
@@ -77,12 +77,7 @@ public class UserView extends Application {
 		
 		// Define action of the translate button.
 		btnTranslate.setOnAction(e -> {
-			if (!ctrl.isProcessing()) {
-				ctrl.setInput(fieldIn.getText());
-				ctrl.processNaturalLanguage();
-			} else {
-				this.appendDisplay("Currently processing a sentence...");
-			}
+			ctrl.processNaturalLanguage(fieldIn.getText());
 		});
 		
 		display = new Text();

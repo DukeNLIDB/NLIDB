@@ -23,7 +23,6 @@ import ui.UserView;
  */
 public class Controller {
 	private Connection connection = null;
-	private String input;
 	private SchemaGraph schema;
 	private NLParser parser;
 	private NodeMapper nodeMapper;
@@ -39,6 +38,7 @@ public class Controller {
 	private Node node;
 	private boolean mappingNodes = false;
 	private boolean processing = false;
+	private SQLQuery query;
 	
 	/**
 	 * Initialize the Controller.
@@ -87,10 +87,19 @@ public class Controller {
 		
 	}
 	
-	public boolean isProcessing() { return processing; }
-	public String getInput() { return input; }
-	public void setInput(String input) { this.input = input; }
+	/**
+	 * Close connection with the database.
+	 */
+	public void closeConnection() {
+		try {
+			if (connection != null) { connection.close(); }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Connection closed.");
+	}
 	
+// ---- Methods for nodes mapping ---- //
 	/**
 	 * Helper method for nodes mapping, displaying the currently mapping Node
 	 * and the choices on the view.
@@ -153,52 +162,23 @@ public class Controller {
 		else { setChoicesOnView(choices); }
 		// After this wait for the button to call chooseNode
 	}
+// ----------------------------------- //
 	
-	/**
-	 * Close connection with the database.
-	 */
-	public void closeConnection() {
-		try {
-			if (connection != null) { connection.close(); }
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Connection closed.");
-	}
-	/**
-	 * Get user input from the view.
-	 * @param s
-	 * @return
-	 */
-	public String getUserInput(String s) {
-		// TODO: get user input from UserView
-		return s;
-	}
 	/**
 	 * Process natural language and return an sql query.
 	 * @param nl
 	 * @return
 	 */
-	public void processNaturalLanguage() {
+	public void processNaturalLanguage(String input) {
+		if (processing) { view.appendDisplay("\nCurrently processing a sentence!\n"); }
 		processing = true;
 		parseTree = new ParseTree(input, parser);
 		startMappingNodes();
+		parseTree.removeMeaninglessNodes();
+		// parseTree adjust structure
+		query = parseTree.translateToSQL();	
+		view.setDisplay(query.toString());
+		processing = false;
 	}
-	
-	public SQLQuery getQuery() {
-		// TODO
-		SQLQuery query;
-		query = new SQLQuery(parseTree.getSentence()+" to sql query...");
-		return query;
-	}
-	
-	/**
-	 * Show an sql query in view.
-	 * @param query
-	 */
-	public void viewQuery(SQLQuery query) {
-		// TODO
-	}
-	
 
 }
