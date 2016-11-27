@@ -147,6 +147,12 @@ public class ParseTree implements IParseTree {
 	}
 	
 	@Override
+	public void insertImplicitNodes() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	@Override
 	public void mergeLNQN(){   //not change Node.index, but change the numbering in nodes[]
 		for (int i=0; i<N; i++){
 			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
@@ -416,11 +422,7 @@ public class ParseTree implements IParseTree {
 		return hashValue;
 	}
 	
-	@Override
-	public void insertImplicitNodes() {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	public double getScore() {
