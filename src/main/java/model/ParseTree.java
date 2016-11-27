@@ -163,39 +163,40 @@ public class ParseTree implements IParseTree {
 	}
 	
 	@Override
-	// TODO: to be fixed 
-	public void mergeLNQN(){
+	public void mergeLNQN(){   //not change Node.index, but change the numbering in nodes[]
 		for (int i=0; i<N; i++){
 			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
 				String word = "("+nodes[i].getWord()+")";
-				String parentWord = nodes[i].parent.getWord()+word;
-				nodes[i].parent.setWord(parentWord);
-				configureDeletingNode(i);
+				String parentWord = nodes[i].getParent().getWord()+word;
+				nodes[i].getParent().setWord(parentWord);
+				removeNode(nodes[i]);
 			}
 		}
-		
-		int Ntemp = N;
-		boolean[] moved = new boolean[N];
-		for (int i = 0; i< N; i++)
-			moved[i] = false;
-		for (int i = 0; i < Ntemp; i ++) {
-			if (nodes[i] == null) {
-				if (i != Ntemp - 1) {
-					nodes[i] = nodes[i + 1];
-					moved[i+1] = true;
-				}
-				N --; 
-			}
+		List<Node> tempTree = new ArrayList<Node>();
+		LinkedList<Node> queue = new LinkedList<Node>();
+		queue.add(root);
+		System.out.println(root);
+		//add nodes from original tree into tempTree in pre order
+		while (!queue.isEmpty()){
+			Node curNode = queue.poll();
+			System.out.println(curNode);
+			tempTree.add(curNode);
+			List<Node> curChildren = curNode.getChildren();
+			int curChildrenSize = curChildren.size();
+			for (int i = curChildrenSize-1; i >= 0; i--)
+				queue.push(curChildren.get(i));
+		}
+		N = tempTree.size();
+		for (int i = 0; i < N; i++){
+			nodes[i] = tempTree.get(i);
 		}
 	}
 
-	void configureDeletingNode (int index) {
-	
-		nodes[index].parent.children.remove(nodes[index]);
-		for (int i = 0; i < nodes[index].children.size(); i ++) {
-			nodes[index].children.get(i).parent = nodes[index].parent; 
+	void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
+		curNode.getParent().getChildren().remove(curNode);
+		for (Node child: curNode.getChildren()) {
+			child.setParent(curNode.getParent()); 
 		}
-		nodes[index] = null;
 	}
 	
 	
@@ -258,8 +259,8 @@ public class ParseTree implements IParseTree {
 		for (int i=1; i<T.size(); i++){  //starting from SN (leave out ROOT)
 			Node curNode = T.nodes[i];
 			String curType = curNode.getInfo().getType();
-			String parentType = curNode.parent.getInfo().getType();
-			List<Node> children = curNode.children;
+			String parentType = curNode.getParent().getInfo().getType();
+			List<Node> children = curNode.getChildren();
 			int sizeOfChildren = children.size();
 			if (curType.equals("SN")){ // select node
 				//SN can only be child of root

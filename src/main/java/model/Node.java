@@ -56,6 +56,9 @@ public class Node {
 	public void setWord(String word) {this.word = word;}
 	public String getPosTag() { return posTag; }
 	public List<Node> getChildren() { return children; }
+	public void setChild(Node child) {this.children.add(child);}
+	public Node getParent() {return parent;}
+	public void setParent(Node parent) {this.parent = parent;}
 
 	public String toString() {
 		String s = word;

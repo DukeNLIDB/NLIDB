@@ -78,6 +78,7 @@ public class TreeAdjustorTest {
 		nodes[8] = new Node(8, "total", "--");
 		nodes[8].info = new NodeInfo("FN", "Year");
 		
+		T.root = nodes[0];
 		nodes[0].children.add(nodes[1]);
 		nodes[1].parent = nodes[0];
 		nodes[1].children.add(nodes[2]);
