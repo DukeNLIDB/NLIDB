@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.Random;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -25,7 +26,7 @@ public class ParseTree implements IParseTree {
 	int N;
 	
 	/**
-	 * Order of parse tree reformulation (used in QueryTree)
+	 * Order of parse tree reformulation (used in getAdjustedTrees())
 	 */
 	int edit;
 	/**
@@ -172,6 +173,18 @@ public class ParseTree implements IParseTree {
 				removeNode(nodes[i]);
 			}
 		}
+		
+		generateNewTree();
+	}
+
+	void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
+		curNode.getParent().getChildren().remove(curNode);
+		for (Node child: curNode.getChildren()) {
+			child.setParent(curNode.getParent()); 
+		}
+	}
+	
+	void generateNewTree(){
 		List<Node> tempTree = new ArrayList<Node>();
 		LinkedList<Node> queue = new LinkedList<Node>();
 		queue.add(root);
@@ -190,17 +203,9 @@ public class ParseTree implements IParseTree {
 		for (int i = 0; i < N; i++){
 			nodes[i] = tempTree.get(i);
 		}
+		root = nodes[0];
 	}
 
-	void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
-		curNode.getParent().getChildren().remove(curNode);
-		for (Node child: curNode.getChildren()) {
-			child.setParent(curNode.getParent()); 
-		}
-	}
-	
-	
-	
 	@Override
 	public List<IParseTree> getAdjustedTrees() {
 		List<IParseTree> results = new ArrayList<IParseTree>();
@@ -232,11 +237,54 @@ public class ParseTree implements IParseTree {
 	}
 	
 	
-	List<ParseTree> adjustor (ParseTree T){
+	List<ParseTree> adjustor (ParseTree T){ //move one random terminal node (without children) to anywhere possible
 		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
+		List<Node> noChildNodes = new LinkedList<Node>();
+		for (int i = 0; i<T.size(); i++){
+			if (T.nodes[i].getChildren() == null)
+				noChildNodes.add(T.nodes[i]);
+		}
+		int numOfNoChildNodes = noChildNodes.size();
+		Random r = new Random();
+		int index = r.nextInt(numOfNoChildNodes);  //selected terminal node to be moved, index from 0 to numOfChildNodes-1
+		Node moveNode = noChildNodes.get(index);
+		Node moveNodeParent = moveNode.getParent();
 		
+		for (int i = 0; i < T.size(); i++){
+			if (!T.nodes[i].equals(moveNodeParent)){ //Object.equals(Object): value comparison rather than reference comparison
+				Node curNode = T.nodes[i];
+				List<Node> curChildren = curNode.getChildren();
+				curNode.setChild(moveNode);
+				for (Node curChild: curChildren)
+					moveNode.setChild(curChild);
+				treeList.add(generateNewTree(T));
+			}
+		}
 		return treeList;
+	}
+	
+	ParseTree generateNewTree(ParseTree T){
+		ParseTree newTree = new ParseTree();
+		List<Node> tempTree = new ArrayList<Node>();
+		LinkedList<Node> queue = new LinkedList<Node>();
+		queue.add(T.root);
+		//add nodes from original tree into tempTree in pre order
+		while (!queue.isEmpty()){
+			Node curNode = queue.poll();
+			System.out.println(curNode);
+			tempTree.add(curNode);
+			List<Node> curChildren = curNode.getChildren();
+			int curChildrenSize = curChildren.size();
+			for (int i = curChildrenSize-1; i >= 0; i--)
+				queue.push(curChildren.get(i));
+		}
+		newTree.N = tempTree.size();
+		for (int i = 0; i < newTree.N; i++){
+			newTree.nodes[i] = tempTree.get(i);
+		}
+		newTree.root = newTree.nodes[0];
+		return newTree;
 	}
 	
 	/**
