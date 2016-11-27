@@ -39,6 +39,9 @@ public class Node {
 	 */
 	List<Node> children = new ArrayList<Node>(); // package private
 	
+	//for testing purpose
+	boolean isInvalid = false;
+	
 	public Node(int index, String word, String posTag) {
 		this.index = index;
 		this.word = word;
@@ -53,6 +56,9 @@ public class Node {
 	public void setWord(String word) {this.word = word;}
 	public String getPosTag() { return posTag; }
 	public List<Node> getChildren() { return children; }
+	public void setChild(Node child) {this.children.add(child);}
+	public Node getParent() {return parent;}
+	public void setParent(Node parent) {this.parent = parent;}
 
 	public String toString() {
 		String s = word;

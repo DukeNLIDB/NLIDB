@@ -7,9 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 
 
 public class SchemaGraph {
@@ -19,7 +18,7 @@ public class SchemaGraph {
 	 */
 	private Map<String, Map<String, String>> tables;
 	//table name, column name, column values
-	private Map<String, Map<String, List<String>>> tableRows;
+	private Map<String, Map<String, Set<String>>> tableRows;
 	
 	/**
 	 * Construct a schemaGraph from database meta data.
@@ -45,7 +44,7 @@ public class SchemaGraph {
 			tableRows.put(tableName, new HashMap<>());
 			
 			Map<String, String> table = tables.get(tableName);
-			Map<String, List<String>> tableRow = tableRows.get(tableName);
+			Map<String, Set<String>> tableRow = tableRows.get(tableName);
 			
 			ResultSet rsColumn = meta.getColumns(null, null, tableName, null);
 			while (rsColumn.next()){
@@ -53,14 +52,16 @@ public class SchemaGraph {
 				String columnName = rsColumn.getString("COLUMN_NAME");
 				String columnType = rsColumn.getString("TYPE_NAME");
 				table.put(columnName, columnType); 
-				/*draw random sample of size 100 from each table, insert into tableRows*/
+				/*draw random sample of size 10000 from each table, insert into tableRows*/
 				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 10000;";
 				ResultSet rows = stmt.executeQuery(query);
-				tableRow.put(columnName, new ArrayList<String>());
-				List<String> columnValues = tableRow.get(columnName);
+				tableRow.put(columnName, new HashSet<String>());
+				Set<String> columnValues = tableRow.get(columnName);
 				while (rows.next()){
 					String columnValue = rows.getString(1);
-					columnValues.add(columnValue);
+					//testing if the last column read has a SQL NULL
+					if (!rows.wasNull())
+						columnValues.add(columnValue);
 				}
 			}			
 		}
@@ -76,7 +77,7 @@ public class SchemaGraph {
 		return tables.get(tableName).keySet();
 	}
 	
-	public List<String> getValues(String tableName, String columnName){
+	public Set<String> getValues(String tableName, String columnName){
 		return tableRows.get(tableName).get(columnName);
 	}
 

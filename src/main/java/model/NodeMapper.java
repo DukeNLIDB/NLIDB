@@ -45,7 +45,9 @@ public class NodeMapper {
 		map.put("each",    new NodeInfo("QN", "EACH"));
 		map.put("and",    new NodeInfo("LN", "AND"));	 // Logic Node
 		map.put("or",    new NodeInfo("LN", "OR"));
-		
+		map.put("more",    new NodeInfo("ON", ">"));
+		map.put("older",    new NodeInfo("ON", ">"));
+		map.put("newer", new NodeInfo("ON", "<"));
 	}
 	
 	/**

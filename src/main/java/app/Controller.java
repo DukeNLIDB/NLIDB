@@ -174,11 +174,11 @@ public class Controller {
 		processing = true;
 		parseTree = new ParseTree(input, parser);
 		startMappingNodes();
-		parseTree.removeMeaninglessNodes();
+		//parseTree.removeMeaninglessNodes();
 		// parseTree adjust structure
-		query = parseTree.translateToSQL();	
-		view.setDisplay(query.toString());
-		processing = false;
+		//query = parseTree.translateToSQL();	
+		//view.setDisplay(query.toString());
+		//processing = false;
 	}
 
 }
