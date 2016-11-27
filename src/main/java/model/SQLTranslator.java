@@ -1,7 +1,5 @@
 package model;
 
-import java.util.List;
-
 /**
  * See the paper by Fei Li and H. V. Jagadish for the defined grammar.
  * @author keping
@@ -39,7 +37,8 @@ public class SQLTranslator {
 		for (Node child : node.getChildren()) {
 			if (child.getInfo().getType().equals("NN")) {
 				translateNP(query, child);
-			} else {
+			} else if (child.getInfo().getType().equals("ON") ||
+					child.getInfo().getType().equals("VN")){
 				translateCondition(query, child);
 			}
 		}
