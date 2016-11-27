@@ -3,8 +3,10 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A class to help map word {@link Node} in {@link ParseTree}
@@ -66,7 +68,7 @@ public class NodeMapper {
 	 */
 	public List<NodeInfo> getNodeInfoChoices(Node node, SchemaGraph schema) {
 		List<NodeInfo> result = new ArrayList<NodeInfo>();   //final output
-		List<NodeInfo> valueNodes = new ArrayList<NodeInfo>();  //used to store (type, value, score) of 100 sample values for every column in every table
+		Set<NodeInfo> valueNodes = new HashSet<NodeInfo>();  //used to store (type, value, score) of 100 sample values for every column in every table
 		String word = node.getWord().toLowerCase(); // all words as lower case
 		
 		if (map.containsKey(word)) {
@@ -92,10 +94,8 @@ public class NodeMapper {
 		}
 		
 		//map value nodes (table values), to get the value node with highest similarity, add its (type, value, score) into result
-		Collections.sort(valueNodes, new NodeInfo.ReverseScoreComparator());
-		NodeInfo maxVN = valueNodes.get(0);
-		result.add(new NodeInfo("VN", maxVN.getValue(), maxVN.getScore()));
-		
+		// we want all candidates, not only the one with the highest similarity
+		result.addAll(valueNodes);
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
 		return result;
