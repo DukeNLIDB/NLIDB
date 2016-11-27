@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -92,24 +93,70 @@ public class ParseTree implements IParseTree {
 		this.edit = edit;
 	}
 	
+	/**
+	 * Helper method for {@link #removeMeaninglessNodes()}.
+	 * (1) If curr node is meaning less, link its children to its parent.
+	 * (2) Move on to remove the meaningless nodes of its children.
+	 */
+	private void removeMeaninglessNodes(Node curr) {
+		if (curr == null) { return; }
+		List<Node> currChildren = new ArrayList<>(curr.getChildren());
+		for (Node child : currChildren) {
+			removeMeaninglessNodes(child);
+		}
+		if (curr != root && curr.getInfo().getType().equals("UNKNOWN")) {
+			curr.parent.getChildren().remove(curr);
+			for (Node child : curr.getChildren()) {
+				curr.parent.getChildren().add(child);
+				child.parent = curr.parent;
+			}	
+		}
+
+	}
+	
+	/**
+	 * Remove a node from tree if its NodeInfo is ("UNKNOWN", "meaningless").
+	 * To remove the meaningless node, link the children of this node
+	 * to its parent.
+	 */
 	@Override
 	public void removeMeaninglessNodes() {
+		if (root.getInfo() == null) {
+			System.out.println("ERR! Node info net yet mapped!");
+		}
+		// Remove meaningless nodes from the tree and 
+		// finally put remaining nodes in Node[].
 		
-		for (int i = 0; i < N; i ++) {
-			NodeInfo temp = nodes[i].getInfo();
-			if(temp.getValue().equals("meaningless")) {
-				configureDeletingNode(i);
+		// Create a temporary root.
+		Node rootTmp = new Node(0, "ROOT", "ROOT");
+		rootTmp.getChildren().add(root);
+		root = rootTmp;
+		// Remove meaningless nodes.
+		removeMeaninglessNodes(root);
+		// Remove the temporary root.
+		if (root.getChildren().size() > 1) {
+			System.out.println("Strange tree structure after removing "+
+					"meaningless Nodes!");
+		}
+		Node rootNow = root.getChildren().get(0);
+		rootNow.parent = null;
+		root = rootNow;
+		// Put nodes back in Node[] using pre-order traversal
+		List<Node> nodesList = new ArrayList<>();
+		LinkedList<Node> stack = new LinkedList<>();
+		stack.push(root);
+		while (!stack.isEmpty()) {
+			Node curr = stack.pop();
+			nodesList.add(curr);
+			List<Node> currChildren = curr.getChildren();
+			for (int i = currChildren.size()-1; i >= 0; i--) {
+				stack.push(currChildren.get(i));	
 			}
 		}
-		
-		int Ntemp = N;
-		for (int i = 0; i < Ntemp; i ++) {
-			if (nodes[i] == null) {
-				if (i != Ntemp - 1) {
-					nodes[i] = nodes[i + 1];
-				}
-				N --; 
-			}
+		N = nodesList.size();
+		nodes = new Node[N];
+		for (int i = 0; i < N; i++) {
+			nodes[i] = nodesList.get(i);
 		}
 	}
 	
@@ -313,25 +360,36 @@ public class ParseTree implements IParseTree {
 		return 0;
 	}
 
+	/**
+	 * Recursive helper method for {@link #translateToSQL()}.
+	 */
+	private void translateToSQL(SQLQuery query, Node node) {
+		if (node.getInfo().getType().equals("NN")) {
+			query.add("SELECT", node.getInfo().getValue());
+			query.add("FROM", node.getInfo().getValue().split(":")[0]);
+			for (Node child : node.getChildren()) {
+				translateToSQL(query, child);
+			}
+		} else if (node.getInfo().getType().equals("VN")) {
+			String compareSymbol = "=";
+			if (!node.getChildren().isEmpty()) {
+				Node ON = node.getChildren().get(0);
+				if (ON.getInfo().getType().equals("ON")) {
+					compareSymbol = ON.getInfo().getValue();
+				}
+			}
+			query.add("WHERE", node.getInfo().getValue() + " " +
+					compareSymbol + " " + node.getWord());
+		} else { }
+	}
+	
 	@Override
 	public SQLQuery translateToSQL() {
 		SQLQuery query = new SQLQuery();
 		if (!root.getInfo().getType().equals("SN")) { return query; }
-		for (Node NN : root.getChildren()) {
-			if (!NN.getInfo().getType().equals("NN")) { continue; }
-			query.add("SELECT", NN.getInfo().getValue());
-			query.add("FROM", NN.getInfo().getValue().split(":")[0]);
-			for (Node VN : NN.getChildren()) {
-				String compareSymbol = "=";
-				if (!VN.getChildren().isEmpty()) {
-					Node ON = VN.getChildren().get(0);
-					if (ON.getInfo().getType().equals("ON")) {
-						compareSymbol = ON.getInfo().getValue();
-					}
-				}
-				query.add("WHERE", VN.getInfo().getValue() + " " +
-						compareSymbol + " " + VN.getWord());
-			}
+		// Assume root is "SN:SELECT"
+		for (Node node : root.getChildren()) {
+			translateToSQL(query, node);
 		}
 		return query;
 	}
