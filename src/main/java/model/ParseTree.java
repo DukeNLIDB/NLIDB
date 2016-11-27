@@ -33,7 +33,7 @@ public class ParseTree implements IParseTree {
 	 */
 	Node[] nodes;
 	/**
-	 * Root Node. Supposed to be "return" or some other word corresponding to "SELECT".
+	 * Root Node. Supposed to be "ROOT".
 	 */
 	Node root;
 	
@@ -61,23 +61,21 @@ public class ParseTree implements IParseTree {
 		GrammaticalStructure gs = parser.parser.predict(tagged);
 		
 		// Reading the parsed sentence into ParseTree
-		N = sentence.size();
+		N = sentence.size()+1;
 		nodes = new Node[N];
-		for (int i = 0; i < N; i++) {
-			nodes[i] = new Node(i, 
+		root = new Node(0, "ROOT", "ROOT");
+		nodes[0] = root;
+		for (int i = 0; i < N-1; i++) {
+			nodes[i+1] = new Node(i+1, 
 					sentence.get(i).word(), tagged.get(i).tag());
 		}
-		root = nodes[0];
 		for (TypedDependency typedDep : gs.allTypedDependencies()) {
 			int from = typedDep.gov().index();
-			if (from == 0) { continue; } // skip ROOT
 			int to   = typedDep.dep().index();
 			// String label = typedDep.reln().getShortName(); // omitting the label
-			nodes[to-1].parent = nodes[from-1];
-			nodes[from-1].children.add(nodes[to-1]);
+			nodes[to].parent = nodes[from];
+			nodes[from].children.add(nodes[to]);
 		}
-
-		
 	}
 
 	@Override
@@ -123,26 +121,11 @@ public class ParseTree implements IParseTree {
 	 */
 	@Override
 	public void removeMeaninglessNodes() {
-		if (root.getInfo() == null) {
+		if (root.getChildren().get(0).getInfo() == null) {
 			System.out.println("ERR! Node info net yet mapped!");
 		}
-		// Remove meaningless nodes from the tree and 
-		// finally put remaining nodes in Node[].
-		
-		// Create a temporary root.
-		Node rootTmp = new Node(0, "ROOT", "ROOT");
-		rootTmp.getChildren().add(root);
-		root = rootTmp;
 		// Remove meaningless nodes.
 		removeMeaninglessNodes(root);
-		// Remove the temporary root.
-		if (root.getChildren().size() > 1) {
-			System.out.println("Strange tree structure after removing "+
-					"meaningless Nodes!");
-		}
-		Node rootNow = root.getChildren().get(0);
-		rootNow.parent = null;
-		root = rootNow;
 		// Put nodes back in Node[] using pre-order traversal
 		List<Node> nodesList = new ArrayList<>();
 		LinkedList<Node> stack = new LinkedList<>();
@@ -438,7 +421,7 @@ public class ParseTree implements IParseTree {
 	}
 	
 	public class ParseTreeIterator implements Iterator<Node> {
-		int i = 0;
+		int i = 1;
 		@Override
 		public boolean hasNext() {
 			return i < N; 
@@ -461,8 +444,8 @@ public class ParseTree implements IParseTree {
 	 */
 	public String getSentence() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(nodes[0].getWord());
-		for (int i = 1; i < N; i++) {
+		sb.append(nodes[1].getWord());
+		for (int i = 2; i < N; i++) {
 			sb.append(" ").append(nodes[i].getWord());
 		}
 		return sb.toString();

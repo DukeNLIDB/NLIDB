@@ -28,6 +28,8 @@ public class ParseTreeTest {
 	 * like this: (in for inproceedings)</p>
 	 * 
 	 * <p><pre>
+	 *    root
+	 *      |
 	 *  return(SN:SELECT)
 	 *      |
 	 *  titles(NN:in.title)
@@ -43,31 +45,33 @@ public class ParseTreeTest {
 	public static void testTranslation1() {
 		// (1) Let's construct the perfect ParseTree for testing.
 		ParseTree tree = new ParseTree();
-		tree.N = 5;
+		tree.N = 6;
 		tree.nodes = new Node[tree.N];
 		Node[] nodes = tree.nodes;
 
-		nodes[0] = new Node(0, "return", "--"); // posTag not useful
-		nodes[0].info = new NodeInfo("SN", "SELECT");
-		nodes[1] = new Node(1, "titles", "--");
-		nodes[1].info = new NodeInfo("NN", "in.title");
-		nodes[2] = new Node(2, "theory", "--");
-		nodes[2].info = new NodeInfo("VN", "in.area");
-		nodes[3] = new Node(3, "1970", "--");
-		nodes[3].info = new NodeInfo("VN", "in.year");
-		nodes[4] = new Node(4, "before", "--");
-		nodes[4].info = new NodeInfo("ON", "<");
+		nodes[0] = new Node(0, "ROOT", "ROOT");
+		nodes[1] = new Node(1, "return", "--"); // posTag not useful
+		nodes[1].info = new NodeInfo("SN", "SELECT");
+		nodes[2] = new Node(2, "titles", "--");
+		nodes[2].info = new NodeInfo("NN", "in.title");
+		nodes[3] = new Node(3, "theory", "--");
+		nodes[3].info = new NodeInfo("VN", "in.area");
+		nodes[4] = new Node(4, "1970", "--");
+		nodes[4].info = new NodeInfo("VN", "in.year");
+		nodes[5] = new Node(5, "before", "--");
+		nodes[5].info = new NodeInfo("ON", "<");
 		
-		nodes[0].children.add(nodes[1]);
-		nodes[1].parent = nodes[0];
+		tree.root = nodes[0];
+		tree.root.getChildren().add(nodes[1]);
 		nodes[1].children.add(nodes[2]);
-		nodes[1].children.add(nodes[3]);
 		nodes[2].parent = nodes[1];
-		nodes[3].parent = nodes[1];
-		nodes[3].children.add(nodes[4]);
-		nodes[4].parent = nodes[3];
+		nodes[2].children.add(nodes[3]);
+		nodes[2].children.add(nodes[4]);
+		nodes[3].parent = nodes[2];
+		nodes[4].parent = nodes[2];
+		nodes[4].children.add(nodes[5]);
+		nodes[5].parent = nodes[4];
 		
-		tree.root = nodes[0];	
 		
 		// (2) Do the translation.
 		SQLQuery query = tree.translateToSQL();
@@ -93,6 +97,8 @@ public class ParseTreeTest {
 	 * 
 	 * <p>The tree after removing meaningless nodes:</p>
 	 * <p><pre>
+	 *    root
+	 *      |
 	 *  return(SN:SELECT)
 	 *      |     `----------\
 	 *  titles(NN:in.title) 1970(VN:in.year)
@@ -109,15 +115,15 @@ public class ParseTreeTest {
 		
 		// Set NodeInfo
 		Node[] nodes = tree.nodes;
-		nodes[0].info = new NodeInfo("SN", "SELECT");
-		nodes[1].info = new NodeInfo("UNKNOWN", "meaningless");
-		nodes[2].info = new NodeInfo("NN", "in.title");
-		nodes[3].info = new NodeInfo("UNKNOWN", "meaningless");
-		nodes[4].info = new NodeInfo("VN", "in.area");
-		nodes[5].info = new NodeInfo("UNKNOWN", "meaningless");
-		nodes[6].info = new NodeInfo("ON", "<");
-		nodes[7].info = new NodeInfo("VN", "in.year");
-		nodes[8].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[1].info = new NodeInfo("SN", "SELECT");
+		nodes[2].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[3].info = new NodeInfo("NN", "in.title");
+		nodes[4].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[5].info = new NodeInfo("VN", "in.area");
+		nodes[6].info = new NodeInfo("UNKNOWN", "meaningless");
+		nodes[7].info = new NodeInfo("ON", "<");
+		nodes[8].info = new NodeInfo("VN", "in.year");
+		nodes[9].info = new NodeInfo("UNKNOWN", "meaningless");
 		
 		System.out.println("After setting nodeinfo:");
 		System.out.println(tree);
@@ -134,7 +140,7 @@ public class ParseTreeTest {
 	}
 	
 	public static void main(String[] args) {
-		testTranslation1();
+//		testTranslation1();
 		removeMeaninglessNodesTest();
 	}
 	
