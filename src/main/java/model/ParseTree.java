@@ -3,10 +3,12 @@ package model;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -161,9 +163,10 @@ public class ParseTree implements IParseTree {
 	}
 	
 	@Override
+	// TODO: to be fixed 
 	public void mergeLNQN(){
 		for (int i=0; i<N; i++){
-			if (nodes[i].getInfo().getValue().equals("LN") || nodes[i].getInfo().getValue().equals("QN")){
+			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
 				String word = "("+nodes[i].getWord()+")";
 				String parentWord = nodes[i].parent.getWord()+word;
 				nodes[i].parent.setWord(parentWord);
@@ -172,10 +175,14 @@ public class ParseTree implements IParseTree {
 		}
 		
 		int Ntemp = N;
+		boolean[] moved = new boolean[N];
+		for (int i = 0; i< N; i++)
+			moved[i] = false;
 		for (int i = 0; i < Ntemp; i ++) {
 			if (nodes[i] == null) {
 				if (i != Ntemp - 1) {
 					nodes[i] = nodes[i + 1];
+					moved[i+1] = true;
 				}
 				N --; 
 			}
@@ -256,43 +263,58 @@ public class ParseTree implements IParseTree {
 			int sizeOfChildren = children.size();
 			if (curType.equals("SN")){ // select node
 				//SN can only be child of root
-				if (!parentType.equals("ROOT"))   
+				if (!parentType.equals("ROOT")){   
 					numOfInv++;
+					curNode.isInvalid = true;
+				}
 				//SN can only have one child from FN or NN
-				else if (sizeOfChildren != 1)
+				else if (sizeOfChildren != 1){
 					numOfInv++;
+					curNode.isInvalid = true;
+				}
 				else{
 					String childType = children.get(0).getInfo().getType();
-					if (!(childType.equals("NN") || childType.equals("FN")))
+					if (!(childType.equals("NN") || childType.equals("FN"))){
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 				}
 			}
 			else if (curType.equals("ON")){  //operator node
 				if (parentType.equals("ROOT")){
-					if (sizeOfChildren == 0)
+					if (sizeOfChildren == 0){
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 					else{
 						for (int j = 0; j<sizeOfChildren; j++){
 							String childType = children.get(j).getInfo().getType();
 							if (childType.equals("ON")){
 								numOfInv++;
+								curNode.isInvalid = true;
 								break;
 							}
 						}
 					}
 				}
 				else if (parentType.equals("NN")){
-					if (sizeOfChildren != 1)
+					if (sizeOfChildren != 1){
 						numOfInv++;
-					else if (!children.get(0).getInfo().getType().equals("VN"))
+						curNode.isInvalid = true;
+					}
+					else if (!children.get(0).getInfo().getType().equals("VN")){
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 				}
 			}
 			else if (curType.equals("NN")){  //name node
 				//NP=NN+NN*Condition. Second NN has no child.
 				if (parentType.equals("NN")){
-					if (sizeOfChildren != 0)
+					if (sizeOfChildren != 0){   //this rule is different from figure 7 (a), but I think this makes sense
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 				}
 				//SN+GNP, or ON+GNP, or FN+GNP. and GNP=NP=NN+NN*Condition. First NN can have any number of children from NN,ON,VN.
 				else if (parentType.equals("SN") || parentType.equals("FN") || parentType.equals("ON")){
@@ -301,6 +323,7 @@ public class ParseTree implements IParseTree {
 							String childType = children.get(j).getInfo().getType();
 							if (!(childType.equals("NN") || childType.equals("VN") || childType.equals("ON"))){
 								numOfInv++;
+								curNode.isInvalid = true;
 								break;
 							}
 						}
@@ -309,13 +332,18 @@ public class ParseTree implements IParseTree {
 				//NN cannot be a child of VN
 				else if (parentType.equals("VN")){
 					numOfInv++;
+					curNode.isInvalid = true;
 				}
 			}
 			else if (curType.equals("VN")){  //value node
-				if (curNode.children != null)  //VN cannot have children
+				if (sizeOfChildren != 0){  //VN cannot have children
 					numOfInv++;
-				else if (!(parentType.equals("ON") || parentType.equals("NN")))  //VN can only be child of ON and NN
+					curNode.isInvalid = true;
+				}
+				else if (!(parentType.equals("ON") || parentType.equals("NN"))){  //VN can only be child of ON and NN
 					numOfInv++;
+					curNode.isInvalid = true;
+				}
 			}
 			else if (curType.equals("FN")){  //function nodes
 				//ON+FN, or ON+GNP, or SN+GNP, or FN+GNP. and GNP=FN+GNP
@@ -323,18 +351,26 @@ public class ParseTree implements IParseTree {
 				//FN can be child of SN, wih only 1 child of NN or FN
 				//FN can be child of FN, wih only 1 child of NN or FN
 				if (sizeOfChildren == 0){
-					if (!parentType.equals("ON"))
+					if (!parentType.equals("ON")){
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 				}
 				else if (sizeOfChildren == 1){
 					String childType = children.get(0).getInfo().getType();
-					if (!(parentType.equals("ON") || parentType.equals("SN") || parentType.equals("FN")))
+					if (!(parentType.equals("ON") || parentType.equals("SN") || parentType.equals("FN"))){
 						numOfInv++;
-					else if (!(childType.equals("NN") || childType.equals("FN")))
+						curNode.isInvalid = true;
+					}
+					else if (!(childType.equals("NN") || childType.equals("FN"))){
 						numOfInv++;
+						curNode.isInvalid = true;
+					}
 				}
-				else
+				else{
 					numOfInv++;
+					curNode.isInvalid = true;
+				}
 			}
 		}
 		

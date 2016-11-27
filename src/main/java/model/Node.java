@@ -39,6 +39,9 @@ public class Node {
 	 */
 	List<Node> children = new ArrayList<Node>(); // package private
 	
+	//for testing purpose
+	boolean isInvalid = false;
+	
 	public Node(int index, String word, String posTag) {
 		this.index = index;
 		this.word = word;
