@@ -201,7 +201,7 @@ public class ParseTree implements IParseTree {
 	 */	
 	int numberOfInvalidNodes (ParseTree T){	
 		int numOfInv = 0;   //number of invalid tree nodes
-		for (int i=0; i<T.size(); i++){
+		for (int i=1; i<T.size(); i++){  //starting from SN (leave out ROOT)
 			Node curNode = T.nodes[i];
 			String curType = curNode.getInfo().getType();
 			String parentType = curNode.parent.getInfo().getType();

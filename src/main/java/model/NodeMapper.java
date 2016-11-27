@@ -73,12 +73,15 @@ public class NodeMapper {
 		}
 				
 		for (String tableName : schema.getTableNames()) {
+			System.out.println(tableName);
 			result.add(new NodeInfo("NN", tableName,
 					WordSimilarity.getSimilarity(word, tableName, wordNet)));    //map name nodes(table names)
 			for (String colName : schema.getColumns(tableName)) {
+				System.out.println(colName);
 				result.add(new NodeInfo("NN", tableName+"."+colName,
 						WordSimilarity.getSimilarity(word, colName, wordNet)));    //map name nodes (attribute names)
 				for (String value: schema.getValues(tableName, colName)){
+					System.out.println(value);
 					valueNodes.add(new NodeInfo("VN", tableName+"."+colName,
 							WordSimilarity.getSimilarity(word, value, wordNet)));    //add every sample value into valueNodes
 				}
