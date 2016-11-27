@@ -63,7 +63,7 @@ public class ParseTree implements IParseTree {
 		
 		// Reading the parsed sentence into ParseTree
 		N = sentence.size()+1;
-		nodes = new Node[N];
+		nodes = new Node[3 * N];
 		root = new Node(0, "ROOT", "ROOT");
 		nodes[0] = root;
 		for (int i = 0; i < N-1; i++) {
@@ -144,6 +144,39 @@ public class ParseTree implements IParseTree {
 		for (int i = 0; i < N; i++) {
 			nodes[i] = nodesList.get(i);
 		}
+	}
+	
+	@Override
+	
+	/*I am assuming the tree is mapped as (b) in figure 7 on page 7 
+	 *and the tree is mapped correctly in preorder*/
+	public void insertImplicitNodes() {
+		
+		//iterate all node and find if there is missing nodes
+		
+		int SN_index = 0;
+		
+		for (int i = 0; i < N; i ++) {
+		
+			if (nodes[i].getInfo().getType().equals("SN")) {
+			
+				SN_index = i;
+				break;	
+			}
+		}
+		
+		
+		int [] leftTreeNodes = new int [N];
+		
+		int parentIndex = 0;
+		
+		for (int i = SN_index + 1; i < N; i ++) {
+			
+			
+			
+		}
+		
+		
 	}
 	
 	@Override
@@ -416,11 +449,7 @@ public class ParseTree implements IParseTree {
 		return hashValue;
 	}
 	
-	@Override
-	public void insertImplicitNodes() {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	public double getScore() {
