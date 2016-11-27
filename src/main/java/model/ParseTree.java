@@ -373,6 +373,11 @@ public class ParseTree implements IParseTree {
 		return sb.toString();
 	}
 	
+	/**
+	 * toString like "curr -> [child1, child2, ...]"
+	 * @param curr
+	 * @return
+	 */
 	private String nodeToString(Node curr) {
 		if (curr == null) { return ""; }
 		String s = curr.toString() + " -> ";
