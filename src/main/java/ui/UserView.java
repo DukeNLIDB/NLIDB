@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
@@ -25,7 +26,7 @@ public class UserView extends Application {
 	Button btnTranslate;
 	Text display;
 	TextArea fieldSQL;
-	ChoiceBox<NodeInfo> choiceBox;
+	ComboBox<NodeInfo> choiceBox; // use scrollable comboBox instead of choiceBox
 	Button btnConfirmChoice;
 	HBox hb;
 	VBox vb1, vb2;
@@ -85,8 +86,9 @@ public class UserView extends Application {
 		display.prefHeight(300);
 		display.setText("Default display text");
 
-		choiceBox = new ChoiceBox<NodeInfo>();
-		
+		choiceBox = new ComboBox<NodeInfo>();
+		choiceBox.setVisibleRowCount(6);
+				
 		btnConfirmChoice = new Button("confirm choice");
 		btnConfirmChoice.setOnAction(e -> {
 			ctrl.chooseNode(getChoice());
