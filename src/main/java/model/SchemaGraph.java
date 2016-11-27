@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 
 
 public class SchemaGraph {
@@ -62,9 +60,7 @@ public class SchemaGraph {
 				while (rows.next()){
 					String columnValue = rows.getString(1);
 					//testing if the last column read has a SQL NULL
-					if (rows.wasNull())
-						System.out.println(tableName+", "+columnName+", Value:"+columnValue);
-					else
+					if (!rows.wasNull())
 						columnValues.add(columnValue);
 				}
 			}			
