@@ -34,9 +34,9 @@ public class ParseTreeTest {
 	 *      |
 	 *  titles(NN:in.title)
 	 *      | `-------------\
-	 *  theory(VN:in.area)  1970(VN:in.year)
+	 *  theory(VN:in.area)  before(ON:<)
 	 *                       |
-	 *                     before(ON:<)
+	 *                     1970(VN:in.year)
 	 * </pre></p>
 	 * 
 	 * <p>The next step is to translate this "perfect" ParseTree word-to-word to
@@ -56,10 +56,10 @@ public class ParseTreeTest {
 		nodes[2].info = new NodeInfo("NN", "in.title");
 		nodes[3] = new Node(3, "theory", "--");
 		nodes[3].info = new NodeInfo("VN", "in.area");
-		nodes[4] = new Node(4, "1970", "--");
-		nodes[4].info = new NodeInfo("VN", "in.year");
-		nodes[5] = new Node(5, "before", "--");
-		nodes[5].info = new NodeInfo("ON", "<");
+		nodes[4] = new Node(4, "before", "--");
+		nodes[4].info = new NodeInfo("ON", "<");
+		nodes[5] = new Node(5, "1970", "--");
+		nodes[5].info = new NodeInfo("VN", "in.year");
 		
 		tree.root = nodes[0];
 		tree.root.getChildren().add(nodes[1]);
@@ -72,6 +72,7 @@ public class ParseTreeTest {
 		nodes[4].children.add(nodes[5]);
 		nodes[5].parent = nodes[4];
 		
+		System.out.println(tree);
 		
 		// (2) Do the translation.
 		SQLQuery query = tree.translateToSQL();
@@ -105,6 +106,8 @@ public class ParseTreeTest {
 	 *      |                | 
 	 *  theory(VN:in.area)  before(ON:<)
 	 * </pre></p>
+	 * 
+	 * <p>Still need the adjustor to swap the position of "1970" and "before".</p>
 	 */
 	public static void removeMeaninglessNodesTest() {
 		String input = "Return all titles of theory papers before 1970.";
@@ -135,12 +138,12 @@ public class ParseTreeTest {
 		
 		SQLQuery query = tree.translateToSQL();
 		
-		System.out.println("Translate to SQL query: ");
 		System.out.println(query);
+		
 	}
 	
 	public static void main(String[] args) {
-//		testTranslation1();
+		testTranslation1();
 		removeMeaninglessNodesTest();
 	}
 	

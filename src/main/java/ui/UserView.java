@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -25,7 +24,6 @@ public class UserView extends Application {
 	Controller ctrl;
 	Button btnTranslate;
 	Text display;
-	TextArea fieldSQL;
 	ComboBox<NodeInfo> choiceBox; // use scrollable comboBox instead of choiceBox
 	Button btnConfirmChoice;
 	HBox hb;
@@ -69,12 +67,6 @@ public class UserView extends Application {
 		fieldIn.setText(TEST_TEXT);
 		
 		btnTranslate = new Button("translate");
-
-		Label lblSQL = new Label("SQL query:");
-		fieldSQL = new TextArea();
-		fieldSQL.setPrefHeight(100);
-		fieldSQL.setPrefWidth(100);
-		fieldSQL.setWrapText(true);
 		
 		// Define action of the translate button.
 		btnTranslate.setOnAction(e -> {
@@ -99,8 +91,7 @@ public class UserView extends Application {
 		vb1.getChildren().addAll(
 				label1,
 				lblInput,fieldIn,
-				btnTranslate,
-				lblSQL, fieldSQL
+				btnTranslate
 				);
 		
 		vb2 = new VBox();

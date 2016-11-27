@@ -428,38 +428,10 @@ public class ParseTree implements IParseTree {
 		return 0;
 	}
 
-	/**
-	 * Recursive helper method for {@link #translateToSQL()}.
-	 */
-	private void translateToSQL(SQLQuery query, Node node) {
-		if (node.getInfo().getType().equals("NN")) {
-			query.add("SELECT", node.getInfo().getValue());
-			query.add("FROM", node.getInfo().getValue().split(":")[0]);
-			for (Node child : node.getChildren()) {
-				translateToSQL(query, child);
-			}
-		} else if (node.getInfo().getType().equals("VN")) {
-			String compareSymbol = "=";
-			if (!node.getChildren().isEmpty()) {
-				Node ON = node.getChildren().get(0);
-				if (ON.getInfo().getType().equals("ON")) {
-					compareSymbol = ON.getInfo().getValue();
-				}
-			}
-			query.add("WHERE", node.getInfo().getValue() + " " +
-					compareSymbol + " " + node.getWord());
-		} else { }
-	}
 	
 	@Override
 	public SQLQuery translateToSQL() {
-		SQLQuery query = new SQLQuery();
-		if (!root.getInfo().getType().equals("SN")) { return query; }
-		// Assume root is "SN:SELECT"
-		for (Node node : root.getChildren()) {
-			translateToSQL(query, node);
-		}
-		return query;
+		return SQLTranslator.translate(root);
 	}
 
 	@Override
