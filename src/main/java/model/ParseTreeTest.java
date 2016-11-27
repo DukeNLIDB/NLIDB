@@ -78,6 +78,27 @@ public class ParseTreeTest {
 	
 	/**
 	 * Using natural language input "Return all titles of theory papers before 1970."
+	 * <p>The original tree:</p>
+	 * <p><pre>
+	 *           root
+	 *            |
+	 *          return
+	 *            |  `---\---------\
+	 *          titles   1970       .
+	 *          /   \      \
+	 *       all   papers  before
+	 *              /  \ 
+	 *            of   theory
+	 * </pre></p>
+	 * 
+	 * <p>The tree after removing meaningless nodes:</p>
+	 * <p><pre>
+	 *  return(SN:SELECT)
+	 *      |     `----------\
+	 *  titles(NN:in.title) 1970(VN:in.year)
+	 *      |                | 
+	 *  theory(VN:in.area)  before(ON:<)
+	 * </pre></p>
 	 */
 	public static void removeMeaninglessNodesTest() {
 		String input = "Return all titles of theory papers before 1970.";
@@ -105,6 +126,11 @@ public class ParseTreeTest {
 		
 		System.out.println("After removing meaningless nodes");
 		System.out.println(tree);
+		
+		SQLQuery query = tree.translateToSQL();
+		
+		System.out.println("Translate to SQL query: ");
+		System.out.println(query);
 	}
 	
 	public static void main(String[] args) {

@@ -43,6 +43,12 @@ public class WordNet {
 	 * @return
 	 */
 	public double similarity(String word1, String word2) {
+//		System.out.println("Finding similarity between: "+word1+" and "+word2);
+		// remove all special characters from words
+		word1 = word1.replaceAll("[^a-zA-Z0-9_-]", "");
+		word2 = word2.replaceAll("[^a-zA-Z0-9_-]", "");
+		// ? why NullPointerException here ??? Doesn't seem to be my fault!
+		// Here special symbols in word causes Exception.
 		List<String> stems1 = stemmer.findStems(word1, POS.NOUN);
 		List<String> stems2 = stemmer.findStems(word2, POS.NOUN);
 		

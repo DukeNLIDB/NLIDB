@@ -54,14 +54,18 @@ public class SchemaGraph {
 				String columnName = rsColumn.getString("COLUMN_NAME");
 				String columnType = rsColumn.getString("TYPE_NAME");
 				table.put(columnName, columnType); 
-				/*draw random sample of size 100 from each table, insert into tableRows*/
-				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 5;";
+				/*draw random sample of size 10000 from each table, insert into tableRows*/
+				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 10000;";
 				ResultSet rows = stmt.executeQuery(query);
 				tableRow.put(columnName, new HashSet<String>());
 				Set<String> columnValues = tableRow.get(columnName);
 				while (rows.next()){
 					String columnValue = rows.getString(1);
-					columnValues.add(columnValue);
+					//testing if the last column read has a SQL NULL
+					if (rows.wasNull())
+						System.out.println(tableName+", "+columnName+", Value:"+columnValue);
+					else
+						columnValues.add(columnValue);
 				}
 			}			
 		}
