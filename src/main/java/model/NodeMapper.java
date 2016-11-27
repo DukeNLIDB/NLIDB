@@ -13,7 +13,6 @@ import java.util.Map;
  *
  */
 public class NodeMapper {
-	final static private int LIST_SIZE = 10;
 	private WordNet wordNet;
 	/**
 	 * Key is the word. Value is the corresponding SQL component.
@@ -97,8 +96,7 @@ public class NodeMapper {
 		
 		result.add(new NodeInfo("UNKNOWN", "meaningless", 1.0));
 		Collections.sort(result, new NodeInfo.ReverseScoreComparator());
-		if (result.size() <= LIST_SIZE) { return result; }
-		else { return result.subList(0, LIST_SIZE); }
+		return result;
 	}
 
 }
