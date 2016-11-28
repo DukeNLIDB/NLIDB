@@ -150,7 +150,7 @@ public class ParseTree implements IParseTree {
 	 *and the tree is mapped correctly in preorder*/
 	public void insertImplicitNodes() {
 		
-		//iterate all node and find if there is missing nodes
+		//iterate all node to find SN node.
 		
 		int SN_index = 0;
 		
@@ -164,17 +164,61 @@ public class ParseTree implements IParseTree {
 		}
 		
 		
-		int [] leftTreeNodes = new int [N];
+		//start from SN node, get all children index
 		
-		int parentIndex = 0;
+		int endOfLeftTree = SN_index;
 		
-		for (int i = SN_index + 1; i < N; i ++) {
+		int startOfLeftTree = SN_index + 1;
+		
+		for (int i = startOfLeftTree; i < N; i ++) {
 			
-			
-			
+			if (nodes[i].getParent().getIndex() == endOfLeftTree) {
+		
+				endOfLeftTree = i;
+			}
+			else {
+				
+				break;
+			}
 		}
 		
+		int rightRoot = endOfLeftTree + 1;
+		implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
+	}
+	
+	public void implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
 		
+		
+		int endOfLeftTreeSecond = rightRoot;
+		
+		boolean firstChild = true;
+		
+		for (int i = rightRoot + 1; i < N; i ++) {
+			
+			if (nodes[i].getParent().getIndex() == rightRoot &&
+				!firstChild) {
+				endOfLeftTreeSecond = i;
+				break;
+			}
+			
+			if(firstChild) {firstChild = false;}
+		}
+		
+		//compare
+		
+		int [] hit = new int[N]; 
+		int hitindex = 0;
+		
+		for (int i = startOfLeftTree; i < endOfLeftTree; i ++) {
+			
+			for (int j = rightRoot + 1; j < endOfLeftTreeSecond; j ++) {
+			
+				if (nodes[i] == nodes[j]) {
+					
+					hit[hitindex] = i;
+				}
+			}
+		}
 	}
 	
 	@Override
