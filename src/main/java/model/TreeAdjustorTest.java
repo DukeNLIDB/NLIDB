@@ -5,7 +5,8 @@ import java.util.List;
 
 public class TreeAdjustorTest {
 	public static void numberOfInvalidNodesTest(){
-		//construct a tree in the paper, current test case is Figure 3 (c), output should be 0
+		//construct a tree in the paper, 
+		//current test case is Figure 3 (a), output should be 3 (node 6 should not be invalid)
 		ParseTree T = new ParseTree();
 		T.N = 9;
 		T.nodes = new Node[T.N];
@@ -17,10 +18,10 @@ public class TreeAdjustorTest {
 		nodes[1].info = new NodeInfo("SN","SELECT");
 		nodes[2] = new Node(2, "author", "--");
 		nodes[2].info = new NodeInfo("NN", "Author");
-		nodes[3] = new Node(3, "more", "--");
-		nodes[3].info = new NodeInfo("ON", "Title");
-		nodes[4] = new Node(4, "paper", "--");
-		nodes[4].info = new NodeInfo("NN", ">");
+		nodes[3] = new Node(3, "paper", "--");
+		nodes[3].info = new NodeInfo("NN", ">");
+		nodes[4] = new Node(4, "more", "--");
+		nodes[4].info = new NodeInfo("ON", "Title");
 		nodes[5] = new Node(5, "Bob", "--");
 		nodes[5].info = new NodeInfo("VN", "Author");
 		nodes[6] = new Node(6, "VLDB", "--");
@@ -32,22 +33,22 @@ public class TreeAdjustorTest {
 		
 		nodes[0].children.add(nodes[1]);
 		nodes[1].parent = nodes[0];
-		nodes[0].children.add(nodes[3]);
-		nodes[3].parent = nodes[0];
 		nodes[1].children.add(nodes[2]);
 		nodes[2].parent = nodes[1];
+		nodes[2].children.add(nodes[3]);
+		nodes[3].parent = nodes[2];
+		nodes[2].children.add(nodes[5]);
+		nodes[5].parent = nodes[2];
+		nodes[2].children.add(nodes[7]);
+		nodes[7].parent = nodes[2];
 		nodes[3].children.add(nodes[4]);
 		nodes[4].parent = nodes[3];
-		nodes[3].children.add(nodes[5]);
-		nodes[5].parent = nodes[3];
-		nodes[4].children.add(nodes[6]);
-		nodes[6].parent = nodes[4];
-		nodes[4].children.add(nodes[7]);
-		nodes[7].parent = nodes[4];
+		nodes[5].children.add(nodes[6]);
+		nodes[6].parent = nodes[5];
 		nodes[7].children.add(nodes[8]);
 		nodes[8].parent = nodes[7];
 		
-		System.out.println(T.numberOfInvalidNodes(T)+"\n");
+		System.out.println(SyntacticEvaluator.numberOfInvalidNodes(T)+"\n");
 		for (int i = 1; i < T.N; i++){
 			if (nodes[i].isInvalid)
 				System.out.println(i);
@@ -164,9 +165,9 @@ public class TreeAdjustorTest {
 
 	public static void main(String[] args) {
 		//test mergeLNQN and numberOfInvalidNodes methods
-		//numberOfInvalidNodesTest();
+		numberOfInvalidNodesTest();
 		//mergeLNQNTest();
-		adjustorTest();
+		//adjustorTest();
 	}
 
 }
