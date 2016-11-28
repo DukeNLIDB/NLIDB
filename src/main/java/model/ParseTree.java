@@ -178,10 +178,11 @@ public class ParseTree implements IParseTree {
 			}
 		}
 		int rightRoot = endOfLeftTree + 1;
-		implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
+		int endOfMidTree = implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
+		implicitHelper(rightRoot + 1, endOfMidTree, endOfMidTree);
 	}
 	
-	public void implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
+	public int implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
 		
 		int startOfCurrentTree = rightRoot + 1;
 		int endOfCurrentTree = rightRoot;
@@ -211,7 +212,7 @@ public class ParseTree implements IParseTree {
 		}
 		
 		//insert
-		
+			
 		for (int j = startOfLeftTree; j < endOfLeftTree; j ++) {
 			boolean found = false;
 			for (int i = 0; i < hitiindex; i ++) {
@@ -224,9 +225,12 @@ public class ParseTree implements IParseTree {
 			
 			if (!found) {
 				modNodes(nodes[j], endOfCurrentTree);
+				endOfCurrentTree ++;
+				N ++;
 			}
 		}
 		
+		return endOfCurrentTree;
 	}
 	
 	public void modNodes (Node n, int endOfCurrentTree) {
