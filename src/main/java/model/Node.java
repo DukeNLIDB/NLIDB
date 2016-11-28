@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -99,7 +100,30 @@ public class Node {
 	public Node getParent() {return parent;}
 	public void setParent(Node parent) {this.parent = parent;}
 
-	
+	/**
+	 * Generate an array of the nodes tree with this as root
+	 * using pre-order traversal;
+	 * @return
+	 */
+	public Node[] genNodesArray() {
+		List<Node> nodesList = new ArrayList<>();
+		LinkedList<Node> stack = new LinkedList<>();
+		stack.push(this);
+		while (!stack.isEmpty()) {
+			Node curr = stack.pop();
+			nodesList.add(curr);
+			List<Node> currChildren = curr.getChildren();
+			for (int i = currChildren.size()-1; i >= 0; i--) {
+				stack.push(currChildren.get(i));	
+			}
+		}
+		int N = nodesList.size();
+		Node[] nodes = new Node[N];
+		for (int i = 0; i < N; i++) {
+			nodes[i] = nodesList.get(i);
+		}
+		return nodes;
+	}
 	
 	/**
 	 * Only includes posTag, word, info, and children.
@@ -121,7 +145,6 @@ public class Node {
 		return result;
 	}
 
-	
 	/**
 	 * Only considers word, posTag, info, and children (recursively).
 	 * See whether two trees represented by two nodes are equal.

@@ -13,21 +13,12 @@ import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.TypedDependency;
 
 public class ParseTree implements IParseTree {
-	// TODO: all fields should be private in final version.
-	
-	/**
-	 * Number of nodes in the ParseTree.
-	 */
-	int N;
 	
 	/**
 	 * Order of parse tree reformulation (used in getAdjustedTrees())
 	 */
 	int edit;
-	/**
-	 * An array of nodes, with the order in the sentence.
-	 */
-	Node[] nodes;
+	// We no longer use an array to store the nodes!
 	/**
 	 * Root Node. Supposed to be "ROOT".
 	 */
@@ -57,8 +48,8 @@ public class ParseTree implements IParseTree {
 		GrammaticalStructure gs = parser.parser.predict(tagged);
 		
 		// Reading the parsed sentence into ParseTree
-		N = sentence.size()+1;
-		nodes = new Node[3 * N];
+		int N = sentence.size()+1;
+		Node[] nodes = new Node[N];
 		root = new Node(0, "ROOT", "ROOT");
 		nodes[0] = root;
 		for (int i = 0; i < N-1; i++) {
@@ -97,13 +88,15 @@ public class ParseTree implements IParseTree {
 			}
 		}
 		return tree;
-		
 	}
 
-
+	public ParseTree(Node node) {
+		root = node.clone();
+	}
+	
 	@Override
 	public int size() {
-		return N;
+		return root.genNodesArray().length;
 	}
 
 	@Override
@@ -149,23 +142,6 @@ public class ParseTree implements IParseTree {
 		}
 		// Remove meaningless nodes.
 		removeMeaninglessNodes(root);
-		// Put nodes back in Node[] using pre-order traversal
-		List<Node> nodesList = new ArrayList<>();
-		LinkedList<Node> stack = new LinkedList<>();
-		stack.push(root);
-		while (!stack.isEmpty()) {
-			Node curr = stack.pop();
-			nodesList.add(curr);
-			List<Node> currChildren = curr.getChildren();
-			for (int i = currChildren.size()-1; i >= 0; i--) {
-				stack.push(currChildren.get(i));	
-			}
-		}
-		N = nodesList.size();
-		nodes = new Node[N];
-		for (int i = 0; i < N; i++) {
-			nodes[i] = nodesList.get(i);
-		}
 	}
 	
 	@Override
@@ -332,19 +308,41 @@ public class ParseTree implements IParseTree {
 		return true;
 	}
 
+	/**
+	 * Return an array of nodes in the tree, shallow copy.
+	 * @return
+	 */
+	public Node[] genNodesArray() {
+		return root.genNodesArray();
+	}
+	
+	/**
+	 * Pre-order iterator
+	 * @author keping
+	 */
 	public class ParseTreeIterator implements Iterator<Node> {
-		int i = 1;
-		@Override
-		public boolean hasNext() {
-			return i < N; 
+		LinkedList<Node> stack = new LinkedList<>();
+		ParseTreeIterator() {
+			stack.push(root);
 		}
 		@Override
-		public Node next() { return nodes[i++]; }
+		public boolean hasNext() {
+			return !stack.isEmpty(); 
+		}
+		@Override
+		public Node next() {
+			Node curr = stack.pop();
+			List<Node> children = curr.getChildren();
+			for (int i = children.size()-1; i >= 0; i--) {
+				stack.push(children.get(i));
+			}
+			return curr;
+		}
 	}
 	
 	/**
 	 * The default iterator in ParseTree returns the Nodes
-	 * using their order in the sentence.
+	 * using pre-order of the tree.
 	 */
 	@Override
 	public ParseTreeIterator iterator() { return new ParseTreeIterator(); }
@@ -356,9 +354,14 @@ public class ParseTree implements IParseTree {
 	 */
 	public String getSentence() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(nodes[1].getWord());
-		for (int i = 2; i < N; i++) {
-			sb.append(" ").append(nodes[i].getWord());
+		boolean first = true;
+		for (Node node : this) {
+			if (first) {
+				sb.append(node.getWord());
+				first = false;
+			} else {
+				sb.append(" ").append(node.getWord());
+			}
 		}
 		return sb.toString();
 	}

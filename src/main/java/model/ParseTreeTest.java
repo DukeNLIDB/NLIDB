@@ -46,9 +46,7 @@ public class ParseTreeTest {
 	public static void testTranslation1() {
 		// (1) Let's construct the perfect ParseTree for testing.
 		ParseTree tree = new ParseTree();
-		tree.N = 6;
-		tree.nodes = new Node[tree.N];
-		Node[] nodes = tree.nodes;
+		Node[] nodes = new Node[6];
 
 		nodes[0] = new Node(0, "ROOT", "ROOT");
 		nodes[0].info = new NodeInfo("ROOT","ROOT");
@@ -150,7 +148,7 @@ public class ParseTreeTest {
 		System.out.println(tree);
 		
 		// Set NodeInfo
-		Node[] nodes = tree.nodes;
+		Node[] nodes = tree.genNodesArray();
 		nodes[1].info = new NodeInfo("SN", "SELECT");
 		nodes[2].info = new NodeInfo("UNKNOWN", "meaningless");
 		nodes[3].info = new NodeInfo("NN", "in.title");
