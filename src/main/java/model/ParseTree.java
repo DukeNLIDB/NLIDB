@@ -89,7 +89,7 @@ public class ParseTree implements IParseTree {
 		int index = 0;
 		while (!stack.isEmpty()){
 			Node currentNode = stack.poll();
-			tree.nodes[index++] = currentNode.clone();
+			tree.nodes[index++] = currentNode;
 			List<Node> children = currentNode.getChildren();
 			int numOfChildren = children.size();
 			for (int i = numOfChildren-1; i>=0; i--){
@@ -97,6 +97,7 @@ public class ParseTree implements IParseTree {
 			}
 		}
 		return tree;
+		
 	}
 
 
@@ -297,7 +298,7 @@ public class ParseTree implements IParseTree {
 	}
 
 	@Override
-	public List<IParseTree> getAdjustedTrees() {
+	public List<ParseTree> getAdjustedTrees() {
 		return TreeAdjustor.getAdjustedTrees(this);
 	}	
 	
@@ -383,6 +384,10 @@ public class ParseTree implements IParseTree {
 		sb.append("Sentence: ").append(getSentence()).append("\n");
 		sb.append(nodeToString(root));
 		return sb.toString();
+	}
+	
+	public int getScore(){
+		return SyntacticEvaluator.numberOfInvalidNodes(this);
 	}
 	
 }

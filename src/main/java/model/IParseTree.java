@@ -46,7 +46,7 @@ public interface IParseTree extends Iterable<Node> {
 	 * Get a list of structurally adjusted parse trees.
 	 * @return a list of adjusted trees
 	 */
-	public List<IParseTree> getAdjustedTrees();
+	public List<ParseTree> getAdjustedTrees();
 	
 	/**
 	 * Translate the parse tree into an SQL query.

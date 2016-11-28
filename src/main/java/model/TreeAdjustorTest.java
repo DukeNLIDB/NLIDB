@@ -158,7 +158,6 @@ public class TreeAdjustorTest {
 		System.out.println("Output trees:");
 		for (int j = 0; j < treeList.size(); j++){
 			System.out.println("Tree "+j+" :");
-			System.out.println(treeList.get(j).toString());
 		}
 		//int number = adjustedTrees.size();
 		//System.out.println(number);
@@ -204,15 +203,16 @@ public class TreeAdjustorTest {
 		nodes[7].parent = nodes[5];
 		
 		System.out.println("===========test for Running getAdjustedTrees() in TreeAdjustor===========");
-		System.out.println("debugging...");
-		List<IParseTree> result = TreeAdjustor.getAdjustedTrees(T);
+		System.out.println("Number of possible trees for choice:");
+		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(T);
+		System.out.println(result.size());
 	}
 
 	public static void main(String[] args) {
-		numberOfInvalidNodesTest();
-		mergeLNQNTest();
-		adjustTest();
-		//getAdjustedTreesTest();
+		//numberOfInvalidNodesTest();
+		//mergeLNQNTest();
+		//adjustTest();
+		getAdjustedTreesTest();
 	}
 
 }

@@ -104,10 +104,11 @@ public class TreeAdjustor {
 		return null;
 	}
 	
-	public static List<IParseTree> getAdjustedTrees(ParseTree tree) {
-		List<IParseTree> results = new ArrayList<IParseTree>();
-		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>();
+	public static List<ParseTree> getAdjustedTrees(ParseTree tree) {
+		List<ParseTree> results = new ArrayList<ParseTree>();
+		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> (t1.getScore()-t2.getScore()));
 		queue.add(tree);
+		results.add(tree);
 		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
 		H.put(tree.hashCode(), tree);
 		tree.setEdit(0);
@@ -117,16 +118,8 @@ public class TreeAdjustor {
 			List<ParseTree> treeList = TreeAdjustor.adjust(oriTree);
 			double treeScore = SyntacticEvaluator.numberOfInvalidNodes(oriTree);
 			
-			System.out.println(treeList.size());
-			for (int j = 0; j < treeList.size(); j++){
-				System.out.println("Tree "+j+" in treeList:");
-				System.out.println(treeList.get(j).toString());
-			}
-			
 			for (int i = 0; i < treeList.size(); i++){
 				ParseTree currentTree = treeList.get(i);
-				System.out.println("current tree:");
-				System.out.println(currentTree.toString());
 				int hashValue = currentTree.hashCode();
 				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
 					H.put(hashValue, currentTree);

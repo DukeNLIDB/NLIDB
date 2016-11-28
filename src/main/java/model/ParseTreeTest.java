@@ -1,5 +1,6 @@
 package model;
 
+import java.util.List;
 
 public class ParseTreeTest {
 
@@ -50,6 +51,7 @@ public class ParseTreeTest {
 		Node[] nodes = tree.nodes;
 
 		nodes[0] = new Node(0, "ROOT", "ROOT");
+		nodes[0].info = new NodeInfo("ROOT","ROOT");
 		nodes[1] = new Node(1, "return", "--"); // posTag not useful
 		nodes[1].info = new NodeInfo("SN", "SELECT");
 		nodes[2] = new Node(2, "titles", "--");
@@ -71,7 +73,7 @@ public class ParseTreeTest {
 		nodes[4].parent = nodes[2];
 		nodes[4].children.add(nodes[5]);
 		nodes[5].parent = nodes[4];
-		
+/*		
 		System.out.println(tree);
 		
 		// (2) Do the translation.
@@ -79,6 +81,37 @@ public class ParseTreeTest {
 		
 		// (3) Print out the query and see.
 		System.out.println(query);
+*/
+/*
+		System.out.println("===========test for Running SyntacticEvaluator.numberOfInvalidNodes===========");
+		System.out.println("Input tree: "+tree.toString());
+		System.out.println("Number of Invalid nodes: "+SyntacticEvaluator.numberOfInvalidNodes(tree)+"\n");
+		System.out.println("Invalid nodes: ");
+		for (int i = 1; i < tree.N; i++){
+			if (nodes[i].isInvalid)
+				System.out.println(nodes[i]);
+		}
+
+		System.out.println("===========test for Running mergeLNQN===========");
+		System.out.println("Input tree: "+tree.toString());
+		ParseTree newTree = tree.mergeLNQN();
+		System.out.println("Output tree: "+newTree.toString());
+		System.out.println("===========test for Running adjust() in TreeAdjustor===========");
+		System.out.println("Input tree: "+tree.toString());
+		List<ParseTree> treeList = TreeAdjustor.adjust(tree);
+		System.out.println("Output size: "+treeList.size());
+		System.out.println("Output trees:");
+		for (int j = 0; j < treeList.size(); j++){
+			System.out.println("Tree "+j+" :");
+			System.out.println(treeList.get(j).toString());
+		}
+		*/
+		System.out.println("===========test for Running getAdjustedTrees() in TreeAdjustor===========");
+		System.out.println("Number of possible trees for choice:");
+		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(tree);
+		System.out.println(result.size());
+		for (ParseTree t:result)
+			System.out.println(t);
 	}
 	
 	/**
@@ -144,7 +177,7 @@ public class ParseTreeTest {
 	
 	public static void main(String[] args) {
 		testTranslation1();
-		removeMeaninglessNodesTest();
+		//removeMeaninglessNodesTest();
 	}
 	
 }
