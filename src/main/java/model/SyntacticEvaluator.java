@@ -255,9 +255,10 @@ public class SyntacticEvaluator {
 	 * @return
 	 */
 	public static int numberOfInvalidNodes (ParseTree T){	
+		Node[] nodes = T.root.genNodesArray();
 		int numOfInvalid = 0;   //number of invalid tree nodes
-		for (int i=1; i<T.size(); i++){  //starting from SN (leave out ROOT)
-			Node curNode = T.nodes[i];
+		for (int i=0; i<T.size(); i++){  //starting from SN (leave out ROOT)
+			Node curNode = nodes[i];
 			String curType = curNode.getInfo().getType();
 			if (curType.equals("ROOT")){ //ROOT
 				numOfInvalid = numOfInvalid + checkROOT(curNode);

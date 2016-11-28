@@ -68,26 +68,6 @@ public class Node {
 		return clone(this);
 	}
 	
-	public static void preOrder(Node node){
-		if (node == null) return;
-		System.out.print(node+" ");
-		for (Node child: node.getChildren()){
-			preOrder(child);
-		}
-		System.out.println("\n");
-	}
-	
-	public static int count(Node root){
-		int number = 0;
-		if (root != null) {
-			number++;
-			for (Node child: root.getChildren()){
-				number = number + count(child);
-			}
-		}
-		return number;
-	}
-	
 	public int getIndex() { return index; }
 	public void setIndex(int index) { this.index = index; }
 	public NodeInfo getInfo() { return info; }

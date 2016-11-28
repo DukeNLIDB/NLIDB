@@ -64,31 +64,6 @@ public class ParseTree implements IParseTree {
 			nodes[from].children.add(nodes[to]);
 		}
 	}
-	
-	/**
-	 * convert a root node representation to ParseTree representation
-	 * @param root
-	 * @return
-	 */
-	public static ParseTree nodeToTree(Node root){
-		ParseTree tree = new ParseTree();
-		tree.root = root;
-		tree.N = Node.count(root);
-		tree.nodes = new Node[tree.N];
-		LinkedList<Node> stack = new LinkedList<Node>();
-		stack.push(tree.root);
-		int index = 0;
-		while (!stack.isEmpty()){
-			Node currentNode = stack.poll();
-			tree.nodes[index++] = currentNode;
-			List<Node> children = currentNode.getChildren();
-			int numOfChildren = children.size();
-			for (int i = numOfChildren-1; i>=0; i--){
-				stack.push(children.get(i));
-			}
-		}
-		return tree;
-	}
 
 	public ParseTree(Node node) {
 		root = node.clone();
@@ -254,7 +229,8 @@ public class ParseTree implements IParseTree {
 	
 	@Override
 	public ParseTree mergeLNQN(){   
-		for (int i=0; i<N; i++){
+		Node[] nodes = this.root.genNodesArray();
+		for (int i=0; i<this.size(); i++){
 			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
 				String word = "("+nodes[i].getWord()+")";
 				String parentWord = nodes[i].getParent().getWord()+word;
@@ -262,7 +238,7 @@ public class ParseTree implements IParseTree {
 				removeNode(nodes[i]);
 			}
 		}
-		ParseTree tree = nodeToTree(root);
+		ParseTree tree = new ParseTree (root);
 		return tree;
 	}
 

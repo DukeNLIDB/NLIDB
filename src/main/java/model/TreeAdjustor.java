@@ -17,12 +17,13 @@ public class TreeAdjustor {
 	 * @return
 	 */
 	public static List<ParseTree> adjust (ParseTree tree){ 
+		Node[] nodes = tree.genNodesArray();
 		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
 		List<Node> noChildNodes = new LinkedList<Node>();
 		for (int i = 0; i<tree.size(); i++){
-			if (tree.nodes[i].getChildren().size() == 0 && !tree.nodes[i].getInfo().getType().equals("ROOT"))
-				noChildNodes.add(tree.nodes[i]);
+			if (nodes[i].getChildren().size() == 0 && !nodes[i].getInfo().getType().equals("ROOT"))
+				noChildNodes.add(nodes[i]);
 		}
 		
 		int numOfNoChildNodes = noChildNodes.size();
@@ -33,7 +34,7 @@ public class TreeAdjustor {
 		Node moveNodeParent = moveNode.getParent();
 		
 		for (int i = 0; i < tree.size(); i++){
-			Node curNode = tree.nodes[i];
+			Node curNode = nodes[i];
 			List<Node> children = curNode.getChildren();
 			int childrenSize = children.size();   //number of children of the target node
 			if (!curNode.equals(moveNodeParent) && !curNode.equals(moveNode)){ //Object.equals(Object): value comparison rather than reference comparison
@@ -61,7 +62,7 @@ public class TreeAdjustor {
 	 * @return
 	 */
 	static ParseTree moveNode (Node r, Node m, Node c, int childrenSize, int i){	
-		Node root = r.clone();
+		Node root = r.clone();    //root of a new tree
 		Node moveNode = findNode(root, m); 
 		Node currentNode = findNode(root, c);
 		Node moveNodeParent = moveNode.getParent();
@@ -82,8 +83,7 @@ public class TreeAdjustor {
 			moveNode.setParent(currentNode);
 			downChild.setParent(moveNode);
 		}
-		
-		ParseTree tree = ParseTree.nodeToTree(root);
+		ParseTree tree = new ParseTree(root);
 		return tree;
 	}
 	
