@@ -173,7 +173,6 @@ public class ParseTree implements IParseTree {
 				removeNode(nodes[i]);
 			}
 		}
-		
 		generateNewTree();
 	}
 
@@ -188,11 +187,11 @@ public class ParseTree implements IParseTree {
 		List<Node> tempTree = new ArrayList<Node>();
 		LinkedList<Node> queue = new LinkedList<Node>();
 		queue.add(root);
-		System.out.println(root);
+		//System.out.println(root);
 		//add nodes from original tree into tempTree in pre order
 		while (!queue.isEmpty()){
 			Node curNode = queue.poll();
-			System.out.println(curNode);
+			//System.out.println(curNode);
 			tempTree.add(curNode);
 			List<Node> curChildren = curNode.getChildren();
 			int curChildrenSize = curChildren.size();
@@ -201,7 +200,8 @@ public class ParseTree implements IParseTree {
 		}
 		N = tempTree.size();
 		for (int i = 0; i < N; i++){
-			nodes[i] = tempTree.get(i);
+			nodes[i]=tempTree.get(i);
+			nodes[i].index = i;
 		}
 		root = nodes[0];
 	}
@@ -237,53 +237,209 @@ public class ParseTree implements IParseTree {
 	}
 	
 	
-	List<ParseTree> adjustor (ParseTree T){ //move one random terminal node (without children) to anywhere possible
+	List<ParseTree> adjustor (){ //move one random terminal node (without children) to anywhere possible
 		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
 		List<Node> noChildNodes = new LinkedList<Node>();
-		for (int i = 0; i<T.size(); i++){
-			if (T.nodes[i].getChildren() == null)
-				noChildNodes.add(T.nodes[i]);
+		for (int i = 0; i<this.size(); i++){
+			if (this.nodes[i].getChildren().size() == 0)
+				noChildNodes.add(this.nodes[i]);
 		}
+		
 		int numOfNoChildNodes = noChildNodes.size();
 		Random r = new Random();
 		int index = r.nextInt(numOfNoChildNodes);  //selected terminal node to be moved, index from 0 to numOfChildNodes-1
 		Node moveNode = noChildNodes.get(index);
+		int moveNodeIndex = moveNode.getIndex();
+		System.out.println(moveNode);
+		System.out.println(moveNodeIndex);
 		Node moveNodeParent = moveNode.getParent();
+		//System.out.println(moveNodeParent+"\n");
 		
-		for (int i = 0; i < T.size(); i++){
-			if (!T.nodes[i].equals(moveNodeParent)){ //Object.equals(Object): value comparison rather than reference comparison
-				Node curNode = T.nodes[i];
+		for (int i = 0; i < this.size(); i++){
+			if (!this.nodes[i].equals(moveNodeParent) && !this.nodes[i].equals(moveNode)){ //Object.equals(Object): value comparison rather than reference comparison
+				Node curNode = this.nodes[i];
 				List<Node> curChildren = curNode.getChildren();
-				curNode.setChild(moveNode);
-				for (Node curChild: curChildren)
-					moveNode.setChild(curChild);
-				treeList.add(generateNewTree(T));
+				int curChildrenSize = curChildren.size();
+				if (curChildrenSize == 0){
+					treeList.add(moveNode(this,moveNodeIndex,i,curChildrenSize,0));
+					System.out.println("T after calling moveNode(): ");
+					for (int n = 0; n<this.N; n++){
+						System.out.println(this.nodes[n].getWord()+this.nodes[n].getIndex());
+					}
+					for (int n = 0; n<this.N; n++){
+						List<Node> children = this.nodes[n].children;
+						int sizeOfChildren = children.size();
+						if (sizeOfChildren != 0){
+							for (int j=0; j<sizeOfChildren; j++)
+								System.out.println(n+"=>"+children.get(j).getIndex());
+						}
+					}
+				}
+				else {
+					for (int j = 0; j <= curChildrenSize; j++){
+						treeList.add(moveNode(this,moveNodeIndex,i,curChildrenSize,j));
+						System.out.println("T after calling moveNode(): ");
+						for (int n = 0; n<this.N; n++){
+							System.out.println(this.nodes[n].getWord()+this.nodes[n].getIndex());
+						}
+						for (int n = 0; n<this.N; n++){
+							List<Node> children = this.nodes[n].children;
+							int sizeOfChildren = children.size();
+							if (sizeOfChildren != 0){
+								for (int k=0; k<sizeOfChildren; k++)
+									System.out.println(n+"=>"+children.get(k).getIndex());
+							}
+						}
+					}
+				}
 			}
+			//ParseTree adjustedTree = T.generateNewTree1();
+			//ParseTree adjustedTree = new ParseTree();
 		}
+		//return adjustedTree;
 		return treeList;
 	}
 	
-	ParseTree generateNewTree(ParseTree T){
+	ParseTree moveNode (ParseTree T, int MoveNode, int targetNode, int childrenSize, int i){
+		System.out.println("T At the beginning of moveNode: "+MoveNode+" "+targetNode+" "+childrenSize+" "+i);
+		for (int n = 0; n<T.N; n++){
+			System.out.print(T.nodes[n]);
+		}
+		for (int n = 0; n<T.N; n++){
+			List<Node> children = T.nodes[n].children;
+			int sizeOfChildren = children.size();
+			if (sizeOfChildren != 0){
+				for (int j=0; j<sizeOfChildren; j++)
+					System.out.println(n+"=>"+children.get(j).getIndex());
+			}
+		}
+		System.out.println("\n");
+		
+		ParseTree temp = T.generateNewTree1();
+		System.out.println("Getting T from generateNewTree1() ");
+		for (int n = 0; n<T.N; n++){
+			System.out.print(T.nodes[n]);
+		}
+		for (int n = 0; n<T.N; n++){
+			List<Node> children = T.nodes[n].children;
+			int sizeOfChildren = children.size();
+			if (sizeOfChildren != 0){
+				for (int j=0; j<sizeOfChildren; j++)
+					System.out.println(n+"=>"+children.get(j).getIndex());
+			}
+		}
+		System.out.println("\n");
+		//int indexOfMoveNode = temp.nodes.indexOf(moveNode);
+		Node tempMoveNode = temp.nodes[MoveNode];
+		System.out.println("tempMoveNode: "+tempMoveNode);
+		//System.out.println(tempMoveNode);
+		Node moveNodeParent = tempMoveNode.getParent();
+		moveNodeParent.getChildren().remove(tempMoveNode);
+		tempMoveNode.setParent(null);
+		
+		Node curNode = temp.nodes[targetNode];
+		
+		if (childrenSize == i){    //add a new child to the target node
+			curNode.setChild(tempMoveNode);
+			tempMoveNode.setParent(curNode);
+		}
+		else if (i < childrenSize){   // convert ith child to this node
+			Node downChild = curNode.getChildren().get(i);
+			System.out.println("downChild: "+downChild);
+			curNode.getChildren().remove(downChild);
+			curNode.getChildren().add(tempMoveNode);
+			tempMoveNode.getChildren().add(downChild);
+			System.out.println(tempMoveNode.getChildren());
+			tempMoveNode.setParent(curNode);
+			downChild.setParent(tempMoveNode);
+		}
+		
+		System.out.println("T after node moves and befor generateNewTree()");
+		for (int n = 0; n<T.N; n++){
+			System.out.print(T.nodes[n]);
+		}
+		for (int n = 0; n<T.N; n++){
+			System.out.println(T.nodes[n].parent+"=>"+T.nodes[n]);
+		}
+		System.out.println("\n");
+		
+		System.out.println("temp after node moves and befor generateNewTree()");
+		for (int n = 0; n<temp.N; n++){
+			System.out.print(temp.nodes[n]);
+		}
+		for (int n = 0; n<temp.N; n++){
+			System.out.println(temp.nodes[n].parent+"=>"+T.nodes[n]);
+		}
+		System.out.println("\n");
+		
+		temp.generateNewTree();  //change temp, and return temp
+		System.out.println("T at the end of moveNode() ");
+		for (int n = 0; n<T.N; n++){
+			System.out.print(T.nodes[n]);
+		}
+		for (int n = 0; n<T.N; n++){
+			List<Node> children = T.nodes[n].children;
+			int sizeOfChildren = children.size();
+			if (sizeOfChildren != 0){
+				for (int j=0; j<sizeOfChildren; j++)
+					System.out.println(n+"=>"+children.get(j).getIndex());
+			}
+		}
+		System.out.println("\n");
+		return temp;
+	}
+	
+	ParseTree generateNewTree1(){
 		ParseTree newTree = new ParseTree();
 		List<Node> tempTree = new ArrayList<Node>();
 		LinkedList<Node> queue = new LinkedList<Node>();
-		queue.add(T.root);
+		queue.add(new Node(this.root));
+		System.out.println("Calling tree of generateNewTree1():");
+		for (int n = 0; n<this.N; n++){
+			System.out.print(this.nodes[n]);
+		}
+		for (int n = 0; n<this.N; n++){
+			List<Node> children = this.nodes[n].children;
+			int sizeOfChildren = children.size();
+			if (sizeOfChildren != 0){
+				for (int j=0; j<sizeOfChildren; j++)
+					System.out.println(n+"=>"+children.get(j).getIndex());
+			}
+		}
+		System.out.println("\n");
 		//add nodes from original tree into tempTree in pre order
 		while (!queue.isEmpty()){
 			Node curNode = queue.poll();
-			System.out.println(curNode);
+			System.out.println("In the pre order traversal: "+curNode);
 			tempTree.add(curNode);
+			//System.out.println(tempTree);
 			List<Node> curChildren = curNode.getChildren();
 			int curChildrenSize = curChildren.size();
-			for (int i = curChildrenSize-1; i >= 0; i--)
-				queue.push(curChildren.get(i));
+			for (int i = curChildrenSize-1; i >= 0; i--){
+				queue.push(new Node(curChildren.get(i)));
+			}
 		}
 		newTree.N = tempTree.size();
+		newTree.nodes = new Node[newTree.N];
 		for (int i = 0; i < newTree.N; i++){
-			newTree.nodes[i] = tempTree.get(i);
+			newTree.nodes[i]=tempTree.get(i);
+			newTree.nodes[i].index = i;
 		}
 		newTree.root = newTree.nodes[0];
+		System.out.println("Calling tree at the end of generateNewTree1():");
+		for (int n = 0; n<this.N; n++){
+			System.out.print(this.nodes[n]);
+		}
+		for (int n = 0; n<this.N; n++){
+			List<Node> children = this.nodes[n].children;
+			int sizeOfChildren = children.size();
+			if (sizeOfChildren != 0){
+				for (int j=0; j<sizeOfChildren; j++)
+					System.out.println(n+"=>"+children.get(j).getIndex());
+			}
+		}
+		System.out.println("\n");
 		return newTree;
 	}
 	

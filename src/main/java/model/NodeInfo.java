@@ -24,6 +24,11 @@ public class NodeInfo {
 		this(type, value);
 		this.score = score;
 	}
+	public NodeInfo(NodeInfo ni){
+		this.type = ni.type;
+		this.value = ni.value;
+		this.score = ni.score;
+	}
 	@Override
 	public String toString() {
 		return type+": "+value;
