@@ -212,7 +212,7 @@ public class TreeAdjustorTest {
 		numberOfInvalidNodesTest();
 		mergeLNQNTest();
 		adjustTest();
-		//getAdjustedTreesTest();
+		getAdjustedTreesTest();
 	}
 
 }
