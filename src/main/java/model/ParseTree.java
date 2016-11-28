@@ -301,6 +301,15 @@ public class ParseTree implements IParseTree {
 		return treeList;
 	}
 	
+	/**
+	 * 
+	 * @param T
+	 * @param MoveNode
+	 * @param targetNode
+	 * @param childrenSize
+	 * @param i
+	 * @return
+	 */
 	ParseTree moveNode (ParseTree T, int MoveNode, int targetNode, int childrenSize, int i){
 		System.out.println("T At the beginning of moveNode: "+MoveNode+" "+targetNode+" "+childrenSize+" "+i);
 		for (int n = 0; n<T.N; n++){
@@ -394,7 +403,7 @@ public class ParseTree implements IParseTree {
 		ParseTree newTree = new ParseTree();
 		List<Node> tempTree = new ArrayList<Node>();
 		LinkedList<Node> queue = new LinkedList<Node>();
-		queue.add(new Node(this.root));
+		
 		System.out.println("Calling tree of generateNewTree1():");
 		for (int n = 0; n<this.N; n++){
 			System.out.print(this.nodes[n]);

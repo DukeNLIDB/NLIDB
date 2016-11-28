@@ -42,23 +42,29 @@ public class Node {
 	//for testing purpose
 	boolean isInvalid = false;
 	
-	public Node(int index, String word, String posTag) {
+	public Node(int index, String word, String posTag){
+		this(index, word, posTag, null);
+	}
+	
+	public Node(int index, String word, String posTag, NodeInfo info) {
 		this.index = index;
 		this.word = word;
 		this.posTag = posTag;
+		this.info = info;
 	}
 	
-	public Node(Node n){
-		this.index = n.index;
-		this.word = n.word;
-		this.posTag = n.posTag;
-		this.info = n.info;
-		if (n.parent == null)
-			this.parent = n.parent;
-		else
-			this.parent = new Node(n.parent);
-		for (int i = 0; i < n.children.size(); i++)
-			this.children.add(new Node(n.children.get(i)));
+	private Node clone(Node node){
+		if (node == null) return null;
+		Node copy = new Node(node.index, node.word, node.posTag, node.info);
+		for (Node child : node.children){
+			Node copyChild = clone(child);
+			copyChild.parent = copy;
+			copy.children.add(copyChild);
+		}
+		return copy;
+	}
+	public Node clone(){
+		return clone(this);
 	}
 	
 	public int getIndex() { return index; }
