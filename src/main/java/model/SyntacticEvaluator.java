@@ -206,6 +206,8 @@ public class SyntacticEvaluator {
 	 */
 	private static int checkFN(Node node){
 		int numOfInvalid = 0;
+		System.out.println(node.getParent());
+		System.out.println(node.getParent().getInfo());
 		String parentType = node.getParent().getInfo().getType();
 		List<Node> children = node.getChildren();
 		int sizeOfChildren = children.size();
@@ -256,8 +258,7 @@ public class SyntacticEvaluator {
 	 */
 	public static int numberOfInvalidNodes (ParseTree T){	
 		int numOfInvalid = 0;   //number of invalid tree nodes
-		for (int i=1; i<T.size(); i++){  //starting from SN (leave out ROOT)
-			Node curNode = T.nodes[i];
+		for (Node curNode : T) {
 			String curType = curNode.getInfo().getType();
 			if (curType.equals("ROOT")){ //ROOT
 				numOfInvalid = numOfInvalid + checkROOT(curNode);

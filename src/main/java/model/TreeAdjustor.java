@@ -2,108 +2,142 @@ package model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Random;
+import java.util.Set;
 
 public class TreeAdjustor {
 	
 	private static final int MAX_EDIT = 10;
-
+	
+	
 	/**
-	 * move one random terminal node (without children) to anywhere possible
+	 * Return the node in the tree that equals to the targetNode.
 	 * @param tree
+	 * @param targetNode
 	 * @return
 	 */
-	public static List<ParseTree> adjust (ParseTree tree){ 
-		List<ParseTree> treeList = new ArrayList<ParseTree>();
-		
-		List<Node> noChildNodes = new LinkedList<Node>();
-		for (int i = 0; i<tree.size(); i++){
-			if (tree.nodes[i].getChildren().size() == 0 && !tree.nodes[i].getInfo().getType().equals("ROOT"))
-				noChildNodes.add(tree.nodes[i]);
-		}
-		
-		int numOfNoChildNodes = noChildNodes.size();
-		Random r = new Random();
-		int index = r.nextInt(numOfNoChildNodes);  //selected terminal node to be moved, index from 0 to numOfChildNodes-1
-		Node moveNode = noChildNodes.get(index);
-		//System.out.println(moveNode);
-		Node moveNodeParent = moveNode.getParent();
-		
-		for (int i = 0; i < tree.size(); i++){
-			Node curNode = tree.nodes[i];
-			List<Node> children = curNode.getChildren();
-			int childrenSize = children.size();   //number of children of the target node
-			if (!curNode.equals(moveNodeParent) && !curNode.equals(moveNode)){ //Object.equals(Object): value comparison rather than reference comparison
-				for (int j = 0; j <= childrenSize; j++){
-					treeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
-				}
-			}
-			else if (curNode.equals(moveNodeParent)){
-				for(int j = 0; j < childrenSize; j++){
-					if (!children.get(j).equals(moveNode))
-						treeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
-				}
-			}
-		}
-		return treeList;
-	}
-	
-	/**
-	 * move the selected leaf node as a new child of a node in the tree
-	 * @param r
-	 * @param m
-	 * @param c
-	 * @param childrenSize
-	 * @param i
-	 * @return
-	 */
-	static ParseTree moveNode (Node r, Node m, Node c, int childrenSize, int i){	
-		Node root = r.clone();
-		Node moveNode = findNode(root, m); 
-		Node currentNode = findNode(root, c);
-		Node moveNodeParent = moveNode.getParent();
-		
-		if (childrenSize == i){    //add a new child to the target node
-			moveNodeParent.getChildren().remove(moveNode);
-			moveNode.setParent(null);
-			currentNode.getChildren().add(moveNode);  //TODO:add to the end of ArrayList<Node> children, needs to be added to every position
-			moveNode.setParent(currentNode);
-		}
-		else if (i < childrenSize){   // convert ith child to this node
-			Node downChild = currentNode.getChildren().get(i);
-			moveNodeParent.getChildren().remove(moveNode);
-			moveNode.setParent(null);
-			currentNode.getChildren().add(i,moveNode); //maintain the pre order
-			currentNode.getChildren().remove(downChild);
-			moveNode.getChildren().add(downChild);
-			moveNode.setParent(currentNode);
-			downChild.setParent(moveNode);
-		}
-		
-		ParseTree tree = ParseTree.nodeToTree(root);
-		return tree;
-	}
-	
-	static Node findNode(Node root, Node target){
-		if (root != null){
-			if (root.equals(target)) 
-				return root;
-			else if (!root.equals(target)) {
-				for (Node child: root.getChildren()){
-					Node result = findNode (child, target);
-					if (result != null){
-						return result;
-					}
-				}
-				return null;
-			}
+	private static Node find(ParseTree tree, Node targetNode) {
+		for (Node node : tree) {
+			if (node.equals(targetNode)) { return node; }
 		}
 		return null;
 	}
 	
+	/**
+	 * Swap this parent node and a child node.
+	 * @param parent
+	 * @param child
+	 */
+	private static void swap(Node parent, Node child) {
+		// swap the attributes directly.
+		NodeInfo childInfo = child.info;
+		String childWord = child.word;
+		String childPosTag = child.posTag;
+		child.info = parent.info;
+		child.word = parent.word;
+		child.posTag = parent.posTag;
+		parent.info = childInfo;
+		parent.word = childWord;
+		parent.posTag = childPosTag;
+	}
+	
+	/**
+	 * Make the child node a rightmost sibling of the target Node.
+	 * @param target
+	 * @param child
+	 */
+	private static void makeSibling(Node target, Node child) {
+		List<Node> children = target.getChildren();
+		target.children = new ArrayList<Node>();;
+		for (Node anyChild : children) {
+			if (anyChild != child) { target.getChildren().add(anyChild); }
+		}
+		target.parent.children.add(child);
+		child.parent = target.parent;
+	}
+	
+	/**
+	 * Make a sibling the rightmost child of the target.
+	 * @param target
+	 * @param sibling
+	 */
+	private static void makeChild(Node target, Node sibling) {
+		List<Node> siblings = target.parent.children;
+		target.parent.children = new ArrayList<Node>();
+		for (Node anySibling : siblings) {
+			if (anySibling != sibling) {
+				target.parent.children.add(anySibling);
+			}
+		}
+		target.children.add(sibling);
+		sibling.parent = target;
+	}
+	
+	/**
+	 * <p>Return a list of adjusted trees after one adjustment to the input tree
+	 * at the target Node.</p>
+	 * <p>Four possible adjustments can be made to that node:</p>
+	 * <ol>
+	 *   <li>Swap this node with its child. (all possible positions)</li>
+	 *   <li>Make child its rightmost sibling.</li> 
+	 *   <li>Make sibling its rightmost child.</li>
+	 *   <li>Swap leftmost child with other children</li>
+	 * </ol>
+	 * @param tree
+	 * @param targetNode
+	 * @return
+	 */
+	private static Set<ParseTree> adjust(ParseTree tree, Node target) {
+		Set<ParseTree> adjusted = new HashSet<>();
+		if (target.parent == null) { return adjusted; }
+		// (1) Swap target with its children.
+		for (Node child : target.getChildren()) {
+			ParseTree tempTree = new ParseTree(tree);
+			swap(find(tempTree, target), find(tempTree, child));
+			adjusted.add(tempTree);
+		}
+		// (2) Make child its rightmost sibling.
+		for (Node child : target.getChildren()) {
+			ParseTree tempTree = new ParseTree(tree);
+			makeSibling(find(tempTree, target), find(tempTree, child));
+			adjusted.add(tempTree);
+		}
+		// (3) Make its sibling its rightmost child.
+		for (Node sibling : target.parent.getChildren()) {
+			if (sibling == target) { continue; }
+			ParseTree tempTree = new ParseTree(tree);
+			makeChild(find(tempTree, target), find(tempTree, sibling));
+			adjusted.add(tempTree);
+		}
+		// (4) Swap leftmost child with other children.
+		if (target.getChildren().size() >= 2) {
+			List<Node> children = target.getChildren();
+			for (int i = 1; i < children.size(); i++) {
+				ParseTree tempTree = new ParseTree(tree);
+				swap(find(tempTree, children.get(0)),
+					 find(tempTree, children.get(i)));
+				adjusted.add(tempTree);
+			}
+		}
+		return adjusted;
+	}
+
+	/**
+	 * Return a set of adjusted trees after one adjustment to the input tree.
+	 * @param tree
+	 * @return
+	 */
+	public static List<ParseTree> adjust(ParseTree tree) { 
+		Set<ParseTree> treeList = new HashSet<ParseTree>();
+		for (Node node : tree) {
+			treeList.addAll(adjust(tree, node));
+		}
+		return new ArrayList<ParseTree>(treeList);
+	}
+	
+
 	public static List<ParseTree> getAdjustedTrees(ParseTree tree) {
 		List<ParseTree> results = new ArrayList<ParseTree>();
 		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> (t1.getScore()-t2.getScore()));

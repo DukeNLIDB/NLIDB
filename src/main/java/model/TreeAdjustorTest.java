@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TreeAdjustorTest {
@@ -8,9 +7,7 @@ public class TreeAdjustorTest {
 		//construct a tree in the paper, 
 		//current test case is Figure 3 (a), output should be 3 (node 6 should not be invalid)
 		ParseTree T = new ParseTree();
-		T.N = 9;
-		T.nodes = new Node[T.N];
-		Node[] nodes = T.nodes;
+		Node[] nodes = new Node[9];
 		
 		nodes[0] = new Node(0, "ROOT", "--");
 		nodes[0].info = new NodeInfo("ROOT","ROOT");
@@ -53,7 +50,7 @@ public class TreeAdjustorTest {
 		System.out.println("Input tree: "+T.toString());
 		System.out.println("Number of Invalid nodes: "+SyntacticEvaluator.numberOfInvalidNodes(T)+"\n");
 		System.out.println("Invalid nodes: ");
-		for (int i = 1; i < T.N; i++){
+		for (int i = 1; i < nodes.length; i++){
 			if (nodes[i].isInvalid)
 				System.out.println(nodes[i]);
 		}
@@ -61,9 +58,7 @@ public class TreeAdjustorTest {
 	
 	public static void mergeLNQNTest() {
 		ParseTree T = new ParseTree();
-		T.N = 9;
-		T.nodes = new Node[T.N];
-		Node[] nodes = T.nodes;
+		Node[] nodes = new Node[9];
 		
 		nodes[0] = new Node(0, "ROOT", "--");
 		nodes[0].info = new NodeInfo("ROOT","ROOT");
@@ -110,9 +105,7 @@ public class TreeAdjustorTest {
 	
 	public static void adjustTest(){
 		ParseTree T = new ParseTree();
-		T.N = 9;
-		T.nodes = new Node[T.N];
-		Node[] nodes = T.nodes;
+		Node[] nodes = new Node[9];
 		
 		nodes[0] = new Node(0, "ROOT", "--");
 		nodes[0].info = new NodeInfo("ROOT","ROOT");
@@ -158,16 +151,13 @@ public class TreeAdjustorTest {
 		System.out.println("Output trees:");
 		for (int j = 0; j < treeList.size(); j++){
 			System.out.println("Tree "+j+" :");
+			System.out.println(treeList.get(j));
 		}
-		//int number = adjustedTrees.size();
-		//System.out.println(number);
 	}
 	
 	public static void getAdjustedTreesTest(){
 		ParseTree T = new ParseTree();
-		T.N = 8;
-		T.nodes = new Node[T.N];
-		Node[] nodes = T.nodes;
+		Node[] nodes = new Node[8];
 		
 		nodes[0] = new Node(0, "ROOT", "--");
 		nodes[0].info = new NodeInfo("ROOT","ROOT");
@@ -213,9 +203,9 @@ public class TreeAdjustorTest {
 		//mergeLNQNTest();
 		//adjustTest();
 		numberOfInvalidNodesTest();
-		mergeLNQNTest();
+//		mergeLNQNTest();
 		adjustTest();
-		getAdjustedTreesTest();
+//		getAdjustedTreesTest();
 	}
 
 }

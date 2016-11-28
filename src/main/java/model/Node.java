@@ -13,11 +13,6 @@ public class Node {
 	// TODO: all fields should be private in final version
 	
 	/**
-	 * Index of the node in the sentence corresponding to 
-	 * the ParseTree.
-	 */
-	int index;
-	/**
 	 * Information indicating the corresponding SQL component of the Node.
 	 */
 	NodeInfo info = null;
@@ -48,7 +43,10 @@ public class Node {
 	}
 	
 	public Node(int index, String word, String posTag, NodeInfo info) {
-		this.index = index;
+		this(word, posTag, info);
+	}
+	
+	public Node(String word, String posTag, NodeInfo info) {
 		this.word = word;
 		this.posTag = posTag;
 		this.info = info;
@@ -56,7 +54,7 @@ public class Node {
 	
 	private Node clone(Node node){
 		if (node == null) return null;
-		Node copy = new Node(node.index, node.word, node.posTag, node.info);
+		Node copy = new Node(node.word, node.posTag, node.info);
 		for (Node child : node.children){
 			Node copyChild = clone(child);
 			copyChild.parent = copy;
@@ -88,8 +86,6 @@ public class Node {
 		return number;
 	}
 	
-	public int getIndex() { return index; }
-	public void setIndex(int index) { this.index = index; }
 	public NodeInfo getInfo() { return info; }
 	public void setInfo(NodeInfo info) { this.info = info; }
 	public String getWord() { return word; }
