@@ -118,6 +118,7 @@ public class Controller {
 		view.setDisplay("Nodes mapped.\n"+parseTree.getSentence());
 		mappingNodes = false;
 		view.removeChoiceBoxButton();
+		processAfterNodesMapping();
 	}
 	
 	/**
@@ -150,12 +151,13 @@ public class Controller {
 	 */
 	public void chooseNode(NodeInfo info) {
 		if (!mappingNodes) { return; }
+//		System.out.println("Now the tree is:");
+//		System.out.println(parseTree);
 		node.setInfo(info);
 		if (!iter.hasNext()) {
 			finishNodesMapping(); 
 			return;
 		}
-		
 		node = iter.next();
 		List<NodeInfo> choices = nodeMapper.getNodeInfoChoices(node, schema);
 		if (choices.size() == 1) { chooseNode(choices.get(0)); }
@@ -163,6 +165,18 @@ public class Controller {
 		// After this wait for the button to call chooseNode
 	}
 // ----------------------------------- //
+	
+	public void processAfterNodesMapping() {
+		System.out.println("Going to remove meaningless nodes for tree: ");
+		System.out.println(parseTree);
+		parseTree.removeMeaninglessNodes();
+		// parseTree adjust structure
+		System.out.println("Going to do translation for tree: ");
+		System.out.println(parseTree);
+		query = parseTree.translateToSQL();	
+		view.setDisplay(query.toString());
+		processing = false;
+	}
 	
 	/**
 	 * Process natural language and return an sql query.
@@ -174,11 +188,6 @@ public class Controller {
 		processing = true;
 		parseTree = new ParseTree(input, parser);
 		startMappingNodes();
-		//parseTree.removeMeaninglessNodes();
-		// parseTree adjust structure
-		//query = parseTree.translateToSQL();	
-		//view.setDisplay(query.toString());
-		//processing = false;
 	}
 
 }

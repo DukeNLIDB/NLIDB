@@ -53,7 +53,7 @@ public class SchemaGraph {
 				String columnType = rsColumn.getString("TYPE_NAME");
 				table.put(columnName, columnType); 
 				/*draw random sample of size 10000 from each table, insert into tableRows*/
-				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 10000;";
+				String query = "SELECT " + columnName + " FROM " + tableName + " ORDER BY RANDOM() LIMIT 2000;";
 				ResultSet rows = stmt.executeQuery(query);
 				tableRow.put(columnName, new HashSet<String>());
 				Set<String> columnValues = tableRow.get(columnName);

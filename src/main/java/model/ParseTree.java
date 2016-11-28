@@ -3,12 +3,10 @@ package model;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.Random;
 
 import edu.stanford.nlp.ling.HasWord;
@@ -34,7 +32,7 @@ public class ParseTree implements IParseTree {
 	 */
 	Node[] nodes;
 	/**
-	 * Root Node. Supposed to be "return" or some other word corresponding to "SELECT".
+	 * Root Node. Supposed to be "ROOT".
 	 */
 	Node root;
 	
@@ -62,23 +60,21 @@ public class ParseTree implements IParseTree {
 		GrammaticalStructure gs = parser.parser.predict(tagged);
 		
 		// Reading the parsed sentence into ParseTree
-		N = sentence.size();
-		nodes = new Node[N];
-		for (int i = 0; i < N; i++) {
-			nodes[i] = new Node(i, 
+		N = sentence.size()+1;
+		nodes = new Node[3 * N];
+		root = new Node(0, "ROOT", "ROOT");
+		nodes[0] = root;
+		for (int i = 0; i < N-1; i++) {
+			nodes[i+1] = new Node(i+1, 
 					sentence.get(i).word(), tagged.get(i).tag());
 		}
-		root = nodes[0];
 		for (TypedDependency typedDep : gs.allTypedDependencies()) {
 			int from = typedDep.gov().index();
-			if (from == 0) { continue; } // skip ROOT
 			int to   = typedDep.dep().index();
 			// String label = typedDep.reln().getShortName(); // omitting the label
-			nodes[to-1].parent = nodes[from-1];
-			nodes[from-1].children.add(nodes[to-1]);
+			nodes[to].parent = nodes[from];
+			nodes[from].children.add(nodes[to]);
 		}
-
-		
 	}
 
 	@Override
@@ -124,26 +120,11 @@ public class ParseTree implements IParseTree {
 	 */
 	@Override
 	public void removeMeaninglessNodes() {
-		if (root.getInfo() == null) {
+		if (root.getChildren().get(0).getInfo() == null) {
 			System.out.println("ERR! Node info net yet mapped!");
 		}
-		// Remove meaningless nodes from the tree and 
-		// finally put remaining nodes in Node[].
-		
-		// Create a temporary root.
-		Node rootTmp = new Node(0, "ROOT", "ROOT");
-		rootTmp.getChildren().add(root);
-		root = rootTmp;
 		// Remove meaningless nodes.
 		removeMeaninglessNodes(root);
-		// Remove the temporary root.
-		if (root.getChildren().size() > 1) {
-			System.out.println("Strange tree structure after removing "+
-					"meaningless Nodes!");
-		}
-		Node rootNow = root.getChildren().get(0);
-		rootNow.parent = null;
-		root = rootNow;
 		// Put nodes back in Node[] using pre-order traversal
 		List<Node> nodesList = new ArrayList<>();
 		LinkedList<Node> stack = new LinkedList<>();
@@ -161,6 +142,110 @@ public class ParseTree implements IParseTree {
 		for (int i = 0; i < N; i++) {
 			nodes[i] = nodesList.get(i);
 		}
+	}
+	
+	@Override
+	
+	/*I am assuming the tree is mapped as (b) in figure 7 on page 7 
+	 *and the tree is mapped correctly in preorder*/
+	public void insertImplicitNodes() {
+		
+		//iterate all node to find SN node.
+		
+		int SN_index = 0;
+		
+		for (int i = 0; i < N; i ++) {
+		
+			if (nodes[i].getInfo().getType().equals("SN")) {
+			
+				SN_index = i;
+				break;	
+			}
+		}
+		
+		//start from SN node, get all children index
+		
+		int endOfLeftTree = SN_index;
+		int startOfLeftTree = SN_index + 1;
+		
+		for (int i = startOfLeftTree; i < N; i ++) {
+			
+			if (nodes[i].getParent().getIndex() == endOfLeftTree) {
+				endOfLeftTree = i;
+			}
+			else {
+				break;
+			}
+		}
+		int rightRoot = endOfLeftTree + 1;
+		implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
+	}
+	
+	public void implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
+		
+		int startOfCurrentTree = rightRoot + 1;
+		int endOfCurrentTree = rightRoot;
+		boolean firstChild = true;
+		
+		for (int i = rightRoot + 1; i < N; i ++) {
+			
+			if (nodes[i].getParent().getIndex() == rightRoot &&
+				!firstChild) {
+				endOfCurrentTree = i - 1;
+				break;
+			}
+			
+			if(firstChild) {firstChild = false;}
+		}
+		//compare
+		
+		int [] hit = new int[N]; 
+		int hitindex = 0;
+		
+		for (int i = startOfLeftTree; i < endOfLeftTree; i ++) {
+			for (int j = startOfCurrentTree; j < endOfCurrentTree + 1; j ++) {
+				if (nodes[i] == nodes[j]) {
+					hit[hitindex] = i;
+				}
+			}
+		}
+		
+		//insert
+		
+		for (int j = startOfLeftTree; j < endOfLeftTree; j ++) {
+			boolean found = false;
+			for (int i = 0; i < hitiindex; i ++) {
+				
+				if (hit[i] == nodes[j]) {
+					found = true; 
+					break;
+				}
+			}
+			
+			if (!found) {
+				modNodes(nodes[j], endOfCurrentTree);
+			}
+		}
+		
+	}
+	
+	public void modNodes (Node n, int endOfCurrentTree) {
+		
+		Node nn = new Node(endOfCurrentTree + 1, n.getWord(), n.getPostTag());
+		nn.setParent(node[endOfCurrentTree]);
+		node[endOfCurrentTree].setChild(nn);
+		
+		for (int i = N - 1; i > endOfCurrentTree; i --) {
+		
+			if (i == endOfCurrentTree + 1) {
+				nodes[i] = nn;
+			}
+			else {
+				nodes[i] = nodes[i - 1];
+				nodes[i].setIndex(i);
+			}
+		}
+		
 	}
 	
 	@Override
@@ -598,11 +683,7 @@ public class ParseTree implements IParseTree {
 		return hashValue;
 	}
 	
-	@Override
-	public void insertImplicitNodes() {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	public double getScore() {
@@ -610,38 +691,10 @@ public class ParseTree implements IParseTree {
 		return 0;
 	}
 
-	/**
-	 * Recursive helper method for {@link #translateToSQL()}.
-	 */
-	private void translateToSQL(SQLQuery query, Node node) {
-		if (node.getInfo().getType().equals("NN")) {
-			query.add("SELECT", node.getInfo().getValue());
-			query.add("FROM", node.getInfo().getValue().split(":")[0]);
-			for (Node child : node.getChildren()) {
-				translateToSQL(query, child);
-			}
-		} else if (node.getInfo().getType().equals("VN")) {
-			String compareSymbol = "=";
-			if (!node.getChildren().isEmpty()) {
-				Node ON = node.getChildren().get(0);
-				if (ON.getInfo().getType().equals("ON")) {
-					compareSymbol = ON.getInfo().getValue();
-				}
-			}
-			query.add("WHERE", node.getInfo().getValue() + " " +
-					compareSymbol + " " + node.getWord());
-		} else { }
-	}
 	
 	@Override
 	public SQLQuery translateToSQL() {
-		SQLQuery query = new SQLQuery();
-		if (!root.getInfo().getType().equals("SN")) { return query; }
-		// Assume root is "SN:SELECT"
-		for (Node node : root.getChildren()) {
-			translateToSQL(query, node);
-		}
-		return query;
+		return SQLTranslator.translate(root);
 	}
 
 	@Override
@@ -651,7 +704,7 @@ public class ParseTree implements IParseTree {
 	}
 	
 	public class ParseTreeIterator implements Iterator<Node> {
-		int i = 0;
+		int i = 1;
 		@Override
 		public boolean hasNext() {
 			return i < N; 
@@ -674,8 +727,8 @@ public class ParseTree implements IParseTree {
 	 */
 	public String getSentence() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(nodes[0].getWord());
-		for (int i = 1; i < N; i++) {
+		sb.append(nodes[1].getWord());
+		for (int i = 2; i < N; i++) {
 			sb.append(" ").append(nodes[i].getWord());
 		}
 		return sb.toString();
