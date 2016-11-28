@@ -155,8 +155,11 @@ public class TreeAdjustorTest {
 		nodes[8].parent = nodes[6];
 		
 		//ParseTree tree = T.generateNewTree1();
-		List<ParseTree> tree = T.adjustor();
-		System.out.println(tree.size());
+		List<Node> nodeList = TreeAdjustor.adjust(T);
+		System.out.println(nodeList.size());
+		for (Node node: nodeList){
+			Node.preOrder(node);
+		}
 		//for (int i = 0; i<tree.N; i++)
 		//	System.out.println(i+": "+tree.nodes[i].getWord());
 		//int number = adjustedTrees.size();
@@ -165,9 +168,9 @@ public class TreeAdjustorTest {
 
 	public static void main(String[] args) {
 		//test mergeLNQN and numberOfInvalidNodes methods
-		numberOfInvalidNodesTest();
+		//numberOfInvalidNodesTest();
 		//mergeLNQNTest();
-		//adjustorTest();
+		adjustorTest();
 	}
 
 }

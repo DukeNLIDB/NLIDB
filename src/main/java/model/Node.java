@@ -67,6 +67,15 @@ public class Node {
 		return clone(this);
 	}
 	
+	public static void preOrder(Node node){
+		if (node == null) return;
+		System.out.print(node+" ");
+		for (Node child: node.getChildren()){
+			preOrder(child);
+		}
+		System.out.println("\n");
+	}
+	
 	public int getIndex() { return index; }
 	public void setIndex(int index) { this.index = index; }
 	public NodeInfo getInfo() { return info; }
