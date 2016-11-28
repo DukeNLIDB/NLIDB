@@ -16,8 +16,8 @@ public class TreeAdjustor {
 	 * @param tree
 	 * @return
 	 */
-	public static List<Node> adjust (ParseTree tree){ 
-		List<Node> nodeList = new ArrayList<Node>();
+	public static List<ParseTree> adjust (ParseTree tree){ 
+		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
 		List<Node> noChildNodes = new LinkedList<Node>();
 		for (int i = 0; i<tree.size(); i++){
@@ -38,17 +38,17 @@ public class TreeAdjustor {
 			int childrenSize = children.size();   //number of children of the target node
 			if (!curNode.equals(moveNodeParent) && !curNode.equals(moveNode)){ //Object.equals(Object): value comparison rather than reference comparison
 				for (int j = 0; j <= childrenSize; j++){
-					nodeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
+					treeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
 				}
 			}
 			else if (curNode.equals(moveNodeParent)){
 				for(int j = 0; j < childrenSize; j++){
 					if (!children.get(j).equals(moveNode))
-						nodeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
+						treeList.add(moveNode(tree.root,moveNode,curNode,childrenSize,j));
 				}
 			}
 		}
-		return nodeList;
+		return treeList;
 	}
 	
 	/**
@@ -60,14 +60,10 @@ public class TreeAdjustor {
 	 * @param i
 	 * @return
 	 */
-	static Node moveNode (Node r, Node m, Node c, int childrenSize, int i){	
+	static ParseTree moveNode (Node r, Node m, Node c, int childrenSize, int i){	
 		Node root = r.clone();
-
-		Node moveNode = findNode(root, m); System.out.println(moveNode);
-		Node currentNode = findNode(root, c);  System.out.println(currentNode);
-
-		System.out.println(childrenSize);
-		System.out.println(i);
+		Node moveNode = findNode(root, m); 
+		Node currentNode = findNode(root, c);
 		Node moveNodeParent = moveNode.getParent();
 		
 		if (childrenSize == i){    //add a new child to the target node
@@ -86,21 +82,24 @@ public class TreeAdjustor {
 			moveNode.setParent(currentNode);
 			downChild.setParent(moveNode);
 		}
-
-		return root;
+		
+		ParseTree tree = ParseTree.generateParseTree(root);
+		return tree;
 	}
 	
 	static Node findNode(Node root, Node target){
-		if (root == null) return null;
-		if (root.equals(target)) return root;
-		else if (!root.equals(target)) {
-			for (Node child: root.getChildren()){
-				Node result = findNode (child, target);
-				if (result != null){
-					return result;
+		if (root != null){
+			if (root.equals(target)) 
+				return root;
+			else if (!root.equals(target)) {
+				for (Node child: root.getChildren()){
+					Node result = findNode (child, target);
+					if (result != null){
+						return result;
+					}
 				}
+				return null;
 			}
-			return null;
 		}
 		return null;
 	}
@@ -115,7 +114,7 @@ public class TreeAdjustor {
 		
 		while (Q.size() > 0){
 			ParseTree oriTree = Q.poll();
-			List<Node> treeList = TreeAdjustor.adjust(oriTree);
+			List<ParseTree> treeList = TreeAdjustor.adjust(oriTree);
 			double treeScore = SyntacticEvaluator.numberOfInvalidNodes(oriTree);
 			
 			for (int i = 0; i < treeList.size(); i++){

@@ -73,6 +73,32 @@ public class ParseTree implements IParseTree {
 			nodes[from].children.add(nodes[to]);
 		}
 	}
+	
+	/**
+	 * convert a root node representation to ParseTree representation
+	 * @param root
+	 * @return
+	 */
+	public static ParseTree generateParseTree(Node root){
+		ParseTree tree = new ParseTree();
+		tree.root = root;
+		tree.N = Node.count(root);
+		tree.nodes = new Node[tree.N];
+		LinkedList<Node> stack = new LinkedList<Node>();
+		stack.push(tree.root);
+		int index = 0;
+		while (!stack.isEmpty()){
+			Node currentNode = stack.poll();
+			tree.nodes[index++] = currentNode.clone();
+			List<Node> children = currentNode.getChildren();
+			int numOfChildren = children.size();
+			for (int i = numOfChildren-1; i>=0; i--){
+				stack.push(children.get(i));
+			}
+		}
+		return tree;
+	}
+
 
 	@Override
 	public int size() {

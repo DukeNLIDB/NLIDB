@@ -155,13 +155,21 @@ public class TreeAdjustorTest {
 		nodes[8].parent = nodes[6];
 		
 		//ParseTree tree = T.generateNewTree1();
-		List<Node> nodeList = TreeAdjustor.adjust(T);
-		System.out.println(nodeList.size());
-		for (Node node: nodeList){
-			Node.preOrder(node);
+		List<ParseTree> treeList = TreeAdjustor.adjust(T);
+		System.out.println(treeList.size());
+		for (int j = 0; j < treeList.size(); j++){
+			ParseTree tree = treeList.get(j);
+			for (int i = 0; i<tree.N; i++){
+				List<Node> children = tree.nodes[i].children;
+				int sizeOfChildren = children.size();
+				if (sizeOfChildren != 0){
+					for (int k=0; k<sizeOfChildren; k++)
+						System.out.println(tree.nodes[i]+"=>"+children.get(k));
+				}
+				
+			}
+			System.out.println("\n");
 		}
-		//for (int i = 0; i<tree.N; i++)
-		//	System.out.println(i+": "+tree.nodes[i].getWord());
 		//int number = adjustedTrees.size();
 		//System.out.println(number);
 	}
