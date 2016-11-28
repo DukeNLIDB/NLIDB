@@ -150,8 +150,8 @@ public class TreeAdjustorTest {
 		System.out.println("Output size: "+treeList.size());
 		System.out.println("Output trees:");
 		for (int j = 0; j < treeList.size(); j++){
-			System.out.println("Tree "+j+" :");
-			System.out.println(treeList.get(j));
+		System.out.println("Tree "+j+" :");
+		System.out.println(treeList.get(j));
 		}
 	}
 	
@@ -199,9 +199,6 @@ public class TreeAdjustorTest {
 	}
 
 	public static void main(String[] args) {
-		//numberOfInvalidNodesTest();
-		//mergeLNQNTest();
-		//adjustTest();
 		numberOfInvalidNodesTest();
 //		mergeLNQNTest();
 		adjustTest();

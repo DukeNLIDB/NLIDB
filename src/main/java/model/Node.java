@@ -10,7 +10,6 @@ import java.util.List;
  *
  */
 public class Node {
-	// TODO: all fields should be private in final version
 	
 	/**
 	 * Information indicating the corresponding SQL component of the Node.
@@ -66,26 +65,7 @@ public class Node {
 		return clone(this);
 	}
 	
-	public static void preOrder(Node node){
-		if (node == null) return;
-		System.out.print(node+" ");
-		for (Node child: node.getChildren()){
-			preOrder(child);
-		}
-		System.out.println("\n");
-	}
-	
-	public static int count(Node root){
-		int number = 0;
-		if (root != null) {
-			number++;
-			for (Node child: root.getChildren()){
-				number = number + count(child);
-			}
-		}
-		return number;
-	}
-	
+
 	public NodeInfo getInfo() { return info; }
 	public void setInfo(NodeInfo info) { this.info = info; }
 	public String getWord() { return word; }

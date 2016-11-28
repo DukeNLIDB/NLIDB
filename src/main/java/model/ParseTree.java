@@ -64,7 +64,7 @@ public class ParseTree implements IParseTree {
 			nodes[from].children.add(nodes[to]);
 		}
 	}
-	
+
 	public ParseTree(Node node) {
 		root = node.clone();
 	}
@@ -232,7 +232,8 @@ public class ParseTree implements IParseTree {
 	
 	@Override
 	public ParseTree mergeLNQN(){   
-		for (int i=0; i<N; i++){
+		Node[] nodes = this.root.genNodesArray();
+		for (int i=0; i<this.size(); i++){
 			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
 				String word = "("+nodes[i].getWord()+")";
 				String parentWord = nodes[i].getParent().getWord()+word;
@@ -240,7 +241,7 @@ public class ParseTree implements IParseTree {
 				removeNode(nodes[i]);
 			}
 		}
-		ParseTree tree = nodeToTree(root);
+		ParseTree tree = new ParseTree (root);
 		return tree;
 	}
 
