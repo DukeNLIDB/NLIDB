@@ -1,18 +1,22 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class TreeAdjustor {
+	
+	private static final int MAX_EDIT = 10;
 
 	/**
 	 * move one random terminal node (without children) to anywhere possible
 	 * @param tree
 	 * @return
 	 */
-	public static List<ParseTree> adjustor (ParseTree tree){ 
+	public static List<ParseTree> adjust (ParseTree tree){ 
 		List<ParseTree> treeList = new ArrayList<ParseTree>();
 		
 		List<Node> noChildNodes = new LinkedList<Node>();
@@ -172,5 +176,173 @@ public class TreeAdjustor {
 		}
 		System.out.println("\n");
 		return temp;
+	}
+	
+	/**
+	 * Number of invalid tree nodes according to the grammar:
+	 * Q -> (SClause)(ComplexCindition)*
+	 * SClause -> SELECT + GNP
+	 * ComplexCondition -> ON + (LeftSubTree*RightSubTree)
+	 * LeftSubTree -> GNP
+	 * RightSubTree -> GNP | VN | FN
+	 * GNP -> (FN + GNP) | NP
+	 * NP -> NN + (NN)*(Condition)*
+	 * Condition -> VN | (ON + VN)
+	 * 
+	 * +: parent-child relationship
+	 * *: sibling relationship
+	 * |: or
+	 */	
+	int numberOfInvalidNodes (ParseTree T){	
+		int numOfInv = 0;   //number of invalid tree nodes
+		for (int i=1; i<T.size(); i++){  //starting from SN (leave out ROOT)
+			Node curNode = T.nodes[i];
+			String curType = curNode.getInfo().getType();
+			String parentType = curNode.getParent().getInfo().getType();
+			List<Node> children = curNode.getChildren();
+			int sizeOfChildren = children.size();
+			if (curType.equals("SN")){ // select node
+				//SN can only be child of root
+				if (!parentType.equals("ROOT")){   
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+				//SN can only have one child from FN or NN
+				else if (sizeOfChildren != 1){
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+				else{
+					String childType = children.get(0).getInfo().getType();
+					if (!(childType.equals("NN") || childType.equals("FN"))){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+				}
+			}
+			else if (curType.equals("ON")){  //operator node
+				if (parentType.equals("ROOT")){
+					if (sizeOfChildren == 0){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+					else{
+						for (int j = 0; j<sizeOfChildren; j++){
+							String childType = children.get(j).getInfo().getType();
+							if (childType.equals("ON")){
+								numOfInv++;
+								curNode.isInvalid = true;
+								break;
+							}
+						}
+					}
+				}
+				else if (parentType.equals("NN")){
+					if (sizeOfChildren != 1){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+					else if (!children.get(0).getInfo().getType().equals("VN")){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+				}
+			}
+			else if (curType.equals("NN")){  //name node
+				//NP=NN+NN*Condition. Second NN has no child.
+				if (parentType.equals("NN")){
+					if (sizeOfChildren != 0){   //this rule is different from figure 7 (a), but I think this makes sense
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+				}
+				//SN+GNP, or ON+GNP, or FN+GNP. and GNP=NP=NN+NN*Condition. First NN can have any number of children from NN,ON,VN.
+				else if (parentType.equals("SN") || parentType.equals("FN") || parentType.equals("ON")){
+					if (sizeOfChildren != 0){
+						for (int j = 0; j < sizeOfChildren; j++){
+							String childType = children.get(j).getInfo().getType();
+							if (!(childType.equals("NN") || childType.equals("VN") || childType.equals("ON"))){
+								numOfInv++;
+								curNode.isInvalid = true;
+								break;
+							}
+						}
+					}
+				}
+				//NN cannot be a child of VN
+				else if (parentType.equals("VN")){
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+			}
+			else if (curType.equals("VN")){  //value node
+				if (sizeOfChildren != 0){  //VN cannot have children
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+				else if (!(parentType.equals("ON") || parentType.equals("NN"))){  //VN can only be child of ON and NN
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+			}
+			else if (curType.equals("FN")){  //function nodes
+				//ON+FN, or ON+GNP, or SN+GNP, or FN+GNP. and GNP=FN+GNP
+				//FN can be child of ON, without children or only 1 child of NN or FN
+				//FN can be child of SN, wih only 1 child of NN or FN
+				//FN can be child of FN, wih only 1 child of NN or FN
+				if (sizeOfChildren == 0){
+					if (!parentType.equals("ON")){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+				}
+				else if (sizeOfChildren == 1){
+					String childType = children.get(0).getInfo().getType();
+					if (!(parentType.equals("ON") || parentType.equals("SN") || parentType.equals("FN"))){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+					else if (!(childType.equals("NN") || childType.equals("FN"))){
+						numOfInv++;
+						curNode.isInvalid = true;
+					}
+				}
+				else{
+					numOfInv++;
+					curNode.isInvalid = true;
+				}
+			}
+		}
+		
+		return numOfInv;
+	}
+	
+	public static List<IParseTree> getAdjustedTrees(ParseTree tree) {
+		List<IParseTree> results = new ArrayList<IParseTree>();
+		PriorityQueue<ParseTree> Q = new PriorityQueue<ParseTree>();
+		Q.add(this);
+		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
+		H.put(hashing(this), this);
+		this.setEdit(0);
+		
+		while (Q.size() > 0){
+			ParseTree oriTree = Q.poll();
+			List<ParseTree> treeList = TreeAdjustor.adjust(oriTree);
+			double treeScore = numberOfInvalidNodes(oriTree);
+			
+			for (int i = 0; i < treeList.size(); i++){
+				ParseTree currentTree = treeList.get(i);
+				int hashValue = hashing(currentTree);
+				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
+					H.put(hashValue, currentTree);
+					currentTree.setEdit(oriTree.getEdit()+1);
+					if (numberOfInvalidNodes(currentTree) <= treeScore){
+						Q.add(currentTree);
+						results.add(currentTree);
+					}
+				}
+			}
+		}
+		return results;
 	}
 }
