@@ -49,13 +49,6 @@ public interface IParseTree extends Iterable<Node> {
 	public List<IParseTree> getAdjustedTrees();
 	
 	/**
-	 * Get a score indicating the syntactic and semantic validity 
-	 * of the parse tree for an SQL query.
-	 * @return validity score
-	 */
-	public double getScore();
-	
-	/**
 	 * Translate the parse tree into an SQL query.
 	 * @return
 	 */
@@ -73,7 +66,7 @@ public interface IParseTree extends Iterable<Node> {
 	 * @param other
 	 * @return true if they are equal
 	 */
-	public boolean equals(IParseTree other);
+	public boolean equals(Object obj);
 	
 	/**
 	 * Get the hashCode for the parse tree. So that trees can be 

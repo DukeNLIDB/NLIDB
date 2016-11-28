@@ -2,12 +2,9 @@ package model;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Random;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -300,33 +297,36 @@ public class ParseTree implements IParseTree {
 		return TreeAdjustor.getAdjustedTrees(this);
 	}	
 	
-	
-	int hashing (ParseTree T){
-		int hashValue = 0;
-		
-		//TODO: how to get a reasonable hash value for each parse tree (with different node orders)
-		return hashValue;
-	}
-	
-
-	@Override
-	public double getScore() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	
 	@Override
 	public SQLQuery translateToSQL() {
 		return SQLTranslator.translate(root);
 	}
 
 	@Override
-	public boolean equals(IParseTree other) {
-		// TODO Auto-generated method stub
-		return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 17;
+		result = prime * result + ((root == null) ? 0 : root.hashCode());
+		return result;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ParseTree other = (ParseTree) obj;
+		if (root == null) {
+			if (other.root != null)
+				return false;
+		} else if (!root.equals(other.root))
+			return false;
+		return true;
+	}
+
 	public class ParseTreeIterator implements Iterator<Node> {
 		int i = 1;
 		@Override
