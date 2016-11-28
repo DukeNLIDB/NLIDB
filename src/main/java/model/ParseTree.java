@@ -163,62 +163,89 @@ public class ParseTree implements IParseTree {
 			}
 		}
 		
-		
 		//start from SN node, get all children index
 		
 		int endOfLeftTree = SN_index;
-		
 		int startOfLeftTree = SN_index + 1;
 		
 		for (int i = startOfLeftTree; i < N; i ++) {
 			
 			if (nodes[i].getParent().getIndex() == endOfLeftTree) {
-		
 				endOfLeftTree = i;
 			}
 			else {
-				
 				break;
 			}
 		}
-		
 		int rightRoot = endOfLeftTree + 1;
 		implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
 	}
 	
 	public void implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
 		
-		
-		int endOfLeftTreeSecond = rightRoot;
-		
+		int startOfCurrentTree = rightRoot + 1;
+		int endOfCurrentTree = rightRoot;
 		boolean firstChild = true;
 		
 		for (int i = rightRoot + 1; i < N; i ++) {
 			
 			if (nodes[i].getParent().getIndex() == rightRoot &&
 				!firstChild) {
-				endOfLeftTreeSecond = i;
+				endOfCurrentTree = i - 1;
 				break;
 			}
 			
 			if(firstChild) {firstChild = false;}
 		}
-		
 		//compare
 		
 		int [] hit = new int[N]; 
 		int hitindex = 0;
 		
 		for (int i = startOfLeftTree; i < endOfLeftTree; i ++) {
-			
-			for (int j = rightRoot + 1; j < endOfLeftTreeSecond; j ++) {
-			
+			for (int j = startOfCurrentTree; j < endOfCurrentTree + 1; j ++) {
 				if (nodes[i] == nodes[j]) {
-					
 					hit[hitindex] = i;
 				}
 			}
 		}
+		
+		//insert
+		
+		for (int j = startOfLeftTree; j < endOfLeftTree; j ++) {
+			boolean found = false;
+			for (int i = 0; i < hitiindex; i ++) {
+				
+				if (hit[i] == nodes[j]) {
+					found = true; 
+					break;
+				}
+			}
+			
+			if (!found) {
+				modNodes(nodes[j], endOfCurrentTree);
+			}
+		}
+		
+	}
+	
+	public void modNodes (Node n, int endOfCurrentTree) {
+		
+		Node nn = new Node(endOfCurrentTree + 1, n.getWord(), n.getPostTag());
+		nn.setParent(node[endOfCurrentTree]);
+		node[endOfCurrentTree].setChild(nn);
+		
+		for (int i = N - 1; i > endOfCurrentTree; i --) {
+		
+			if (i == endOfCurrentTree + 1) {
+				nodes[i] = nn;
+			}
+			else {
+				nodes[i] = nodes[i - 1];
+				nodes[i].setIndex(i);
+			}
+		}
+		
 	}
 	
 	@Override
