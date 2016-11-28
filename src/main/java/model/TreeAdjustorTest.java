@@ -31,6 +31,7 @@ public class TreeAdjustorTest {
 		nodes[8] = new Node(8, "2000", "--");
 		nodes[8].info = new NodeInfo("VN", "Year");
 		
+		T.root = nodes[0];
 		nodes[0].children.add(nodes[1]);
 		nodes[1].parent = nodes[0];
 		nodes[1].children.add(nodes[2]);
@@ -48,10 +49,13 @@ public class TreeAdjustorTest {
 		nodes[7].children.add(nodes[8]);
 		nodes[8].parent = nodes[7];
 		
-		System.out.println(SyntacticEvaluator.numberOfInvalidNodes(T)+"\n");
+		System.out.println("===========test for Running SyntacticEvaluator.numberOfInvalidNodes===========");
+		System.out.println("Input tree: "+T.toString());
+		System.out.println("Number of Invalid nodes: "+SyntacticEvaluator.numberOfInvalidNodes(T)+"\n");
+		System.out.println("Invalid nodes: ");
 		for (int i = 1; i < T.N; i++){
 			if (nodes[i].isInvalid)
-				System.out.println(i);
+				System.out.println(nodes[i]);
 		}
 	}
 	
@@ -98,20 +102,13 @@ public class TreeAdjustorTest {
 		nodes[6].children.add(nodes[8]);
 		nodes[8].parent = nodes[6];
 		
+		System.out.println("===========test for Running mergeLNQN===========");
+		System.out.println("Input tree: "+T.toString());
 		ParseTree tree = T.mergeLNQN();
-		for (int i = 0; i<tree.N; i++)
-			System.out.println(i+": "+tree.nodes[i].getWord());
-		for (int i = 0; i<tree.N; i++){
-			List<Node> children = tree.nodes[i].children;
-			int sizeOfChildren = children.size();
-			if (sizeOfChildren != 0){
-				for (int j=0; j<sizeOfChildren; j++)
-					System.out.println(tree.nodes[i]+"=>"+children.get(j));
-			}
-		}
+		System.out.println("Output tree: "+tree.toString());
 	}
 	
-	public static void adjustorTest(){
+	public static void adjustTest(){
 		ParseTree T = new ParseTree();
 		T.N = 9;
 		T.nodes = new Node[T.N];
@@ -154,11 +151,14 @@ public class TreeAdjustorTest {
 		nodes[6].children.add(nodes[8]);
 		nodes[8].parent = nodes[6];
 		
-		//ParseTree tree = T.generateNewTree1();
+		System.out.println("===========test for Running adjust() in TreeAdjustor===========");
+		System.out.println("Input tree: "+T.toString());
 		List<ParseTree> treeList = TreeAdjustor.adjust(T);
-		System.out.println(treeList.size());
+		System.out.println("Output size: "+treeList.size());
+		System.out.println("Output trees:");
 		for (int j = 0; j < treeList.size(); j++){
 			ParseTree tree = treeList.get(j);
+			System.out.println("tree "+j);
 			for (int i = 0; i<tree.N; i++){
 				List<Node> children = tree.nodes[i].children;
 				int sizeOfChildren = children.size();
@@ -212,15 +212,17 @@ public class TreeAdjustorTest {
 		nodes[5].children.add(nodes[7]);
 		nodes[7].parent = nodes[5];
 		
+		System.out.println("===========test for Running getAdjustedTrees() in TreeAdjustor===========");
+		System.out.println("debugging...");
 		List<IParseTree> result = TreeAdjustor.getAdjustedTrees(T);
 	}
 
 	public static void main(String[] args) {
 		//test mergeLNQN and numberOfInvalidNodes methods
-		//numberOfInvalidNodesTest();
-		//mergeLNQNTest();
-		//adjustorTest();
-		getAdjustedTreesTest();
+		numberOfInvalidNodesTest();
+		mergeLNQNTest();
+		adjustTest();
+		//getAdjustedTreesTest();
 	}
 
 }

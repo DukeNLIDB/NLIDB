@@ -29,7 +29,7 @@ public class TreeAdjustor {
 		Random r = new Random();
 		int index = r.nextInt(numOfNoChildNodes);  //selected terminal node to be moved, index from 0 to numOfChildNodes-1
 		Node moveNode = noChildNodes.get(index);
-		System.out.println(moveNode);
+		//System.out.println(moveNode);
 		Node moveNodeParent = moveNode.getParent();
 		
 		for (int i = 0; i < tree.size(); i++){
@@ -133,7 +133,16 @@ public class TreeAdjustor {
 			
 			for (int i = 0; i < treeList.size(); i++){
 				ParseTree currentTree = treeList.get(i);
-
+				for (int j = 0; j<tree.N; j++){
+					List<Node> children = currentTree.nodes[j].children;
+					int sizeOfChildren = children.size();
+					if (sizeOfChildren != 0){
+						for (int k=0; k<sizeOfChildren; k++)
+							System.out.println(tree.nodes[j]+"=>"+children.get(k));
+					}
+					//System.out.println(tree.nodes[i].getInfo().getType());
+				}
+				System.out.println("\n");
 				int hashValue = currentTree.hashCode();
 				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
 					H.put(hashValue, currentTree);
