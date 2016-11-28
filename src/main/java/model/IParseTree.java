@@ -35,7 +35,7 @@ public interface IParseTree extends Iterable<Node> {
 	/**
 	 * Restructure the parse tree by merging Logic Nodes and Quantifier Nodes with their parents.
 	 */
-	public void mergeLNQN();
+	public ParseTree mergeLNQN();
 	
 	/**
 	 * Insert implicit nodes, mostly about the symmetry for comparison.

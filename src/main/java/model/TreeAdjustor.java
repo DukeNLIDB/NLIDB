@@ -21,7 +21,7 @@ public class TreeAdjustor {
 		
 		List<Node> noChildNodes = new LinkedList<Node>();
 		for (int i = 0; i<tree.size(); i++){
-			if (tree.nodes[i].getChildren().size() == 0)
+			if (tree.nodes[i].getChildren().size() == 0 && !tree.nodes[i].getInfo().getType().equals("ROOT"))
 				noChildNodes.add(tree.nodes[i]);
 		}
 		
@@ -83,7 +83,7 @@ public class TreeAdjustor {
 			downChild.setParent(moveNode);
 		}
 		
-		ParseTree tree = ParseTree.generateParseTree(root);
+		ParseTree tree = ParseTree.nodeToTree(root);
 		return tree;
 	}
 	
@@ -106,25 +106,40 @@ public class TreeAdjustor {
 	
 	public static List<IParseTree> getAdjustedTrees(ParseTree tree) {
 		List<IParseTree> results = new ArrayList<IParseTree>();
-		PriorityQueue<ParseTree> Q = new PriorityQueue<ParseTree>();
-		Q.add(tree);
+		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>();
+		queue.add(tree);
 		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
-		H.put(hashing(tree), tree);
+		H.put(tree.hashCode(), tree);
 		tree.setEdit(0);
 		
-		while (Q.size() > 0){
-			ParseTree oriTree = Q.poll();
+		while (queue.size() > 0){
+			ParseTree oriTree = queue.poll();
 			List<ParseTree> treeList = TreeAdjustor.adjust(oriTree);
 			double treeScore = SyntacticEvaluator.numberOfInvalidNodes(oriTree);
 			
+			System.out.println(treeList.size());
+			for (int j = 0; j < treeList.size(); j++){
+				ParseTree tree1 = treeList.get(j);
+				for (int i = 0; i<tree1.N; i++){
+					List<Node> children = tree1.nodes[i].children;
+					int sizeOfChildren = children.size();
+					if (sizeOfChildren != 0){
+						for (int k=0; k<sizeOfChildren; k++)
+							System.out.println(tree1.nodes[i]+"=>"+children.get(k));
+					}
+				}
+				System.out.println("\n");
+			}
+			
 			for (int i = 0; i < treeList.size(); i++){
 				ParseTree currentTree = treeList.get(i);
-				int hashValue = hashing(currentTree);
+
+				int hashValue = currentTree.hashCode();
 				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
 					H.put(hashValue, currentTree);
 					currentTree.setEdit(oriTree.getEdit()+1);
 					if (SyntacticEvaluator.numberOfInvalidNodes(currentTree) <= treeScore){
-						Q.add(currentTree);
+						queue.add(currentTree);
 						results.add(currentTree);
 					}
 				}

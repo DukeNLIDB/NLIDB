@@ -79,7 +79,7 @@ public class ParseTree implements IParseTree {
 	 * @param root
 	 * @return
 	 */
-	public static ParseTree generateParseTree(Node root){
+	public static ParseTree nodeToTree(Node root){
 		ParseTree tree = new ParseTree();
 		tree.root = root;
 		tree.N = Node.count(root);
@@ -276,7 +276,7 @@ public class ParseTree implements IParseTree {
 	}
 	
 	@Override
-	public void mergeLNQN(){   //not change Node.index, but change the numbering in nodes[]
+	public ParseTree mergeLNQN(){   
 		for (int i=0; i<N; i++){
 			if (nodes[i].getInfo().getType().equals("LN") || nodes[i].getInfo().getType().equals("QN")){
 				String word = "("+nodes[i].getWord()+")";
@@ -285,37 +285,15 @@ public class ParseTree implements IParseTree {
 				removeNode(nodes[i]);
 			}
 		}
-		generateNewTree();
+		ParseTree tree = nodeToTree(root);
+		return tree;
 	}
 
-	void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
+	private void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
 		curNode.getParent().getChildren().remove(curNode);
 		for (Node child: curNode.getChildren()) {
 			child.setParent(curNode.getParent()); 
 		}
-	}
-	
-	void generateNewTree(){
-		List<Node> tempTree = new ArrayList<Node>();
-		LinkedList<Node> queue = new LinkedList<Node>();
-		queue.add(root);
-		//System.out.println(root);
-		//add nodes from original tree into tempTree in pre order
-		while (!queue.isEmpty()){
-			Node curNode = queue.poll();
-			//System.out.println(curNode);
-			tempTree.add(curNode);
-			List<Node> curChildren = curNode.getChildren();
-			int curChildrenSize = curChildren.size();
-			for (int i = curChildrenSize-1; i >= 0; i--)
-				queue.push(curChildren.get(i));
-		}
-		N = tempTree.size();
-		for (int i = 0; i < N; i++){
-			nodes[i]=tempTree.get(i);
-			nodes[i].index = i;
-		}
-		root = nodes[0];
 	}
 
 	@Override
