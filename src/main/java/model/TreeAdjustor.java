@@ -119,30 +119,14 @@ public class TreeAdjustor {
 			
 			System.out.println(treeList.size());
 			for (int j = 0; j < treeList.size(); j++){
-				ParseTree tree1 = treeList.get(j);
-				for (int i = 0; i<tree1.N; i++){
-					List<Node> children = tree1.nodes[i].children;
-					int sizeOfChildren = children.size();
-					if (sizeOfChildren != 0){
-						for (int k=0; k<sizeOfChildren; k++)
-							System.out.println(tree1.nodes[i]+"=>"+children.get(k));
-					}
-				}
-				System.out.println("\n");
+				System.out.println("Tree "+j+" in treeList:");
+				System.out.println(treeList.get(j).toString());
 			}
 			
 			for (int i = 0; i < treeList.size(); i++){
 				ParseTree currentTree = treeList.get(i);
-				for (int j = 0; j<tree.N; j++){
-					List<Node> children = currentTree.nodes[j].children;
-					int sizeOfChildren = children.size();
-					if (sizeOfChildren != 0){
-						for (int k=0; k<sizeOfChildren; k++)
-							System.out.println(tree.nodes[j]+"=>"+children.get(k));
-					}
-					//System.out.println(tree.nodes[i].getInfo().getType());
-				}
-				System.out.println("\n");
+				System.out.println("current tree:");
+				System.out.println(currentTree.toString());
 				int hashValue = currentTree.hashCode();
 				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
 					H.put(hashValue, currentTree);

@@ -206,8 +206,8 @@ public class SyntacticEvaluator {
 	 */
 	private static int checkFN(Node node){
 		int numOfInvalid = 0;
-		//System.out.println(node.getParent());
-		//System.out.println(node.getParent().getInfo());
+		System.out.println(node.getParent());
+		System.out.println(node.getParent().getInfo());
 		String parentType = node.getParent().getInfo().getType();
 		List<Node> children = node.getChildren();
 		int sizeOfChildren = children.size();
