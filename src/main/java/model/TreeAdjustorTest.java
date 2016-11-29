@@ -200,9 +200,9 @@ public class TreeAdjustorTest {
 
 	public static void main(String[] args) {
 		numberOfInvalidNodesTest();
-//		mergeLNQNTest();
+		mergeLNQNTest();
 		adjustTest();
-//		getAdjustedTreesTest();
+		getAdjustedTreesTest();
 	}
 
 }

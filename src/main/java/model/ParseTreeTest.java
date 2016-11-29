@@ -80,12 +80,12 @@ public class ParseTreeTest {
 		// (3) Print out the query and see.
 		System.out.println(query);
 */
-/*
+
 		System.out.println("===========test for Running SyntacticEvaluator.numberOfInvalidNodes===========");
 		System.out.println("Input tree: "+tree.toString());
 		System.out.println("Number of Invalid nodes: "+SyntacticEvaluator.numberOfInvalidNodes(tree)+"\n");
 		System.out.println("Invalid nodes: ");
-		for (int i = 1; i < tree.N; i++){
+		for (int i = 1; i < tree.size(); i++){
 			if (nodes[i].isInvalid)
 				System.out.println(nodes[i]);
 		}
@@ -103,7 +103,7 @@ public class ParseTreeTest {
 			System.out.println("Tree "+j+" :");
 			System.out.println(treeList.get(j).toString());
 		}
-		*/
+		
 		System.out.println("===========test for Running getAdjustedTrees() in TreeAdjustor===========");
 		System.out.println("Number of possible trees for choice:");
 		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(tree);
