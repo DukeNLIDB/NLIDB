@@ -151,7 +151,7 @@ The main idea of inserting implicit node into parse tree is to make sure that tw
 
 After inserting name node based on the core node comparision, next step is to check the constrain for both core node. For example: if left core node has constrain of year greater than 2007 and area of "Database" , right core node should also have the same constrain. If right node does not conform to this constrain, then constrains nodes should be copied from the left subtree to right subtree. 
 
-Our implementation of processing the implicit nodes insertion starts from the root of the tree. It checks if any nodes below select Node (SN) is missing in the middle treel. If there is, copy it over to the middle tree. Then repeat the same procedure to the middle tree and rightmost subtree. After the name node is copied over, it starts from the middle tree to check if there is any constrain missing in the rightmost tree. If there is,t
+Our implementation of processing the implicit nodes insertion starts from the root of the tree. It checks if any nodes below select Node (SN) is missing in the middle treel. If there is, copy it over to the middle tree. Then repeat the same procedure to the middle tree and rightmost subtree. After the name node is copied over, it starts from the middle tree to check if there is any constrain missing in the rightmost tree. If there is, copy those over
 
 %%%================================================================%%%
 \section{Experiments}
@@ -187,7 +187,7 @@ As for basic GUI functions, we may need to design a much fancier GUI as the last
 \begin{itemize}
 \item {\bf Yilin Gao:} GUI implementation, controller design, report writing.
 \item {\bf Keping Wang:} database connection, schema retrieval, Stanford NLP parser usage, parse tree design, word similarity score, report writing.
-\item {\bf Chengkang Xu:} node mapping, meaningless nodes removal, tree structure adjustment (in progress), report writing.
+\item {\bf Chengkang Xu:} node mapping, meaningless nodes removal, inserting implicit nodes, report writing.
 \end{itemize}
 
 
