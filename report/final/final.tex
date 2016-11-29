@@ -249,6 +249,9 @@ After inserting name node based on the core node comparison, next step is to che
 
 Our implementation of processing the implicit nodes insertion starts from the root of the tree. It checks if any nodes below select Node (SN) is missing in the middle tree. If there is, copy it over to the middle tree. Then repeat the same procedure to the middle tree and rightmost subtree. After the name node is copied over, it starts from the middle tree to check if there is any constrain missing in the rightmost tree. If there is, copy those over to the right tree. Finally,  if the root of subtree is an ON (operator node), and the first node connect to root in the subtree is a name node, there may be a function node missing. Our implementation tries to insert a function node in between to make the subtree semantically meaningful. 
 
+\subsection{SQL Translation}
+For now we've only conducted the basic translation, that is the translation to SQL querys without functions and joins, only "SELECT ... FROM ... WHERE ...;". Besides, currently we've only implemented the "AND" logic for selecting conditions. The basic translation procedure is to first construct a mutable SQLQuery object, and then traverse the whole tree assuming the tree has been syntactically valid according to the grammar defined above. When we encounter NN (name nodes), we add it to the "SELECT" part of the query, and then add the table of that name node to the set "FROM"; when we encounter "VN" (value node), we derive from it a selection condition (=, >, or <), and add it to "WHERE" clause. Similarly the translation can be done following the grammar for functions and more complex conditions. We are going to implement join in the future.
+
 %%%================================================================%%%
 \section{Experiments}
 The JavaFX application runs on JVM, and we’ve tested it on an Ubuntu 16.04 machine. We are using JDBC to connect to the PostgreSQL database of dblp, which we used in homework 1.
@@ -282,7 +285,7 @@ As for basic GUI functions, we may need to design a much fancier GUI as the last
 
 \begin{itemize}
 \item {\bf Yilin Gao:} GUI implementation, schema retrieval, nodes mapping, parse tree reformulation, report writing.
-\item {\bf Keping Wang:} database connection, schema retrieval, Stanford NLP parser usage, parse tree design, word similarity score, report writing.
+\item {\bf Keping Wang:} database connection, schema retrieval, Stanford NLP parser usage, parse tree design, word similarity score, SQL translation, report writing.
 \item {\bf Chengkang Xu:} node mapping, meaningless nodes removal, inserting implicit nodes, report writing.
 \end{itemize}
 
