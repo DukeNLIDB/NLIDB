@@ -12,6 +12,11 @@ import java.util.List;
 public class Node {
 	
 	/**
+	 * record if the node is copied over
+	 */
+	boolean outside = false;
+	
+	/**
 	 * Information indicating the corresponding SQL component of the Node.
 	 */
 	NodeInfo info = null;
