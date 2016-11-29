@@ -80,6 +80,8 @@ public class Node {
 	public void setChild(Node child) {this.children.add(child);}
 	public Node getParent() {return parent;}
 	public void setParent(Node parent) {this.parent = parent;}
+	public void setOutside(boolean outside) {this.outside = outside;}
+	public boolean getOutside() {return this.outside}
 
 	/**
 	 * Generate an array of the nodes tree with this as root
