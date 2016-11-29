@@ -230,6 +230,7 @@ Given a parse tree, there are several steps of reformulation.
 	
 	\textbf{return} results
 	}
+	
 	We use a hash table to store hash values for trees and make sure every tree is processed at most once. We set a parameter $t$ to limit the maximum number of edits approved. We use a function evaluate(tree) to compute the ``score'' of each tree, and if a newly generated tree has higher score than the original tree, we regard it as a bad tree and discard it directly. Otherwise, this tree is added into the priority queue, which stores trees with there ``score'' in ascending order, for future reformulation.
 	
 	We denote the ``score'' of each tree as the number of ``invalid'' nodes violating previous grammar. With more ``invalid'' nodes, a tree gets higher score and is more likely to be discarded right away. The complex rules to check if a nodes is ``invalid'' extend the recursive parse tree grammar and figure out the validity of nodes according to their word type. One basic rule is that, we only check the relationship between a node and its direct children to determine its validity. Take a Value Node (VN) for example, according to the grammar, it is invalid if and only if it has children.
