@@ -81,5 +81,18 @@ public class NodeInfo {
 		return true;
 	}
 
+	public boolean sameSchema (NodeInfo other) {
+
+		if (type == null || other.type == null || value == null || other.value == null) {
+			return false;
+		}
+
+		if (type.equals(other.type) && value.equals(other.value)) {
+
+			return true;
+		}
+
+		return false;
+	}
 	
 }
