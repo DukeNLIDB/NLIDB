@@ -87,7 +87,7 @@ public class NodeInfo {
 			return false;
 		}
 
-		if (type.equals(other.type) && value.equals(other.value)) {
+		if (type.equals(other.getType()) && value.equals(other.getValue())) {
 
 			return true;
 		}
