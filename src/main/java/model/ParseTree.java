@@ -127,108 +127,26 @@ public class ParseTree implements IParseTree {
 	/*I am assuming the tree is mapped as (b) in figure 7 on page 7 
 	 *and the tree is mapped correctly in preorder*/
 	public void insertImplicitNodes() {
+		List <Node> childrenOfRoot = root.getChildren();
 		
-		//iterate all node to find SN node.
-		
-		int SN_index = 0;
-		
-		for (int i = 0; i < N; i ++) {
-		
-			if (nodes[i].getInfo().getType().equals("SN")) {
+		// no condition
+		if (childrenOfRoot.size() <= 1) {
 			
-				SN_index = i;
-				break;	
-			}
+			return;
 		}
 		
-		//start from SN node, get all children index
+		//one or more condition
 		
-		int endOfLeftTree = SN_index;
-		int startOfLeftTree = SN_index + 1;
-		
-		for (int i = startOfLeftTree; i < N; i ++) {
+		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 			
-			if (nodes[i].getParent().getIndex() == endOfLeftTree) {
-				endOfLeftTree = i;
-			}
-			else {
-				break;
-			}
-		}
-		int rightRoot = endOfLeftTree + 1;
-		int endOfMidTree = implicitHelper(startOfLeftTree, endOfLeftTree, rightRoot);
-		implicitHelper(rightRoot + 1, endOfMidTree, endOfMidTree);
-	}
-	
-	public int implicitHelper (int startOfLeftTree, int endOfLeftTree, int rightRoot) {
-		
-		int startOfCurrentTree = rightRoot + 1;
-		int endOfCurrentTree = rightRoot;
-		boolean firstChild = true;
-		
-		for (int i = rightRoot + 1; i < N; i ++) {
-			
-			if (nodes[i].getParent().getIndex() == rightRoot &&
-				!firstChild) {
-				endOfCurrentTree = i - 1;
-				break;
-			}
-			
-			if(firstChild) {firstChild = false;}
-		}
-		//compare
-		
-		int [] hit = new int[N]; 
-		int hitindex = 0;
-		
-		for (int i = startOfLeftTree; i < endOfLeftTree; i ++) {
-			for (int j = startOfCurrentTree; j < endOfCurrentTree + 1; j ++) {
-				if (nodes[i] == nodes[j]) {
-					hit[hitindex] = i;
-				}
-			}
-		}
-		
-		//insert
-			
-		for (int j = startOfLeftTree; j < endOfLeftTree; j ++) {
-			boolean found = false;
-			for (int i = 0; i < hitindex; i ++) {
+			if (childrenOfRoot.get(i).getInfo().getType().equals("SN")) {
 				
-				if (nodes[i] == nodes[j]) {  //corrected by Sandy, not sure
-					found = true; 
-					break;
-				}
-			}
-			
-			if (!found) {
-				modNodes(nodes[j], endOfCurrentTree);
-				endOfCurrentTree ++;
-				N ++;
+				
 			}
 		}
-		
-		return endOfCurrentTree;
 	}
 	
-	public void modNodes (Node n, int endOfCurrentTree) {
-		
-		Node nn = new Node(endOfCurrentTree + 1, n.getWord(), n.getPosTag());
-		nn.setParent(nodes[endOfCurrentTree]);
-		nodes[endOfCurrentTree].setChild(nn);
-		
-		for (int i = N - 1; i > endOfCurrentTree; i --) {
-		
-			if (i == endOfCurrentTree + 1) {
-				nodes[i] = nn;
-			}
-			else {
-				nodes[i] = nodes[i - 1];
-				nodes[i].setIndex(i);
-			}
-		}
-		
-	}
+	
 	
 	@Override
 	public ParseTree mergeLNQN(){   
