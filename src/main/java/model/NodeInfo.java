@@ -83,7 +83,7 @@ public class NodeInfo {
 
 	public boolean sameSchema (NodeInfo other) {
 
-		if (type == null || other.type == null || value == null || other.value == null) {
+		if (type == null || other.getType() == null || value == null || other.getValue() == null) {
 			return false;
 		}
 
