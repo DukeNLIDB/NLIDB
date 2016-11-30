@@ -135,15 +135,33 @@ public class ParseTree implements IParseTree {
 			return;
 		}
 		
-		//one or more condition
+		//find SN node
+
+		int IndexOfSN = 0;
 		
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 			
 			if (childrenOfRoot.get(i).getInfo().getType().equals("SN")) {
 				
+				IndexOfSN = i;
+				break;
+			}
+		}
+
+		//get children of select and add them to left subtree of all branches
+
+		Node SN = childrenOfRoot.get(IndexOfSN);
+
+		Node [] SN_children = SN.genNodesArray();
+
+		for (int i = 0; i < childrenOfRoot.size(); i ++) {
+
+			if (i != IndexOfSN) {
+
 				
 			}
 		}
+
 	}
 	
 	

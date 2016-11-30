@@ -26,7 +26,7 @@ public class ImplicitNodeTest {
 		nodes[4].info = new NodeInfo("NN", "in.pubkey");
 
 		nodes[5] = new Node(5, "VLDB", "--");
-		nodes[5].info = new NodeInfo("NN", "in.area");
+		nodes[5].info = new NodeInfo("VN", "in.area");
 
 		nodes[6] = new Node(6, "after", "--");
 		nodes[6].info = new NodeInfo("ON", ">");
