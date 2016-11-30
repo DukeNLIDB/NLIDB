@@ -173,15 +173,18 @@ public class ParseTree implements IParseTree {
 
 		//add them to left subtree of all branches
 
+		Node [] nodes;
+		int indexOfBranchEnd; 
+
 		Node SN_NN = SN.get(IndexOfSN_NN);
 
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 
 			if (i != IndexOfSN) {
 
-				Node [] nodes = childrenOfRoot.get(i).genNodesArray();
+				nodes = childrenOfRoot.get(i).genNodesArray();
 
-				int indexOfBranchEnd = implictNodeHelper(nodes);
+				indexOfBranchEnd = endOfLeftBranch(nodes);
 
 				Node copy = SN_NN.clone();
 				copy.setOutside(true);
@@ -191,28 +194,94 @@ public class ParseTree implements IParseTree {
 			}
 		}
 
-		//
+		/*Now begin the second phase, compare left core node with right core node*/
+
+		int indexOfRightCoreNode = -1;
+		int indexOfLeftCoreNode = -1;
+
+		for (int i = 0; i < childrenOfRoot.size(); i ++) {
+			
+			if (i != IndexOfSN) {
+				
+				nodes = childrenOfRoot.get(i).genNodesArray();
+
+				int sizeOfRightTree = nodes[endOfLeftBranch(nodes) + 1].getChildren().size() + 1;
+
+				//if right tree only contains nunmbers, skip it
+
+				if (sizeOfRightTree != 1 || !isNumeric(nodes[endOfLeftBranch(nodes) + 1].getWord())) {
+
+					indexOfLeftCoreNode = coreNode(nodes, true);
+					indexOfRightCoreNode = coreNode(nodes, false);
+
+					
+
+				}
+
+			}
+		}
 
 	}
+
 	
 	/**
 	 * find the index of the last node in the left subtree
 	 */
 
-	public int implictNodeHelper (Node [] nodes) {
+	public int endOfLeftBranch (Node [] nodes) {
 
-		for (int i = 1; i < nodes.size(); i ++) {
+		for (int i = 1; i < nodes.length; i ++) {
 
 			if(nodes[i].getParent().equals(nodes[0])) {
 
-				return i;
+				return i - 1;
 			}
 
 		}
 
 		return -1;
 	}
+
+	/**
+	 * check if right branch contains only number
+	 */
+	public boolean isNumeric(String str)  {  
+  		try  {  
+    		double d = Double.parseDouble(str);  
+  		}  
+  		catch(NumberFormatException e) {  
+    		return false;  
+  		}  
+  		return true;  
+	}
+
+	/**
+	 * find index of core node
+	 */
+
+	public int coreNode (Node [] nodes, boolean left) {
+
+		int startIndex = 1;
+		int endIndex = endOfLeftBranch(nodes);
+
+		if (!left) {
+
+			startIndex = endOfLeftBranch(nodes) + 1;
+			endIndex = nodes.length - 1;
+		}
+
+		for (int i = startIndex; i <= endIndex; i ++) {
+
+			if (nodes[i].getInfo().getType().equals("NN")) {
+
+				return i;
+			}
+		}
+
+		return -1;
+	}
 	
+	//
 	
 	@Override
 	public ParseTree mergeLNQN(){   
