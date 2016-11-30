@@ -127,6 +127,7 @@ public class ParseTree implements IParseTree {
 	/*I am assuming the tree is mapped as (b) in figure 7 on page 7 
 	 *and the tree is mapped correctly in preorder*/
 	public void insertImplicitNodes() {
+
 		List <Node> childrenOfRoot = root.getChildren();
 		
 		// no condition
@@ -135,7 +136,9 @@ public class ParseTree implements IParseTree {
 			return;
 		}
 		
-		//find SN node
+		/*Now begin first phase, add nodes under select to left subtree*/
+
+		//find index of SN
 
 		int IndexOfSN = 0;
 		
@@ -148,22 +151,67 @@ public class ParseTree implements IParseTree {
 			}
 		}
 
-		//get children of select and add them to left subtree of all branches
+		//start from the name node 
 
 		Node SN = childrenOfRoot.get(IndexOfSN);
+		List <Node> SN_children = SN.getChildren();
 
-		Node [] SN_children = SN.genNodesArray();
+		int IndexOfSN_NN = 0;
+
+
+		for (int i = 0; i < SN_children.size(); i ++) {
+
+			if (SN_children.get(i).getInfo().getType().equals("NN")) {
+
+
+				IndexOfSN_NN = i;
+				break;
+			}
+
+		}
+
+
+		//add them to left subtree of all branches
+
+		Node SN_NN = SN.get(IndexOfSN_NN);
 
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 
 			if (i != IndexOfSN) {
 
-				
+				Node [] nodes = childrenOfRoot.get(i).genNodesArray();
+
+				int indexOfBranchEnd = implictNodeHelper(nodes);
+
+				Node copy = SN_NN.clone();
+				copy.setOutside(true);
+
+				nodes[indexOfBranchEnd].setChild(copy);
+				copy.setParent(nodes[indexOfBranchEnd]);
 			}
 		}
 
+		//
+
 	}
 	
+	/**
+	 * find the index of the last node in the left subtree
+	 */
+
+	public int implictNodeHelper (Node [] nodes) {
+
+		for (int i = 1; i < nodes.size(); i ++) {
+
+			if(nodes[i].getParent().equals(nodes[0])) {
+
+				return i;
+			}
+
+		}
+
+		return -1;
+	}
 	
 	
 	@Override
