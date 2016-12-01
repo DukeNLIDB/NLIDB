@@ -124,8 +124,6 @@ public class ParseTree implements IParseTree {
 	
 	@Override
 	
-	/*I am assuming the tree is mapped as (b) in figure 7 on page 7 
-	 *and the tree is mapped correctly in preorder*/
 	public void insertImplicitNodes() {
 
 		List <Node> childrenOfRoot = root.getChildren();
@@ -136,9 +134,7 @@ public class ParseTree implements IParseTree {
 			return;
 		}
 		
-		/*Now begin first phase, add nodes under select to left subtree*/
-
-		//find index of SN
+		//phase 1, add nodes under select to left subtree
 
 		int IndexOfSN = 0;
 		
@@ -158,11 +154,9 @@ public class ParseTree implements IParseTree {
 
 		int IndexOfSN_NN = 0;
 
-
 		for (int i = 0; i < SN_children.size(); i ++) {
 
 			if (SN_children.get(i).getInfo().getType().equals("NN")) {
-
 
 				IndexOfSN_NN = i;
 				break;
@@ -177,7 +171,7 @@ public class ParseTree implements IParseTree {
 		
 		int indexOfAppendedNode; 
 
-		Node SN_NN = SN.get(IndexOfSN_NN);
+		Node SN_NN = SN_children.get(IndexOfSN_NN);
 
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 
@@ -198,7 +192,7 @@ public class ParseTree implements IParseTree {
 			}
 		}
 
-		/*Now begin the second phase, compare left core node with right core node*/
+		//phase 2, compare left core node with right core node
 
 		int indexOfRightCoreNode = -1;
 		int indexOfLeftCoreNode = -1;
@@ -242,7 +236,6 @@ public class ParseTree implements IParseTree {
 							//copy core node only
 
 							doInsert = true;
-
 						}
 
 						if (doInsert) {
@@ -283,7 +276,6 @@ public class ParseTree implements IParseTree {
 								copy.setParent(nodes[indexOfNewRightCN - 1]);
 								nodes[indexOfNewRightCN - 1].children = new ArrayList<Node>();
 								nodes[indexOfNewRightCN - 1].setChild(copy); 
-
 							}
 
 							else {
@@ -293,56 +285,122 @@ public class ParseTree implements IParseTree {
 								if (indexOfNewRightCN == -1) {
 
 									indexOfNewRightCN = endOfLeftBranch(nodes);
-
 								}
-
-								//
 
 								copy.setChild(nodes[indexOfNewRightCN]);
 								nodes[indexOfNewRightCN].getParent().removeChild(nodes[indexOfNewRightCN]);
 								nodes[indexOfNewRightCN].getParent().setChild(copy);
 								nodes[indexOfNewRightCN].setParent(copy);
-
 							}
-
 						}
 
-						//now begin phase 3, map each NV under left core node to right core node
-
-						Node [] nodes_new = childrenOfRoot.get(i).genNodesArray();
-
-						indexOfRightCoreNode = coreNode(nodes_new, false);
+						//phase 3, map each NV under left core node to right core node
 						
 						List <Node> NV_children_left = nodes[indexOfLeftCoreNode].getChildren();
 
-						List <Node> NV_children_right = nodes[indexOfRightCoreNode].getChildren();
-
-
 						for (int j = 0; j < NV_children_left.size(); j ++) {
 
+							Node [] nodes_new = childrenOfRoot.get(i).genNodesArray();
+							indexOfRightCoreNode = coreNode(nodes_new, false);
+							List <Node> NV_children_right = nodes_new[indexOfRightCoreNode].getChildren();
+
 							boolean found_NV = false;
+
+							Node curr_left = NV_children_left.get(j);
+							String curr_left_type = curr_left.getInfo().getType();
 
 							for (int k = 0; k < NV_children_right.size(); k ++) {
 
 								//compare
-								
 
+								Node curr_right = NV_children_right.get(k);
+
+								//strictly compare, exact match ON
+
+								if (curr_left_type.equals("ON")) {
+
+									if (curr_left.equals(curr_right)) {
+
+										found_NV = true;
+										break;
+									}
+								}
+
+								else {
+
+									if (curr_left.getInfo().sameSchema(curr_right.getInfo())) {
+
+										found_NV = true;
+										break;
+									}
+								}
 							}
 
 							if (!found_NV) {
 
 								//insert
+
+								copy = curr_left.clone();
+								nodes_new[indexOfRightCoreNode].setChild(copy);
+								copy.setOutside(true);
+								copy.setParent(nodes_new[indexOfRightCoreNode]);
 							}
 						}
 
+						//phase 4, insert function node
+
+						Node [] nodes_final_temp = childrenOfRoot.get(i).genNodesArray();
+
+						int indexOfLeftFN_Tail = -1;
+
+						for (int j = indexOfLeftCoreNode; j > 0; j --) {
+
+							if (nodes_final_temp[j].getInfo().getType().equals("FN")) {
+
+								indexOfLeftFN_Tail = j;
+								break;
+							}
+						}
+
+						if (indexOfLeftFN_Tail != -1) {
+
+							//ASSUMPTION: if FN exists, it always before core node
+
+							for (int k = 1; k < indexOfLeftFN_Tail + 1; k ++) {
+
+								Node [] nodes_final = childrenOfRoot.get(i).genNodesArray();
+								indexOfRightCoreNode = coreNode(nodes_final, false);
+
+								boolean found_FN = false;
+
+								for (int j = endOfLeftBranch(nodes_final) + 1; j < indexOfRightCoreNode; j ++) {
+
+									if (nodes_final[j].getInfo().ExactSameSchema(nodes_final[k].getInfo())) {
+
+										found_FN = true;
+									}
+								}
+
+								if(!found_FN) {
 
 
+									copy = nodes_final[k].clone();
+									copy.setOutside(true);
+									copy.children = new ArrayList<Node>();
+
+									nodes[0].removeChild(nodes_final[endOfLeftBranch(nodes_final) + 1]);
+									nodes[0].setChild(copy);
+
+									copy.setParent(nodes[0]);
+									copy.setChild(nodes[endOfLeftBranch(nodes_final) + 1]);
+									nodes[endOfLeftBranch(nodes_final) + 1].setParent(copy);
+								}
+							}
+						}
 					}
 				}
-
 			}
 		}
-
 	}
 
 	/**
