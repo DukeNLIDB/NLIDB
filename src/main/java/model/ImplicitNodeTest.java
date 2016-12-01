@@ -35,7 +35,7 @@ public class ImplicitNodeTest {
 		nodes[7].info = new NodeInfo("VN", "in.year");
 
 		nodes[8] = new Node(8, "Bob", "--");
-		nodes[8].info = new NodeInfo("VN", "author.authoship");
+		nodes[8].info = new NodeInfo("VN", "authorship.author");
 		
 		tree.root = nodes[0];
 		tree.root.setChild(nodes[1]);
