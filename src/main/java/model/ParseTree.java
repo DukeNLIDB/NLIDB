@@ -173,8 +173,9 @@ public class ParseTree implements IParseTree {
 
 		//add them to left subtree of all branches
 
-		Node [] nodes;
-		int indexOfBranchEnd; 
+		Node copy;
+		
+		int indexOfAppendedNode; 
 
 		Node SN_NN = SN.get(IndexOfSN_NN);
 
@@ -182,15 +183,18 @@ public class ParseTree implements IParseTree {
 
 			if (i != IndexOfSN) {
 
-				nodes = childrenOfRoot.get(i).genNodesArray();
+				Node [] nodes_SN_NN = childrenOfRoot.get(i).genNodesArray();
 
-				indexOfBranchEnd = endOfLeftBranch(nodes);
+				indexOfAppendedNode = nameNodeToBeAppended(nodes_SN_NN);
 
-				Node copy = SN_NN.clone();
-				copy.setOutside(true);
+				if (indexOfAppendedNode != -1) {
 
-				nodes[indexOfBranchEnd].setChild(copy);
-				copy.setParent(nodes[indexOfBranchEnd]);
+					copy = SN_NN.clone();
+					copy.setOutside(true);
+
+					nodes_SN_NN[indexOfAppendedNode].setChild(copy);
+					copy.setParent(nodes_SN_NN[indexOfAppendedNode);
+				}
 			}
 		}
 
@@ -203,19 +207,137 @@ public class ParseTree implements IParseTree {
 			
 			if (i != IndexOfSN) {
 				
-				nodes = childrenOfRoot.get(i).genNodesArray();
+				Node [] nodes = childrenOfRoot.get(i).genNodesArray();
 
-				int sizeOfRightTree = nodes[endOfLeftBranch(nodes) + 1].getChildren().size() + 1;
+				int startOfRightBranch = endOfLeftBranch(nodes) + 1
+
+				int sizeOfRightTree = nodes[startOfRightBranch].getChildren().size() + 1;
 
 				//if right tree only contains nunmbers, skip it
 
-				if (sizeOfRightTree != 1 || !isNumeric(nodes[endOfLeftBranch(nodes) + 1].getWord())) {
+				if (sizeOfRightTree != 1 || !isNumeric(nodes[startOfRightBranch].getWord())) {
 
 					indexOfLeftCoreNode = coreNode(nodes, true);
 					indexOfRightCoreNode = coreNode(nodes, false);
 
-					
+					//if left core node exists
 
+					if (indexOfLeftCoreNode != -1) {
+
+						boolean doInsert = false;
+ 
+						//if right subtree neither have core node nor it only contains number
+						if (indexOfRightCoreNode == -1) {
+
+							//copy core node only
+							
+							doInsert = true;
+						}
+
+						//if right core node & left core node are different schema
+
+						else if (!nodes[indexOfRightCoreNode].getInfo().
+								 ExactSameSchema(nodes[indexOfLeftCoreNode]).getInfo()) {
+
+							//copy core node only
+
+							doInsert = true;
+
+						}
+
+						if (doInsert) {
+
+							copy = nodes[indexOfLeftCoreNode].clone();
+							copy.children = new ArrayList<Node>();
+							copy.setOutside(true);
+
+							boolean insertAroundFN = false;
+
+							int indexOfNewRightCN = IndexToInsertCN(nodes);
+
+							if (indexOfNewRightCN == -1) {
+
+								for (int j = nodes.length - 1; j >  endOfLeftBranch(nodes); j --) {
+
+									if (nodes[j].getInfo().getType().equals("FN")) {
+
+										indexOfNewRightCN = j + 1;
+										insertAroundFN = true;
+										break;
+									}
+								}
+							}
+
+							if (insertAroundFN) {
+
+								//THIS ONLY HANDLES FN NODE HAS NO CHILD OR ONE NAME NODE CHILD
+
+								List <Node> FN_children = nodes[indexOfNewRightCN - 1].getChildren();
+								
+								for (int j = 0; j < FN_children.size(); j ++) {
+									
+									copy.setChild(FN_children.get(j));
+									FN_children.get(j).setParent(copy);
+								}
+
+								copy.setParent(nodes[indexOfNewRightCN - 1]);
+								nodes[indexOfNewRightCN - 1].children = new ArrayList<Node>();
+								nodes[indexOfNewRightCN - 1].setChild(copy); 
+
+							}
+
+							else {
+
+								//if right subtree only contains VN, adjust index
+
+								if (indexOfNewRightCN == -1) {
+
+									indexOfNewRightCN = endOfLeftBranch(nodes);
+
+								}
+
+								//
+
+								copy.setChild(nodes[indexOfNewRightCN]);
+								nodes[indexOfNewRightCN].getParent().removeChild(nodes[indexOfNewRightCN]);
+								nodes[indexOfNewRightCN].getParent().setChild(copy);
+								nodes[indexOfNewRightCN].setParent(copy);
+
+							}
+
+						}
+
+						//now begin phase 3, map each NV under left core node to right core node
+
+						Node [] nodes_new = childrenOfRoot.get(i).genNodesArray();
+
+						indexOfRightCoreNode = coreNode(nodes_new, false);
+						
+						List <Node> NV_children_left = nodes[indexOfLeftCoreNode].getChildren();
+
+						List <Node> NV_children_right = nodes[indexOfRightCoreNode].getChildren();
+
+
+						for (int j = 0; j < NV_children_left.size(); j ++) {
+
+							boolean found_NV = false;
+
+							for (int k = 0; k < NV_children_right.size(); k ++) {
+
+								//compare
+								
+
+							}
+
+							if (!found_NV) {
+
+								//insert
+							}
+						}
+
+
+
+					}
 				}
 
 			}
@@ -223,6 +345,40 @@ public class ParseTree implements IParseTree {
 
 	}
 
+	/**
+	 * find the index in the right tree to append core node
+	 */
+
+	public int IndexToInsertCN (Node [] nodes) {
+
+
+		for (int i = endOfLeftBranch(nodes) + 1; i < nodes.length; i ++) {
+
+			if (nodes[i].getInfo().getType().equals("NN")) {
+
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Appending the name node under SELECT to the last name node in leftsubtree
+	 */
+
+	public int nameNodeToBeAppended (Node [] nodes) {
+
+		for (int i = endOfLeftBranch(nodes); i > 0; i --) {
+
+			if (nodes[i].getInfo().getType().equals("NN")) {
+
+				return i;
+			}
+		}
+
+		return -1;
+	}
 	
 	/**
 	 * find the index of the last node in the left subtree
@@ -274,7 +430,14 @@ public class ParseTree implements IParseTree {
 
 			if (nodes[i].getInfo().getType().equals("NN")) {
 
-				return i;
+				if (nodes[i].getOutside) {
+					return -1;
+				}
+
+				else {
+
+					return i;
+				}
 			}
 		}
 
