@@ -81,7 +81,7 @@ public class NodeInfo {
 		return true;
 	}
 
-	public boolean sameSchema (NodeInfo other) {
+	public boolean ExactSameSchema (NodeInfo other) {
 
 		if (type == null || other.getType() == null || value == null || other.getValue() == null) {
 			return false;
@@ -91,6 +91,36 @@ public class NodeInfo {
 
 			return true;
 		}
+
+		return false;
+	}
+
+	public boolean sameSchema (NodeInfo other) {
+
+		if (type == null || other.getType() == null || value == null || other.getValue() == null) {
+			return false;
+		}
+
+		int indexOfDot_Other = other.getValue().indexOf('.');
+
+		int indexOfDot = value.indexOf('.');
+
+		if (indexOfDot_Other == -1) {
+
+			indexOfDot_Other = other.getValue().length();
+		}
+
+		if (indexOfDot == -1) {
+
+			indexOfDot = value.length;
+		}
+
+		if (other.getValue().substring(0, indexOfDot_Other - 1)
+			.equals(value.substring(0, indexOfDot - 1))) {
+
+			return true;
+		}
+
 
 		return false;
 	}
