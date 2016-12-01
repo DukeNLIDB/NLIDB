@@ -137,7 +137,6 @@ public class ParseTree implements IParseTree {
 		//phase 1, add nodes under select to left subtree
 
 		int IndexOfSN = 0;
-		
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 			
 			if (childrenOfRoot.get(i).getInfo().getType().equals("SN")) {
@@ -161,16 +160,12 @@ public class ParseTree implements IParseTree {
 				IndexOfSN_NN = i;
 				break;
 			}
-
 		}
-
 
 		//add them to left subtree of all branches
 
 		Node copy;
-		
 		int indexOfAppendedNode; 
-
 		Node SN_NN = SN_children.get(IndexOfSN_NN);
 
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
@@ -178,7 +173,6 @@ public class ParseTree implements IParseTree {
 			if (i != IndexOfSN) {
 
 				Node [] nodes_SN_NN = childrenOfRoot.get(i).genNodesArray();
-
 				indexOfAppendedNode = nameNodeToBeAppended(nodes_SN_NN);
 
 				if (indexOfAppendedNode != -1) {
@@ -202,9 +196,7 @@ public class ParseTree implements IParseTree {
 			if (i != IndexOfSN) {
 				
 				Node [] nodes = childrenOfRoot.get(i).genNodesArray();
-
 				int startOfRightBranch = endOfLeftBranch(nodes) + 1
-
 				int sizeOfRightTree = nodes[startOfRightBranch].getChildren().size() + 1;
 
 				//if right tree only contains nunmbers, skip it
@@ -224,7 +216,7 @@ public class ParseTree implements IParseTree {
 						if (indexOfRightCoreNode == -1) {
 
 							//copy core node only
-							
+						
 							doInsert = true;
 						}
 
@@ -243,7 +235,7 @@ public class ParseTree implements IParseTree {
 							copy = nodes[indexOfLeftCoreNode].clone();
 							copy.children = new ArrayList<Node>();
 							copy.setOutside(true);
-
+							
 							boolean insertAroundFN = false;
 
 							int indexOfNewRightCN = IndexToInsertCN(nodes);
@@ -382,8 +374,6 @@ public class ParseTree implements IParseTree {
 								}
 
 								if(!found_FN) {
-
-
 									copy = nodes_final[k].clone();
 									copy.setOutside(true);
 									copy.children = new ArrayList<Node>();
