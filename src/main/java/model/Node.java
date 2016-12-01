@@ -82,6 +82,18 @@ public class Node {
 	public void setParent(Node parent) {this.parent = parent;}
 	public void setOutside(boolean outside) {this.outside = outside;}
 	public boolean getOutside() {return this.outside}
+	
+	public void removeChild (Node child) {
+
+		for (int i = 0; i < children.size(); i ++) {
+
+			if (children.get(i).equals(child)) {
+
+				children.remove(i);
+				return;
+			}
+		}
+	}
 
 	/**
 	 * Generate an array of the nodes tree with this as root
