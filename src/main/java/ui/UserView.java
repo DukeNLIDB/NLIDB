@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import model.NodeInfo;
 
 public class UserView extends Application {
-	private static final String TEST_TEXT = "Return all titles of theory papers before 1970.";
+	private static final String TEST_TEXT = "Return all authors who published theory papers before 1980.";
 	
 	Stage stage; // the window
 	Scene scene; // the main content in the window

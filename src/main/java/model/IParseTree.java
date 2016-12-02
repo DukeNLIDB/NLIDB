@@ -52,7 +52,7 @@ public interface IParseTree extends Iterable<Node> {
 	 * Translate the parse tree into an SQL query.
 	 * @return
 	 */
-	public SQLQuery translateToSQL();
+	public SQLQuery translateToSQL(SchemaGraph schema);
 	
 	/**
 	 * Convert the tree to a String for easier debugging.

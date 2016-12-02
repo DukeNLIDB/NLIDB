@@ -558,9 +558,18 @@ public class ParseTree implements IParseTree {
 		return result.subList(0, 4);
 	}	
 	
-	@Override
+	/**
+	 * Only for testing.
+	 * @return
+	 */
+	@Deprecated
 	public SQLQuery translateToSQL() {
-		return SQLTranslator.translate(root);
+		return translateToSQL(null);
+	}
+	
+	@Override
+	public SQLQuery translateToSQL(SchemaGraph schema) {
+		return SQLTranslator.translate(root, schema);
 	}
 
 	@Override

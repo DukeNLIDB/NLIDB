@@ -31,6 +31,8 @@ public class SQLQuery {
 	 */
 	String get() { return toString(); }
 	
+	Collection<String> getCollection(String keyWord) { return map.get(keyWord); }
+	
 	/**
 	 * Add (key, value) to the SQL Query.
 	 * For example, (SELECT, article.title) or (FROM, article).

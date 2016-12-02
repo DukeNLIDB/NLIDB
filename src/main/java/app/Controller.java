@@ -201,7 +201,7 @@ public class Controller {
 		parseTree.insertImplicitNodes();
 		System.out.println("Going to do translation for tree: ");
 		System.out.println(parseTree);
-		query = parseTree.translateToSQL();	
+		query = parseTree.translateToSQL(schema);	
 		view.setDisplay(query.toString());
 		processing = false;		
 	}
