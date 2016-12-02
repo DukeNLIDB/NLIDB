@@ -191,6 +191,7 @@ public class Controller {
 	public void finishTreeSelection() {
 		selectingTree = false;
 		view.removeTreesChoices();
+		processAfterTreeSelection();
 	}
 	
 // ------------------------------------- //

@@ -1,11 +1,9 @@
 package ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import app.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -62,11 +60,11 @@ public class UserView extends Application {
 	}
 	
 	public void showTreesChoice() {
-		// TODO;
+		vb2.getChildren().addAll(treeChoice, btnTreeConfirm);
 	}
 	
 	public void removeTreesChoices() {
-		// TODO;
+		vb2.getChildren().removeAll(treeChoice, btnTreeConfirm);
 	}
 	
 	@Override
@@ -106,11 +104,7 @@ public class UserView extends Application {
 		
 		// choices and button for tree selection
 		treeChoice = new ComboBox<Integer>(); // ! only show 3 choices now
-		List<Integer> treeIndexList = new ArrayList<Integer>();
-		treeIndexList.add(0);
-		treeIndexList.add(1);
-		treeIndexList.add(2);
-		treeChoice.setItems((ObservableList<Integer>) treeIndexList);
+		treeChoice.setItems(FXCollections.observableArrayList(0,1,2));
 		treeChoice.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) -> {
 			ctrl.showTree(treeChoice.getItems().get((Integer) newV));
 		});

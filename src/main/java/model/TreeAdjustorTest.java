@@ -201,7 +201,7 @@ public class TreeAdjustorTest {
 		System.out.println(result.size());
 		Collections.sort(result, (t1, t2) -> (- t1.getScore() + t2.getScore()));
 		System.out.println("The three trees with highest scores look like:");
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 5; i++) {
 			System.out.println(result.get(i));
 		}
 	}

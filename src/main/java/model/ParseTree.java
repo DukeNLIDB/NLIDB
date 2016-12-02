@@ -492,8 +492,7 @@ public class ParseTree implements IParseTree {
 
 		return -1;
 	}
-	
-	//
+
 	
 	@Override
 	public ParseTree mergeLNQN(){   

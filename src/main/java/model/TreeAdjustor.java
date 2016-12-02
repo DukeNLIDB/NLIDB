@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class TreeAdjustor {
 	
-	private static final int MAX_EDIT = 10;
+	private static final int MAX_EDIT = 20;
 	
 	
 	/**
@@ -140,7 +140,8 @@ public class TreeAdjustor {
 
 	public static List<ParseTree> getAdjustedTrees(ParseTree tree) {
 		List<ParseTree> results = new ArrayList<ParseTree>();
-		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> (t1.getScore()-t2.getScore()));
+		// The top of the pq is the most valid tree (highest score, lowest number of invalid nodes)
+		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> ( - t1.getScore() + t2.getScore() ));
 		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
 //		H.put(tree.hashCode(), tree);
 //		queue.add(tree);
@@ -153,16 +154,17 @@ public class TreeAdjustor {
 		
 		while (queue.size() > 0){
 			ParseTree oriTree = queue.poll();
+			if (oriTree.getEdit() >= MAX_EDIT) { continue; }
 			List<ParseTree> treeList = TreeAdjustor.adjust(oriTree);
-			double treeScore = SyntacticEvaluator.numberOfInvalidNodes(oriTree);
+			double numInvalidNodes = SyntacticEvaluator.numberOfInvalidNodes(oriTree);
 			
 			for (int i = 0; i < treeList.size(); i++){
 				ParseTree currentTree = treeList.get(i);
 				int hashValue = currentTree.hashCode();
-				if (oriTree.getEdit()<MAX_EDIT && !H.containsKey(hashValue)){
+				if ( !H.containsKey(hashValue) ) {
 					H.put(hashValue, currentTree);
 					currentTree.setEdit(oriTree.getEdit()+1);
-					if (SyntacticEvaluator.numberOfInvalidNodes(currentTree) <= treeScore){
+					if (SyntacticEvaluator.numberOfInvalidNodes(currentTree) <= numInvalidNodes) {
 						queue.add(currentTree);
 						results.add(currentTree);
 					}
