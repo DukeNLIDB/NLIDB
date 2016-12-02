@@ -10,8 +10,42 @@ import java.util.Set;
  *
  */
 public class SQLTranslator {
+	private SQLQuery query;
+	private SchemaGraph schema;
+	private Node root;
 	
-	private static void translateCondition(SQLQuery query, Node node) {
+	public SQLTranslator(Node root, SchemaGraph schema) {
+		this.root = root;
+		this.schema = schema;
+		query = new SQLQuery();
+		
+		translateSClause(root.getChildren().get(0));
+		if (root.getChildren().size() >= 2) {
+			translateComplexCondition(root.getChildren().get(1));
+		}
+		
+		if (schema != null) addJoinPath();
+	}
+	
+	public SQLQuery getResult() { return query; } 
+	
+	
+	private static boolean isNumber(String str) {
+	    int length = str.length();
+	    if (length == 0) { return false; }
+	    int i = 0;
+	    if (str.charAt(0) == '-') {
+	        if (length == 1) { return false; }
+	        i = 1;
+	    }
+	    for (; i < length; i++) {
+	        char c = str.charAt(i);
+	        if (c < '0' || c > '9' && c != '.') { return false; }
+	    }
+	    return true;
+	}
+	
+	private void translateCondition(Node node) {
 		String attribute = "ATTRIBUTE";
 		String compareSymbol = "=";
 		String value = "VALUE";
@@ -24,46 +58,49 @@ public class SQLTranslator {
 			attribute = VN.getInfo().getValue();
 			value = VN.getWord();
 		}
+		if (!isNumber(value)) { value = "\""+value+"\""; }
 		query.add("WHERE", attribute+" "+compareSymbol+" "+value);
 		query.add("FROM", attribute.split("\\.")[0]);
 	}
 	
-	private static void translateNN(SQLQuery query, Node node) {
+	private void translateNN(Node node) {
+		if (!node.getInfo().getType().equals("NN")) { return; }
 		query.add("SELECT", node.getInfo().getValue());
 		query.add("FROM", node.getInfo().getValue().split("\\.")[0]);		
 	}
 	
-	private static void translateNP(SQLQuery query, Node node) {
-		translateNN(query, node);
+	
+	private void translateNP(Node node) {
+		translateNN(node);
 		for (Node child : node.getChildren()) {
 			if (child.getInfo().getType().equals("NN")) {
-				translateNN(query, child);
+				translateNN(child);
 			} else if (child.getInfo().getType().equals("ON") ||
 					child.getInfo().getType().equals("VN")){
-				translateCondition(query, child);
+				translateCondition(child);
 			}
 		}
 	}
 	
-	private static void translateGNP(SQLQuery query, Node node) {
+	private void translateGNP(Node node) {
 		if (node.getInfo().getType().equals("FN")) {
 			// TODO: Do something for the FN
-			translateGNP(query, node.getChildren().get(0));
+			translateGNP(node.getChildren().get(0));
 		} else if (node.getInfo().getType().equals("NN")) {
-			translateNP(query, node);
+			translateNP(node);
 		}
 	}
 	
-	private static void translateComplexCondition(SQLQuery query, Node node) {
+	private void translateComplexCondition(Node node) {
 		// TODO;
 	}
 	
-	private static void translateSClause(SQLQuery query, Node node) {
+	private void translateSClause(Node node) {
 		if (!node.getInfo().getType().equals("SN")) { return; }
-		translateGNP(query, node.getChildren().get(0));
+		translateGNP(node.getChildren().get(0));
 	}
 	
-	private static void addJoinPath(SQLQuery query, SchemaGraph schema) {
+	private void addJoinPath() {
 		List<String> fromTables = new ArrayList<String>(query.getCollection("FROM"));
 		if (fromTables.size() <= 1) { return; }
 		String table1 = fromTables.get(0);
@@ -72,22 +109,6 @@ public class SQLTranslator {
 		for (String joinKey : joinKeys) {
 			query.add("WHERE", table1+"."+joinKey+" = "+table2+"."+joinKey);
 		}
-	}
-	
-	public static SQLQuery translate(Node root, SchemaGraph schema) {
-		SQLQuery query = new SQLQuery();
-		if (!root.getWord().equals("ROOT")) {
-			System.out.println("ROOT is not ROOT!");
-			return query;
-		}
-		
-		translateSClause(query, root.getChildren().get(0));
-		if (root.getChildren().size() >= 2) {
-			translateComplexCondition(query, root.getChildren().get(1));
-		}
-		
-		if (schema != null) addJoinPath(query, schema);
-		return query;
 	}
 
 }
