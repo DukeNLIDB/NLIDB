@@ -543,11 +543,18 @@ public class ParseTree implements IParseTree {
 
 	/**
 	 * For now, return the first three trees for choices.
+	 * First order on higher validity score, second order on lower edits.
 	 */
 	@Override
 	public List<ParseTree> getAdjustedTrees() {
 		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(this);
-		Collections.sort(result, (t1, t2) -> (- t1.getScore() + t2.getScore()));
+		Collections.sort(result, (t1, t2) -> {
+			if (t1.getScore() != t2.getScore()) {
+				return - t1.getScore() + t2.getScore();
+			} else {
+				return t1.getEdit() - t2.getEdit();
+			}
+		});
 		return result.subList(0, 4);
 	}	
 	
