@@ -14,8 +14,7 @@ public class SyntacticEvaluator {
 	 * a root is invalid if: 
 	 * it has no child; 
 	 * it has only one child and this child is not SN; 
-	 * it has more than one child and the first child is not SN; 
-	 * it has more than one child and the first child is SN, but some later child is not GNP.
+	 * it has more than one child and other than the first child is not ON.
 	 * @param node
 	 * @return
 	 */
@@ -39,7 +38,7 @@ public class SyntacticEvaluator {
 			}
 			else {
 				for (int j = 1; j < sizeOfChildren; j++){
-					if (!(children.get(j).getInfo().getType().equals("NN") || children.get(j).getInfo().getType().equals("FN"))){
+					if (!children.get(j).getInfo().getType().equals("ON")){
 						numOfInvalid++;
 						node.isInvalid = true;
 					}
@@ -218,11 +217,11 @@ public class SyntacticEvaluator {
 		}
 		else if (sizeOfChildren == 1){
 			String childType = children.get(0).getInfo().getType();
-			if (!(parentType.equals("ON") || parentType.equals("SN") || parentType.equals("FN"))){
+			if (!(parentType.equals("ON") || parentType.equals("SN") /*|| parentType.equals("FN")*/)){
 				numOfInvalid++;
 				node.isInvalid = true;
 			}
-			else if (!(childType.equals("NN") || childType.equals("FN"))){
+			else if (!(childType.equals("NN") /*|| childType.equals("FN")*/)){
 				numOfInvalid++;
 				node.isInvalid = true;
 			}

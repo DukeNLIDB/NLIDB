@@ -513,8 +513,26 @@ public class ParseTree implements IParseTree {
 	private void removeNode (Node curNode) {   //remove this node by changing parent-children relationship
 		curNode.getParent().getChildren().remove(curNode);
 		for (Node child: curNode.getChildren()) {
-			child.setParent(curNode.getParent()); 
+			child.setParent(curNode.getParent());
+			curNode.getParent().setChild(child);
 		}
+	}
+	
+	public ParseTree addON(){
+		Node root = this.root;
+		Node on = new Node (0,"equals", "postag");
+		on.info = new NodeInfo ("ON", "=");
+		List<Node> children = root.getChildren();
+		int numOfChild = children.size();
+		for (int i = numOfChild-1 ; i >= 0 ; i--){
+			on.setChild(children.get(i));
+			children.get(i).setParent(on);
+			children.remove(i);
+		}
+		root.setChild(on);
+		on.setParent(root);		
+		ParseTree tree = new ParseTree(root);
+		return tree;
 	}
 
 	/**

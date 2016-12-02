@@ -141,9 +141,13 @@ public class TreeAdjustor {
 	public static List<ParseTree> getAdjustedTrees(ParseTree tree) {
 		List<ParseTree> results = new ArrayList<ParseTree>();
 		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> (t1.getScore()-t2.getScore()));
+		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
+//		H.put(tree.hashCode(), tree);
+//		queue.add(tree);
+//		results.add(tree);
+		tree.addON();
 		queue.add(tree);
 		results.add(tree);
-		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
 		H.put(tree.hashCode(), tree);
 		tree.setEdit(0);
 		
