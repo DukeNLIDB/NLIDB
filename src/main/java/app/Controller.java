@@ -193,7 +193,6 @@ public class Controller {
 		view.removeTreesChoices();
 		processAfterTreeSelection();
 	}
-	
 // ------------------------------------- //
 	
 	public void processAfterTreeSelection() {
@@ -208,7 +207,7 @@ public class Controller {
 		System.out.println("Going to remove meaningless nodes for tree: ");
 		System.out.println(parseTree);
 		parseTree.removeMeaninglessNodes();
-		// parseTree adjust structure
+		parseTree.mergeLNQN();
 		startTreeSelection();
 	}
 	
