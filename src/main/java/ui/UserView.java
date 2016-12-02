@@ -18,7 +18,8 @@ import javafx.stage.Stage;
 import model.NodeInfo;
 
 public class UserView extends Application {
-	private static final String TEST_TEXT = "Return number of authors who published theory papers before 1980.";
+	private static final String TEST_TEXT = "Return the number of authors who published both journal and conference papers after 2000.";
+	// "Return number of authors who published theory papers before 1980."
 	
 	Stage stage; // the window
 	Scene scene; // the main content in the window

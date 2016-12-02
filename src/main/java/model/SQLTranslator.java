@@ -12,10 +12,8 @@ import java.util.Set;
 public class SQLTranslator {
 	private SQLQuery query;
 	private SchemaGraph schema;
-	private Node root;
 	
 	public SQLTranslator(Node root, SchemaGraph schema) {
-		this.root = root;
 		this.schema = schema;
 		query = new SQLQuery();
 		
@@ -108,14 +106,27 @@ public class SQLTranslator {
 		translateGNP(node.getChildren().get(0));
 	}
 	
-	private void addJoinPath() {
-		List<String> fromTables = new ArrayList<String>(query.getCollection("FROM"));
-		if (fromTables.size() <= 1) { return; }
-		String table1 = fromTables.get(0);
-		String table2 = fromTables.get(1);
+	private void addJoinKeys(String table1, String table2) {
 		Set<String> joinKeys = schema.getJoinKeys(table1, table2);
 		for (String joinKey : joinKeys) {
 			query.add("WHERE", table1+"."+joinKey+" = "+table2+"."+joinKey);
+		}
+	}
+	
+	private void addJoinPath(List<String> joinPath) {
+		for (int i = 0; i < joinPath.size()-1; i++) {
+			addJoinKeys(joinPath.get(i), joinPath.get(i+1));
+		}
+	}
+	
+	private void addJoinPath() {
+		List<String> fromTables = new ArrayList<String>(query.getCollection("FROM"));
+		if (fromTables.size() <= 1) { return; }
+		for (int i = 0; i < fromTables.size()-1; i++) {
+			for (int j = i+1; j < fromTables.size(); j++) {
+				List<String> joinPath = schema.getJoinPath(fromTables.get(i), fromTables.get(j));
+				addJoinPath(joinPath);
+			}
 		}
 	}
 

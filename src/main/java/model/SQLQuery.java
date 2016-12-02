@@ -17,7 +17,7 @@ public class SQLQuery {
 		map = new HashMap<>();
 		map.put("SELECT", new ArrayList<String>());
 		map.put("FROM", new HashSet<String>());
-		map.put("WHERE", new ArrayList<String>());
+		map.put("WHERE", new HashSet<String>());
 	}
 
 	@Deprecated
