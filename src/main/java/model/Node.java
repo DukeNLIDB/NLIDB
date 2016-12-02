@@ -104,15 +104,6 @@ public class Node {
 		}
 	}
 	
-	public void printNodeInfo () {
-		if (info != null) {
-			
-			System.out.println("type: " + info.getType() + " value: " + info.getValue());
-		}
-		else {
-			System.out.println("nodeInfo is null");
-		}
-	}
 
 	/**
 	 * Generate an array of the nodes tree with this as root
