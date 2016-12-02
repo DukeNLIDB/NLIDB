@@ -518,7 +518,7 @@ public class ParseTree implements IParseTree {
 	}
 	
 	public ParseTree addON(){
-		Node root = this.root;
+		Node root = this.root.clone();
 		Node on = new Node (0,"equals", "postag");
 		on.info = new NodeInfo ("ON", "=");
 		List<Node> children = root.getChildren();

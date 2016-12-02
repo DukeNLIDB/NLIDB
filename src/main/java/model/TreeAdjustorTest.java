@@ -249,14 +249,16 @@ public class TreeAdjustorTest {
 		ParseTree tree = T.addON();
 		System.out.println("After adding ON:");
 		System.out.println(tree);
+		System.out.println("The original tree:");
+		System.out.println(T);
 	}
 
 	public static void main(String[] args) {
 //		numberOfInvalidNodesTest();
 //		mergeLNQNTest();
 //		adjustTest();
-		getAdjustedTreesTest();
-//		testAddON();
+//		getAdjustedTreesTest();
+		testAddON();
 	}
 
 }

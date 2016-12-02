@@ -142,14 +142,16 @@ public class TreeAdjustor {
 		List<ParseTree> results = new ArrayList<ParseTree>();
 		PriorityQueue<ParseTree> queue = new PriorityQueue<ParseTree>((t1,t2) -> (t1.getScore()-t2.getScore()));
 		HashMap<Integer, ParseTree> H = new HashMap<Integer, ParseTree>();
-//		H.put(tree.hashCode(), tree);
-//		queue.add(tree);
-//		results.add(tree);
-		tree.addON();
 		queue.add(tree);
 		results.add(tree);
 		H.put(tree.hashCode(), tree);
 		tree.setEdit(0);
+		
+		ParseTree treeWithON = tree.addON();
+		queue.add(treeWithON);
+		results.add(treeWithON);
+		H.put(treeWithON.hashCode(), treeWithON);
+		treeWithON.setEdit(0);
 		
 		while (queue.size() > 0){
 			ParseTree oriTree = queue.poll();
