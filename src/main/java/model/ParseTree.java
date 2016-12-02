@@ -132,10 +132,13 @@ public class ParseTree implements IParseTree {
 		// no condition
 		if (childrenOfRoot.size() <= 1) {
 			
+			
 			return;
 		}
 		
 		//phase 1, add nodes under select to left subtree
+		
+		System.out.println("Phase 1, add nodes under select node to left subtree");
 
 		int IndexOfSN = 0;
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
@@ -153,6 +156,7 @@ public class ParseTree implements IParseTree {
 		List <Node> SN_children = SN.getChildren();
 
 		int IndexOfSN_NN = 0;
+
 
 		for (int i = 0; i < SN_children.size(); i ++) {
 
@@ -172,7 +176,7 @@ public class ParseTree implements IParseTree {
 		for (int i = 0; i < childrenOfRoot.size(); i ++) {
 
 			if (i != IndexOfSN) {
-
+				
 				Node [] nodes_SN_NN = childrenOfRoot.get(i).genNodesArray();
 				indexOfAppendedNode = nameNodeToBeAppended(nodes_SN_NN);
 
@@ -186,8 +190,13 @@ public class ParseTree implements IParseTree {
 				}
 			}
 		}
-
+		
+		System.out.println(toString() + '\n');
+		
+		
 		//phase 2, compare left core node with right core node
+		
+		System.out.println("Phase 2, core node insertion");
 
 		int indexOfRightCoreNode = -1;
 		int indexOfLeftCoreNode = -1;
@@ -200,7 +209,7 @@ public class ParseTree implements IParseTree {
 				int startOfRightBranch = endOfLeftBranch(nodes) + 1;
 				int sizeOfRightTree = nodes[startOfRightBranch].getChildren().size() + 1;
 
-				//if right tree only contains nunmbers, skip it
+				//if right tree only contains numbers, skip it
 
 				if (sizeOfRightTree != 1 || !isNumeric(nodes[startOfRightBranch].getWord())) {
 
@@ -237,6 +246,7 @@ public class ParseTree implements IParseTree {
 							copy.children = new ArrayList<Node>();
 							copy.setOutside(true);
 							
+							
 							boolean insertAroundFN = false;
 
 							int indexOfNewRightCN = IndexToInsertCN(nodes);
@@ -253,7 +263,7 @@ public class ParseTree implements IParseTree {
 									}
 								}
 							}
-
+							
 							if (insertAroundFN) {
 
 								//THIS ONLY HANDLES FN NODE HAS NO CHILD OR ONE NAME NODE CHILD
@@ -272,22 +282,28 @@ public class ParseTree implements IParseTree {
 							}
 
 							else {
-
+								
 								//if right subtree only contains VN, adjust index
 
 								if (indexOfNewRightCN == -1) {
 
-									indexOfNewRightCN = endOfLeftBranch(nodes);
+									indexOfNewRightCN = endOfLeftBranch(nodes) + 1;
 								}
 
 								copy.setChild(nodes[indexOfNewRightCN]);
+								copy.setParent(nodes[indexOfNewRightCN].getParent());
 								nodes[indexOfNewRightCN].getParent().removeChild(nodes[indexOfNewRightCN]);
 								nodes[indexOfNewRightCN].getParent().setChild(copy);
 								nodes[indexOfNewRightCN].setParent(copy);
+								
 							}
 						}
+						
+						System.out.println(toString());
 
 						//phase 3, map each NV under left core node to right core node
+						
+						System.out.println("Phase 3, transfer constrain nodes from left to right");
 						
 						List <Node> NV_children_left = nodes[indexOfLeftCoreNode].getChildren();
 
@@ -340,7 +356,11 @@ public class ParseTree implements IParseTree {
 							}
 						}
 
+						System.out.println(toString());
+						
 						//phase 4, insert function node
+						
+						System.out.println("Phase 4, insert missing function node");
 
 						Node [] nodes_final_temp = childrenOfRoot.get(i).genNodesArray();
 
@@ -388,6 +408,7 @@ public class ParseTree implements IParseTree {
 								}
 							}
 						}
+						System.out.println(toString());
 					}
 				}
 			}
@@ -435,10 +456,10 @@ public class ParseTree implements IParseTree {
 
 	public int endOfLeftBranch (Node [] nodes) {
 
-		for (int i = 1; i < nodes.length; i ++) {
+		for (int i = 2; i < nodes.length; i ++) {
 
 			if(nodes[i].getParent().equals(nodes[0])) {
-
+				
 				return i - 1;
 			}
 
@@ -479,14 +500,7 @@ public class ParseTree implements IParseTree {
 
 			if (nodes[i].getInfo().getType().equals("NN")) {
 
-				if (nodes[i].getOutside()) {
-					return -1;
-				}
-
-				else {
-
-					return i;
-				}
+				return i;
 			}
 		}
 
