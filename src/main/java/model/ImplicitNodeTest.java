@@ -4,7 +4,6 @@ import java.util.List;
 
 public class ImplicitNodeTest {
 
-	
 	public static void main(String[] args) {
 		
 		ParseTree tree = new ParseTree();
@@ -58,10 +57,14 @@ public class ImplicitNodeTest {
 
 		nodes[6].setChild(nodes[7]);
 		nodes[7].setParent(nodes[6]);
-
-
+		
+		System.out.println("Before");
+		System.out.println(tree.toString());
+		
 		tree.insertImplicitNodes();
-
+		
+		System.out.println("After");
+		System.out.println(tree.toString());
 		
 	}
 	
