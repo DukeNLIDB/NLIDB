@@ -521,15 +521,8 @@ public class ParseTree implements IParseTree {
 		Node root = this.root.clone();
 		Node on = new Node (0,"equals", "postag");
 		on.info = new NodeInfo ("ON", "=");
-		List<Node> children = root.getChildren();
-		int numOfChild = children.size();
-		for (int i = numOfChild-1 ; i >= 0 ; i--){
-			on.setChild(children.get(i));
-			children.get(i).setParent(on);
-			children.remove(i);
-		}
 		root.setChild(on);
-		on.setParent(root);		
+		on.setParent(root);	
 		ParseTree tree = new ParseTree(root);
 		return tree;
 	}
