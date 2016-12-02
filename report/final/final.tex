@@ -266,17 +266,34 @@ Figure 5 is a detailed structure on programs in our project.
 
 We have programmed a GUI in \texttt{UserView.java} and a connection between database and GUI in \texttt{Controller.java}. To realize natural language query, our first step in implementing the translation process is to parse the natural language into SQL keywords using a predefined natural language parser called Stanford NLP. The parsing process is written in \texttt{NLParser.java} and \texttt{ParserTree.java}. After we get the parser tree, we map each tree node (word in initial natural language input) to certain component of SQL and database. The mapping is written in \texttt{NodeMapper.java}. Reformulating parse tree and inserting implicit nodes and related functions are written in \texttt{ParseTree.java}, \texttt{TreeAdjustor.java} and \texttt{SyntacticEvaluator.java}. Translating to SQL is written in \texttt{SQLTranslator.java} and \texttt{SQLQuery}.
 
-\begin{figure*}[ht]
-  \centering
-  \includegraphics[width=0.7\linewidth]{figures/gui_nodes_mapping.png}
-  \caption{GUI during Node Mapping}
-\end{figure*}
+\begin{figure}
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{figures/gui_nodes_mapping.png} % first figure itself
+		\caption{GUI during Node Mapping}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{figures/gui_tree_adjustor1.png} % second figure itself
+		\caption{GUI after Tree Reformulation}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=0.9\textwidth]{figures/gui_translation.png} % second figure itself
+		\caption{GUI after SQL Translation}
+	\end{minipage}
+\end{figure}
 
 Figure 6 is a screenshot of our application during the nodes mapping stage. The upper left part is where the user input comes. The bottom left part is supposed to be the translated SQL query (which hasn’t been completed). The upper left part shows the current information on nodes mapping. The choice box showing “NN: inproceedings.title” contains a drop down list of node types and values for the user to choose from. Once the user confirms the choice by pressing the “confirm choice” button, the app will go on to map the next word. The mapping choices will only be shown to the user if the word doesn’t match with the five predefined node types.
 
-As for the node mapper, we’ve only defined very limited number of explicit rules for nodes mapping. There are only a few predefined keywords, such as return, equals, all, etc (thus limited SQL query functions as well). The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices. 
+Figure 7 is a screenshot of our application after the tree reformulation stage, showing the first parse tree out of 3 choices. The user will go through 3 choices and choose their most ideal tree structure. The tree structure is printed out firstly in preorder traversal, later in parent-children relationship. We can notice that the first choice is almost same as the correct parse tree structure.
 
-In the parse tree reformulation phase, we have correctly defined the grammar rules for checking transformed trees and implemented the algorithm. But because the size of output is so large, it is really hard for the user to pick up an ideal tree from a limited number (like 10) of reported choices. This shortcoming affects the accuracy of tree reformulation. A possible remediation is to add more details to the rules of identifying valid tree structures. Another idea is to introduce more methods of tree comparison, so that there will be larger discrepancies between scores of different trees.
+Figure 8 is a screenshot of our application after the SQL translation stage, translated the previous selected parse tree into SQL.
+
+For the node mapper, we’ve only defined very limited number of explicit rules for nodes mapping. There are only a few predefined keywords, such as return, equals, all, etc (thus limited SQL query functions as well). The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices. 
+
+In the parse tree reformulation phase, we have correctly defined the grammar rules for checking transformed trees and implemented the algorithm. At first, because the size of output was so large, it was really hard for the user to pick up an ideal tree from a limited number (like 3 or 5) of reported choices. This shortcoming affects the accuracy of tree reformulation. A possible remediation is to add more details to the rules of identifying valid tree structures. Another idea is to introduce more methods of tree comparison, so that there will be larger discrepancies between scores of different trees. We have implemented the first method, and been able to improve the accuracy.
 
 %%%================================================================%%%
 \section{Contributions of Project Members}
