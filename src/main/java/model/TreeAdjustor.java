@@ -9,8 +9,7 @@ import java.util.Set;
 
 public class TreeAdjustor {
 	
-	private static final int MAX_EDIT = 20;
-	
+	private static final int MAX_EDIT = 15;
 	
 	/**
 	 * Return the node in the tree that equals to the targetNode.

@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -149,6 +150,9 @@ public class SchemaGraph {
 	 * @return
 	 */
 	public List<String> getJoinPath(String table1, String table2) {
+		if (!tables.containsKey(table1) || !tables.containsKey(table2)) {
+			return new ArrayList<String>();
+		}
 		// Assume table1 and table2 are different.
 		// Find shortest path using BFS.
 		HashMap<String, Boolean> visited = new HashMap<>();

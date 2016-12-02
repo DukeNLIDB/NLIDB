@@ -16,6 +16,7 @@ public class Node {
 	 */
 	boolean outside = false;
 	
+	private int index = 0;
 	/**
 	 * Information indicating the corresponding SQL component of the Node.
 	 */
@@ -47,18 +48,20 @@ public class Node {
 	}
 	
 	public Node(int index, String word, String posTag, NodeInfo info) {
-		this(word, posTag, info);
-	}
-	
-	public Node(String word, String posTag, NodeInfo info) {
+		this.index = index;
 		this.word = word;
 		this.posTag = posTag;
 		this.info = info;
 	}
 	
+	public Node(String word, String posTag, NodeInfo info) {
+		this(0, word, posTag, info);
+		
+	}
+	
 	private Node clone(Node node){
 		if (node == null) return null;
-		Node copy = new Node(node.word, node.posTag, node.info);
+		Node copy = new Node(node.index, node.word, node.posTag, node.info);
 		for (Node child : node.children){
 			Node copyChild = clone(child);
 			copyChild.parent = copy;
@@ -138,12 +141,13 @@ public class Node {
 	public int hashCode() { // exclude parent.
 		final int prime = 31;
 		int result = 17;
+		result = prime * result + index;
 		result = prime * result + ((posTag == null) ? 0 : posTag.hashCode());
 		result = prime * result + ((word == null) ? 0 : word.hashCode());
 		result = prime * result + ((info == null) ? 0 : info.hashCode());
 		if (children != null) {
 			for (Node child : children) {
-				result = prime * result + child.hashCode();				
+				result = prime * result + child.hashCode();	
 			}
 		}
 
@@ -160,6 +164,7 @@ public class Node {
 		if (obj == null) { return false; }
 		if (getClass() != obj.getClass()) { return false; }
 		Node other = (Node) obj;
+		if (index != other.index) { return false; }
 		if (!word.equals(other.word)) { return false; }
 		if (!posTag.equals(other.posTag)) { return false; }
 		if (info != other.info) {
@@ -177,7 +182,7 @@ public class Node {
 	}
 
 	public String toString() {
-		String s = word;
+		String s = "("+index+")"+word;
 		if (info != null) {
 			s += "("+info.getType()+":"+info.getValue()+")";
 		}

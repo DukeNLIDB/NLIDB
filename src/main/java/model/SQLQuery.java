@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Map;
  * @author keping
  */
 public class SQLQuery {
+	private List<SQLQuery> blocks;
 	private Map<String, Collection<String>> map;
 	
 	SQLQuery() {
@@ -18,6 +20,7 @@ public class SQLQuery {
 		map.put("SELECT", new ArrayList<String>());
 		map.put("FROM", new HashSet<String>());
 		map.put("WHERE", new HashSet<String>());
+		blocks = new ArrayList<SQLQuery>();
 	}
 
 	@Deprecated
@@ -30,6 +33,11 @@ public class SQLQuery {
 	 * @return
 	 */
 	String get() { return toString(); }
+	
+	public void addBlock(SQLQuery query) {
+		blocks.add(query);
+		add("FROM", "BLOCK"+blocks.size());
+	}
 	
 	Collection<String> getCollection(String keyWord) { return map.get(keyWord); }
 	
@@ -87,6 +95,11 @@ public class SQLQuery {
 			return "Illegal Query"; 
 		}
 		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < blocks.size(); i++) {
+			sb.append("BLOCK"+(i+1)+":").append("\n");
+			sb.append(blocks.get(i).toString()).append("\n");
+			sb.append("\n");
+		}
 		sb.append("SELECT ").append(toSBLine(map.get("SELECT"))).append("\n");
 		sb.append("FROM ").append(toSBLine(map.get("FROM"))).append("\n");
 		if (!map.get("WHERE").isEmpty()) {

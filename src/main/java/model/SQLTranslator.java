@@ -12,17 +12,33 @@ import java.util.Set;
 public class SQLTranslator {
 	private SQLQuery query;
 	private SchemaGraph schema;
+	private int blockCounter = 1;
 	
 	public SQLTranslator(Node root, SchemaGraph schema) {
-		this.schema = schema;
-		query = new SQLQuery();
-		
-		translateSClause(root.getChildren().get(0));
-		if (root.getChildren().size() >= 2) {
-			translateComplexCondition(root.getChildren().get(1));
+		this(root, schema, false);
+	}
+	
+	/**
+	 * Translating a block, starting from translateGNP.
+	 * @param root
+	 * @param schema
+	 */
+	public SQLTranslator(Node root, SchemaGraph schema, boolean block) {
+		if (!block) {
+			this.schema = schema;
+			query = new SQLQuery();
+			
+			translateSClause(root.getChildren().get(0));
+			if (root.getChildren().size() >= 2) {
+				translateComplexCondition(root.getChildren().get(1));
+			}
+			
+			if (schema != null) addJoinPath();
+		} else {
+			this.schema = schema;
+			query = new SQLQuery();
+			translateGNP(root);
 		}
-		
-		if (schema != null) addJoinPath();
 	}
 	
 	public SQLQuery getResult() { return query; } 
@@ -91,6 +107,7 @@ public class SQLTranslator {
 	
 	private void translateGNP(Node node) {
 		if (node.getInfo().getType().equals("FN")) {
+			if (node.getChildren().isEmpty()) { return; }
 			translateNP(node.getChildren().get(0), node.getInfo().getValue());
 		} else if (node.getInfo().getType().equals("NN")) {
 			translateNP(node);
@@ -98,7 +115,13 @@ public class SQLTranslator {
 	}
 	
 	private void translateComplexCondition(Node node) {
-		// TODO;
+		if (!node.getInfo().getType().equals("ON")) { return; }
+		if (node.getChildren().size() != 2) { return; }
+		SQLTranslator transLeft = new SQLTranslator(node.getChildren().get(0), schema, true);
+		SQLTranslator transRight= new SQLTranslator(node.getChildren().get(1), schema, true);
+		query.addBlock(transLeft.getResult());
+		query.addBlock(transRight.getResult());
+		query.add("WHERE", "BLOCK"+(blockCounter++)+" "+node.getInfo().getValue()+" "+"BLOCK"+(blockCounter++));
 	}
 	
 	private void translateSClause(Node node) {
