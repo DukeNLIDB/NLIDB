@@ -32,24 +32,31 @@ public class NodeMapper {
 		wordNet = new WordNet();
 		map = new HashMap<String, NodeInfo>();
 		map.put("return", new NodeInfo("SN", "SELECT")); // Select Node
+		
 		map.put("equals", new NodeInfo("ON", "="));		 // Operator Node
 		map.put("less",    new NodeInfo("ON", "<"));
 		map.put("greater",    new NodeInfo("ON", ">"));
 		map.put("not",    new NodeInfo("ON", "!="));    //TODO: not is a operator node or logic node?
-		map.put("average",     new NodeInfo("FN", "AVG"));	 // Function Node
-		map.put("most",     new NodeInfo("FN", "MAX"));
-		map.put("total",     new NodeInfo("FN", "SUM"));
 		map.put("before", new NodeInfo("ON", "<"));
 		map.put("after", new NodeInfo("ON", ">"));
-		map.put("fn",     new NodeInfo("FN", "AVG"));	 // Function Node
-		map.put("all",    new NodeInfo("QN", "ALL"));	 // Quantifier Node
-		map.put("any",    new NodeInfo("QN", "ANY"));
-		map.put("each",    new NodeInfo("QN", "EACH"));
-		map.put("and",    new NodeInfo("LN", "AND"));	 // Logic Node
-		map.put("or",    new NodeInfo("LN", "OR"));
 		map.put("more",    new NodeInfo("ON", ">"));
 		map.put("older",    new NodeInfo("ON", ">"));
 		map.put("newer", new NodeInfo("ON", "<"));
+		
+		map.put("fn",     new NodeInfo("FN", "AVG"));	 // Function Node
+		map.put("average",     new NodeInfo("FN", "AVG"));
+		map.put("most",     new NodeInfo("FN", "MAX"));
+		map.put("total",     new NodeInfo("FN", "SUM"));
+		map.put("number", new NodeInfo("FN","COUNT"));
+
+		map.put("all",    new NodeInfo("QN", "ALL"));	 // Quantifier Node
+		map.put("any",    new NodeInfo("QN", "ANY"));
+		map.put("each",    new NodeInfo("QN", "EACH"));
+		
+		map.put("and",    new NodeInfo("LN", "AND"));	 // Logic Node
+		map.put("or",    new NodeInfo("LN", "OR"));
+		
+
 	}
 	
 	/**

@@ -62,16 +62,25 @@ public class SQLTranslator {
 		query.add("WHERE", attribute+" "+compareSymbol+" "+value);
 		query.add("FROM", attribute.split("\\.")[0]);
 	}
-	
+
 	private void translateNN(Node node) {
+		translateNN(node, "");
+	}
+	private void translateNN(Node node, String valueFN) {
 		if (!node.getInfo().getType().equals("NN")) { return; }
-		query.add("SELECT", node.getInfo().getValue());
+		if (!valueFN.equals("")) {
+			query.add("SELECT", valueFN+"("+node.getInfo().getValue()+")");
+		} else {
+			query.add("SELECT", node.getInfo().getValue());
+		}
 		query.add("FROM", node.getInfo().getValue().split("\\.")[0]);		
 	}
 	
-	
 	private void translateNP(Node node) {
-		translateNN(node);
+		translateNP(node, "");
+	}
+	private void translateNP(Node node, String valueFN) {
+		translateNN(node, valueFN);
 		for (Node child : node.getChildren()) {
 			if (child.getInfo().getType().equals("NN")) {
 				translateNN(child);
@@ -84,8 +93,7 @@ public class SQLTranslator {
 	
 	private void translateGNP(Node node) {
 		if (node.getInfo().getType().equals("FN")) {
-			// TODO: Do something for the FN
-			translateGNP(node.getChildren().get(0));
+			translateNP(node.getChildren().get(0), node.getInfo().getValue());
 		} else if (node.getInfo().getType().equals("NN")) {
 			translateNP(node);
 		}

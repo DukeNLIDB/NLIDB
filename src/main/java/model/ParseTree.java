@@ -569,7 +569,8 @@ public class ParseTree implements IParseTree {
 	
 	@Override
 	public SQLQuery translateToSQL(SchemaGraph schema) {
-		return SQLTranslator.translate(root, schema);
+		SQLTranslator translator = new SQLTranslator(root, schema);
+		return translator.getResult(); 
 	}
 
 	@Override
