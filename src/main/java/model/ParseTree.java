@@ -632,8 +632,13 @@ public class ParseTree implements IParseTree {
 		return sb.toString();
 	}
 	
+	/**
+	 * Score of a tree measures the syntactic legality of 
+	 * the tree. It is negative number of Invalid nodes.
+	 * @return
+	 */
 	public int getScore(){
-		return SyntacticEvaluator.numberOfInvalidNodes(this);
+		return - SyntacticEvaluator.numberOfInvalidNodes(this);
 	}
 	
 }
