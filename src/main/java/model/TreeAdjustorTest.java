@@ -194,21 +194,69 @@ public class TreeAdjustorTest {
 		nodes[7].parent = nodes[5];
 		
 		System.out.println("===========test for Running getAdjustedTrees() in TreeAdjustor===========");
+		System.out.println("The original tree:");
+		System.out.println(T);
 		System.out.println("Number of possible trees for choice:");
 		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(T);
 		System.out.println(result.size());
 		Collections.sort(result, (t1, t2) -> (- t1.getScore() + t2.getScore()));
 		System.out.println("The three trees with highest scores look like:");
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 50; i++) {
 			System.out.println(result.get(i));
 		}
 	}
+	
+	public static void testAddON (){
+		ParseTree T = new ParseTree();
+		Node[] nodes = new Node[8];
+		
+		nodes[0] = new Node(0, "ROOT", "--");
+		nodes[0].info = new NodeInfo("ROOT","ROOT");
+		nodes[1] = new Node(1, "return", "--");
+		nodes[1].info = new NodeInfo("SN","SELECT");
+		nodes[2] = new Node(2, "conference", "--");
+		nodes[2].info = new NodeInfo("NN", "Author");
+		nodes[3] = new Node(3, "area", "--");
+		nodes[3].info = new NodeInfo("NN", "Title");
+		nodes[4] = new Node(4, "papers", "--");
+		nodes[4].info = new NodeInfo("NN", "Author");
+		nodes[5] = new Node(5, "citations", "--");
+		nodes[5].info = new NodeInfo("NN", "Journal");
+		nodes[6] = new Node(6, "most", "--");
+		nodes[6].info = new NodeInfo("FN", ">");
+		nodes[7] = new Node(7, "total", "--");
+		nodes[7].info = new NodeInfo("FN", "Year");
+		
+		T.root = nodes[0];
+		nodes[0].children.add(nodes[1]);
+		nodes[1].parent = nodes[0];
+		nodes[1].children.add(nodes[2]);
+		nodes[2].parent = nodes[1];
+		nodes[2].children.add(nodes[3]);
+		nodes[3].parent = nodes[2];
+		nodes[2].children.add(nodes[4]);
+		nodes[4].parent = nodes[2];
+		nodes[4].children.add(nodes[5]);
+		nodes[5].parent = nodes[4];
+		nodes[5].children.add(nodes[6]);
+		nodes[6].parent = nodes[5];
+		nodes[5].children.add(nodes[7]);
+		nodes[7].parent = nodes[5];
+		
+		System.out.println("===========test for Running addON() in ParseTree===========");
+		System.out.println("The original tree:");
+		System.out.println(T);
+		ParseTree tree = T.addON();
+		System.out.println("After adding ON:");
+		System.out.println(tree);
+	}
 
 	public static void main(String[] args) {
-		numberOfInvalidNodesTest();
-		mergeLNQNTest();
-		adjustTest();
+//		numberOfInvalidNodesTest();
+//		mergeLNQNTest();
+//		adjustTest();
 		getAdjustedTreesTest();
+//		testAddON();
 	}
 
 }
