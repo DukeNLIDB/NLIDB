@@ -94,6 +94,25 @@ public class Node {
 			}
 		}
 	}
+	
+	public void printNodeArray () {
+		
+		Node [] nodes = genNodesArray();
+		
+		for (int i = 0; i < nodes.length; i++) {
+			System.out.println("type: " + nodes[i].getInfo().getType() + " value: " + nodes[i].getInfo().getValue());
+		}
+	}
+	
+	public void printNodeInfo () {
+		if (info != null) {
+			
+			System.out.println("type: " + info.getType() + " value: " + info.getValue());
+		}
+		else {
+			System.out.println("nodeInfo is null");
+		}
+	}
 
 	/**
 	 * Generate an array of the nodes tree with this as root
