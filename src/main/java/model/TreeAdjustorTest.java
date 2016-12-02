@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TreeAdjustorTest {
@@ -196,6 +197,11 @@ public class TreeAdjustorTest {
 		System.out.println("Number of possible trees for choice:");
 		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(T);
 		System.out.println(result.size());
+		Collections.sort(result, (t1, t2) -> (- t1.getScore() + t2.getScore()));
+		System.out.println("The three trees with highest scores look like:");
+		for (int i = 0; i < 3; i++) {
+			System.out.println(result.get(i));
+		}
 	}
 
 	public static void main(String[] args) {
