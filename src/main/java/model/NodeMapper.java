@@ -68,6 +68,10 @@ public class NodeMapper {
 	 */
 	public List<NodeInfo> getNodeInfoChoices(Node node, SchemaGraph schema) {
 		List<NodeInfo> result = new ArrayList<NodeInfo>();   //final output
+		if (node.getWord().equals("ROOT")) {
+			result.add(new NodeInfo("ROOT", "ROOT"));
+			return result;
+		}
 		Set<NodeInfo> valueNodes = new HashSet<NodeInfo>();  //used to store (type, value, score) of 100 sample values for every column in every table
 		String word = node.getWord().toLowerCase(); // all words as lower case
 		

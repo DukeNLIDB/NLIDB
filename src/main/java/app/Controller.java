@@ -37,7 +37,9 @@ public class Controller {
 	 */
 	private Node node;
 	private boolean mappingNodes = false;
+	private boolean selectingTree = false;
 	private boolean processing = false;
+	private List<ParseTree> treeChoices;
 	private SQLQuery query;
 	
 	/**
@@ -129,6 +131,8 @@ public class Controller {
 	 */
 	public void startMappingNodes() {
 		if (mappingNodes) { return; }
+		view.showNodesChoice();
+		
 		mappingNodes = true;
 		iter = parseTree.iterator();
 		if (!iter.hasNext()) {
@@ -166,16 +170,45 @@ public class Controller {
 	}
 // ----------------------------------- //
 	
+	
+// ---- Methods for trees selection ---- //
+	public void startTreeSelection() {
+		if (selectingTree) { return; }
+		view.showTreesChoice();
+		selectingTree = true;
+		treeChoices = parseTree.getAdjustedTrees();
+	}
+	
+	public void showTree(int index) {
+		view.setDisplay(treeChoices.get(index).toString());
+	}
+	
+	public void chooseTree(int index) {
+		parseTree = treeChoices.get(index);
+		finishTreeSelection();
+	}
+	
+	public void finishTreeSelection() {
+		selectingTree = false;
+		view.removeTreesChoices();
+	}
+	
+// ------------------------------------- //
+	
+	public void processAfterTreeSelection() {
+		System.out.println("Going to do translation for tree: ");
+		System.out.println(parseTree);
+		query = parseTree.translateToSQL();	
+		view.setDisplay(query.toString());
+		processing = false;		
+	}
+	
 	public void processAfterNodesMapping() {
 		System.out.println("Going to remove meaningless nodes for tree: ");
 		System.out.println(parseTree);
 		parseTree.removeMeaninglessNodes();
 		// parseTree adjust structure
-		System.out.println("Going to do translation for tree: ");
-		System.out.println(parseTree);
-		query = parseTree.translateToSQL();	
-		view.setDisplay(query.toString());
-		processing = false;
+		startTreeSelection();
 	}
 	
 	/**

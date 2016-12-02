@@ -2,6 +2,7 @@ package model;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -516,9 +517,14 @@ public class ParseTree implements IParseTree {
 		}
 	}
 
+	/**
+	 * For now, return the first three trees for choices.
+	 */
 	@Override
 	public List<ParseTree> getAdjustedTrees() {
-		return TreeAdjustor.getAdjustedTrees(this);
+		List<ParseTree> result = TreeAdjustor.getAdjustedTrees(this);
+		Collections.sort(result, (t1, t2) -> (- t1.getScore() + t2.getScore()));
+		return result.subList(0, 4);
 	}	
 	
 	@Override

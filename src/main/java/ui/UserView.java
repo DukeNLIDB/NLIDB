@@ -1,5 +1,8 @@
 package ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import app.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -26,8 +29,11 @@ public class UserView extends Application {
 	Text display;
 	ComboBox<NodeInfo> choiceBox; // use scrollable comboBox instead of choiceBox
 	Button btnConfirmChoice;
+	ComboBox<Integer> treeChoice;
+	Button btnTreeConfirm;
 	HBox hb;
 	VBox vb1, vb2;
+	
 	
 	public void setDisplay(String text) {
 		display.setText(text);
@@ -35,6 +41,10 @@ public class UserView extends Application {
 	
 	public void appendDisplay(String text) {
 		display.setText(display.getText()+text);
+	}
+	
+	public void showNodesChoice() {
+		vb2.getChildren().addAll(choiceBox, btnConfirmChoice);
 	}
 	
 	public void removeChoiceBoxButton() {
@@ -49,6 +59,14 @@ public class UserView extends Application {
 	
 	public NodeInfo getChoice() {
 		return choiceBox.getValue();
+	}
+	
+	public void showTreesChoice() {
+		// TODO;
+	}
+	
+	public void removeTreesChoices() {
+		// TODO;
 	}
 	
 	@Override
@@ -78,12 +96,27 @@ public class UserView extends Application {
 		display.prefHeight(300);
 		display.setText("Default display text");
 
+		// choices and button for nodes mapping
 		choiceBox = new ComboBox<NodeInfo>();
 		choiceBox.setVisibleRowCount(6);
-				
 		btnConfirmChoice = new Button("confirm choice");
 		btnConfirmChoice.setOnAction(e -> {
 			ctrl.chooseNode(getChoice());
+		});
+		
+		// choices and button for tree selection
+		treeChoice = new ComboBox<Integer>(); // ! only show 3 choices now
+		List<Integer> treeIndexList = new ArrayList<Integer>();
+		treeIndexList.add(0);
+		treeIndexList.add(1);
+		treeIndexList.add(2);
+		treeChoice.setItems((ObservableList<Integer>) treeIndexList);
+		treeChoice.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) -> {
+			ctrl.showTree(treeChoice.getItems().get((Integer) newV));
+		});
+		btnTreeConfirm = new Button("confirm tree choice");
+		btnTreeConfirm.setOnAction(e -> {
+			ctrl.chooseTree(treeChoice.getValue());
 		});
 		
 		vb1 = new VBox();
@@ -96,7 +129,7 @@ public class UserView extends Application {
 		
 		vb2 = new VBox();
 		vb2.setSpacing(20);
-		vb2.getChildren().addAll(display, choiceBox, btnConfirmChoice);
+		vb2.getChildren().addAll(display);
 		
 		hb = new HBox();
 		hb.setPadding(new Insets(15, 12, 15, 12));
