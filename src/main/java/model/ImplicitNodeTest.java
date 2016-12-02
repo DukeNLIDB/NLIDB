@@ -60,7 +60,7 @@ public class ImplicitNodeTest {
 		nodes[7].setParent(nodes[6]);
 
 
-		insertImplicitNodes();
+		tree.insertImplicitNodes();
 
 		
 	}

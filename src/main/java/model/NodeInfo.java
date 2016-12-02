@@ -112,7 +112,7 @@ public class NodeInfo {
 
 		if (indexOfDot == -1) {
 
-			indexOfDot = value.length;
+			indexOfDot = value.length();
 		}
 
 		if (other.getValue().substring(0, indexOfDot_Other - 1)

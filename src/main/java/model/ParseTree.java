@@ -181,7 +181,7 @@ public class ParseTree implements IParseTree {
 					copy.setOutside(true);
 
 					nodes_SN_NN[indexOfAppendedNode].setChild(copy);
-					copy.setParent(nodes_SN_NN[indexOfAppendedNode);
+					copy.setParent(nodes_SN_NN[indexOfAppendedNode]);
 				}
 			}
 		}
@@ -196,7 +196,7 @@ public class ParseTree implements IParseTree {
 			if (i != IndexOfSN) {
 				
 				Node [] nodes = childrenOfRoot.get(i).genNodesArray();
-				int startOfRightBranch = endOfLeftBranch(nodes) + 1
+				int startOfRightBranch = endOfLeftBranch(nodes) + 1;
 				int sizeOfRightTree = nodes[startOfRightBranch].getChildren().size() + 1;
 
 				//if right tree only contains nunmbers, skip it
@@ -223,7 +223,7 @@ public class ParseTree implements IParseTree {
 						//if right core node & left core node are different schema
 
 						else if (!nodes[indexOfRightCoreNode].getInfo().
-								 ExactSameSchema(nodes[indexOfLeftCoreNode]).getInfo()) {
+								 ExactSameSchema(nodes[indexOfLeftCoreNode].getInfo())) {
 
 							//copy core node only
 
@@ -478,7 +478,7 @@ public class ParseTree implements IParseTree {
 
 			if (nodes[i].getInfo().getType().equals("NN")) {
 
-				if (nodes[i].getOutside) {
+				if (nodes[i].getOutside()) {
 					return -1;
 				}
 
