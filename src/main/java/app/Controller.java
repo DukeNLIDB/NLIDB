@@ -196,6 +196,9 @@ public class Controller {
 // ------------------------------------- //
 	
 	public void processAfterTreeSelection() {
+		System.out.println("The tree before implicit nodes insertion: ");
+		System.out.println(parseTree);
+		parseTree.insertImplicitNodes();
 		System.out.println("Going to do translation for tree: ");
 		System.out.println(parseTree);
 		query = parseTree.translateToSQL();	
