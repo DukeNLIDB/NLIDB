@@ -24,7 +24,7 @@
 \begin{document}
 
 \title{Natural Language Interface for Relational Database\\	
-	\small{Final Report}}
+	\small{Final Report}\footnote{The github repository for this project is \url{https://github.com/DukeNLIDB/NLIDB}}}
 
 %Authors in alphabetical order of last names
 \author{Yilin Gao \\
@@ -250,11 +250,17 @@ After inserting name node based on the core node comparison, next step is to che
 Our implementation of processing the implicit nodes insertion starts from the root of the tree. It checks if any nodes below select Node (SN) is missing in the middle tree. If there is, copy it over to the middle tree. Then repeat the same procedure to the middle tree and rightmost subtree. After the name node is copied over, it starts from the middle tree to check if there is any constrain missing in the rightmost tree. If there is, copy those over to the right tree. Finally,  if the root of subtree is an ON (operator node), and the first node connect to root in the subtree is a name node, there may be a function node missing. Our implementation tries to insert a function node in between to make the subtree semantically meaningful. 
 
 \subsection{SQL Translation}
-For now we've only conducted the basic translation, that is the translation to SQL querys without functions and joins, only "SELECT ... FROM ... WHERE ...;". Besides, currently we've only implemented the "AND" logic for selecting conditions. The basic translation procedure is to first construct a mutable SQLQuery object, and then traverse the whole tree assuming the tree has been syntactically valid according to the grammar defined above. When we encounter NN (name nodes), we add it to the "SELECT" part of the query, and then add the table of that name node to the set "FROM"; when we encounter "VN" (value node), we derive from it a selection condition (=, >, or <), and add it to "WHERE" clause. Similarly the translation can be done following the grammar for functions and more complex conditions. We are going to implement join in the future.
+To do the SQL translation, first we create an SQLQuery object, with the structure "SELECT ... FROM ... WHERE ...;". Then we traverse over the tree and do the translation according to the grammar rules defined previously. For example, If we find a NameNode with value "article.title", then we add "article.title" to the SELECT part of the SQL Query, and add "article" to the "FROM" part of the query. If we find a ValueNode "1980" with value "article.year", then we add "article.year = 1980" to the WHERE clause, and add "article" to FROM clause. Here each component, SELECT, FROM, or WHERE, store the values in a set.
+
+For now we can only handle "AND" logic for the WHERE clause. Parsing natural language into combinations of ANDs and ORs is itself a difficult task, which is not the focus of our project.
+
+We also implemented the join of different tables. Whenever there are more than one tables in FROM clause, we know it's time for a join. We calculate the join path from the schema graph using breadth-first-search. We allow intermediate tables for joining two tables, and we find out the join key columns between every two tables using the following rule: a set of columns is a join key for two tables if it is the primary key of one table and contained but not the primary key of the other table.
+
+Besides, we also layed out the basic framework for subquery blocks in complex conditions. A subquery block is obtained by starting a new SQL translation for a subtree. Each subquery block is added to the FROM clause of the main qu now we can only assume that all the columns columns in a subquery compose into a public key and are contained in other table(s) of the main query to allow join to happen appropriately.
 
 %%%================================================================%%%
 \section{Experiments}
-The JavaFX application runs on JVM, and we’ve tested it on MacOS and Ubuntu 16.04 machine. We are using JDBC to connect to the PostgreSQL database of dblp, which we used in homework 1.
+The JavaFX application runs on JVM, and we’ve tested it on Mac OS X and Ubuntu 16.04 machine. We are using JDBC to connect to the PostgreSQL database of dblp, which we used in homework 1.
 
 \begin{figure}[ht]
   \centering
@@ -294,6 +300,14 @@ Figure 8 is a screenshot of our application after the SQL translation stage, tra
 For the node mapper, we’ve only defined very limited number of explicit rules for nodes mapping. There are only a few predefined keywords, such as return, equals, all, etc (thus limited SQL query functions as well). The nodes mapping for name nodes and value nodes doesn’t work perfectly well, maybe in the future we will try some more sensible measures of word similarity. But it is ok for now, since the users can almost always find the right name node or value node from the multiple choices. 
 
 In the parse tree reformulation phase, we have correctly defined the grammar rules for checking transformed trees and implemented the algorithm. At first, because the size of output was so large, it was really hard for the user to pick up an ideal tree from a limited number (like 3 or 5) of reported choices. This shortcoming affects the accuracy of tree reformulation. A possible remediation is to add more details to the rules of identifying valid tree structures. Another idea is to introduce more methods of tree comparison, so that there will be larger discrepancies between scores of different trees. We have implemented the first method, and been able to improve the accuracy.
+
+The final results after tanslation can be satisfying for simple queries, even allowing COUNT() and simple joins. However, for complex queries involving multiple blocks, the translation can seldom be perfect, and we haven't yet got the time to tune our model well enough for complex queries.
+
+\section{Conclusion}
+So this is our project of Natural Language Interface for Relational Databse. The model mainly consists of (1) parsing natural language input to dependency tree, (2) mapping nodes to SQL components, (3) adjusting the structure of the parse tree, (4) insert the implicit nodes, and (5) translating parse tree to SQL query. We've made it work well for simple queries, but given our limited time it still has very low accuracy for complex queries. 
+
+We believe that it is never enough to handle natural language problems only by hard-coding rules. For future work, we would like to explore a new approach for translating natural language to SQL, that is using neural networks combined with limited grammatic rules defining the validity of an SQL query. 
+
 
 %%%================================================================%%%
 \section{Contributions of Project Members}
