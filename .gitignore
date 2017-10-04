@@ -1,5 +1,8 @@
-/target/
-lib/
-.DS_Store
 *~
 .*~
+.DS_Store
+
+target/
+
+*.iml
+.idea/
