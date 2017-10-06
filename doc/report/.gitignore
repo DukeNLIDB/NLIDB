@@ -1,5 +1,5 @@
 auto/
-*/*.*
+midterm/README.md
 !*/*.pdf
 !*/*.py
 !*/*.bib
