@@ -46,7 +46,7 @@ here to form a wide "NP" tree.)
 
 This is a project managed using maven. Just in case, if you don't know about maven, checkout this wonderful [tutorial](https://www.udemy.com/apachemaven/), which you have to pay for though...
 
-Right now it uses the dblp database on local machine. To connect to the database, make sure you have database "dblp" on your localhost with post 5432, accessible to user "dblpuser" with password "dblpuser". Or modify the `startConnection()` method in class `app.Controller` to connect to database.
+Right now it uses the dblp database on local machine. To connect to the database, make sure you have database "dblp" on your localhost with post 5432, accessible to user "dblpuser" with password "dblpuser". Or modify the `startConnection()` method in class `Controller` to connect to database.
 
 To get hands on the development, import it into eclipse, but first make sure you've installed the following eclipse plugins:
 
@@ -58,6 +58,6 @@ To use WordNet inside the project (I'm using MIT JWI as the interface, which is 
 1. Create a folder "lib" in the project base directory.
 2. Download [WordNet](https://wordnet.princeton.edu/wordnet/download/) into that "lib" directory just created.
 3. Extract the downloaded WordNet. 
-4. Finally just make sure "$(basedir)/lib/WordNet-3.0/dict/" exists. (Or you have to modify the path inside class `model.WordNet`.)
+4. Finally just make sure "$(basedir)/lib/WordNet-3.0/dict/" exists. (Or you have to modify the path inside class `com.dukenlidb.nlidb.model.WordNet`.)
 
-The entry point of the application is the `main()` method in `ui.UserView` class. 
+The entry point of the application is the `com.dukenlidb.nlidb.main()` method in `UserView` class. 

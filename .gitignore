@@ -2,7 +2,11 @@
 .*~
 .DS_Store
 
-target/
-
 *.iml
 .idea/
+
+# build files
+target/
+build/
+out/
+.gradle/

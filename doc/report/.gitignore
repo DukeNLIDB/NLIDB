@@ -1,0 +1,7 @@
+auto/
+midterm/README.md
+!*/*.pdf
+!*/*.py
+!*/*.bib
+!*/*.tex
+!*/*.md
