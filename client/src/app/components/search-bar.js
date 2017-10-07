@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import buttonStyle from '../../styles/button';
 
 const Wrapper = styled.form`
-  margin: 50px auto;
+  margin: 20px auto;
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -46,11 +46,13 @@ class SearchBar extends Component {
   }
 
   render() {
+    const { title, buttonTitle } = this.props;
+
     return (
       <Wrapper onSubmit={e => this.handleSubmit(e)}>
-        <LabelText>Natural Language Input: </LabelText>
+        <LabelText>{title}</LabelText>
         <Input value={this.state.input} onChange={event => this.handleChange(event)} />
-        <SubmitButton type="submit" value="translate" />
+        <SubmitButton type="submit" value={buttonTitle} />
       </Wrapper>
     );
   }

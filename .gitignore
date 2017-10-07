@@ -8,4 +8,5 @@
 # build files
 target/
 build/
+out/
 .gradle/

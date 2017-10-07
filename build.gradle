@@ -4,16 +4,22 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE')
     }
 }
 
-apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
+mainClassName = "com.dukenlidb.nlidb.main.Application"
+
+bootRun {
+    systemProperties = System.properties
+}
+
 jar {
-    baseName = 'gs-rest-service'
+    baseName = 'nlidb-service'
     version =  '0.1.0'
 }
 
@@ -25,11 +31,14 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compileOnly 'org.projectlombok:lombok:1.16.18'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'redis.clients:jedis:2.9.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.1'
     compile 'edu.stanford.nlp:stanford-corenlp:3.6.0'
     compile 'edu.stanford.nlp:stanford-corenlp:3.6.0:models-english'
     compile 'edu.mit:jwi:2.2.3'
     compile 'org.postgresql:postgresql:42.1.4'
-    testCompile "junit:junit:4.12"
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'junit:junit:4.12'
 }

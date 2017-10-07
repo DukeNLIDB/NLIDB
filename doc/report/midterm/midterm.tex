@@ -43,7 +43,7 @@ Writing SQL queries can be difficult, especially when it involves complex logic.
 
 Translating natural language into an SQl query isn't an easy job. Not only because of the disambiguity of natural language, but also that users may make mistakes in writing natural language input, such as mis-spelling. We want the users to feel at ease using our interface, not afraid of being mis-interpreted by the NLIDB, even if they cannot remember the exact names of the database column names. So we follow Li and Jagadish (2014)\cite{li2014} to use an interactive interface to let user make choices in several ambiguous phases of the translation.
 
-The main components for translating a natural language to an SQL query are as follows:
+The com.dukenlidb.nlidb.main components for translating a natural language to an SQL query are as follows:
 
 \begin{enumerate}
   \item Parse the natural language input into a parse tree using dependency syntax parser.
@@ -54,7 +54,7 @@ The main components for translating a natural language to an SQL query are as fo
 
 Up until this midterm report, we have completed steps 1 - 2 above. We have built an interactive graphical user interface (GUI), and established connection with a database to experiment with the two steps. Now the user can already choose the desired node mappings from the choices offered by our application. 
 
-Before the final report, we will finish steps 3 - 4 and tune the model with some hand-written natural language and SQL query pairs. 
+Before the final report, we will finish steps 3 - 4 and tune the com.dukenlidb.nlidb.model with some hand-written natural language and SQL query pairs.
 
 %%%================================================================%%%
 \section{Related Work}
@@ -70,7 +70,7 @@ NLIDB here is a concrete application of the natural language QA systems.\cite{QA
 
 For this NLIDB, we have to first develop a GUI, and then design the \texttt{ParseTree} class. Then we need to develop parse tree node mapper, parse tree structure adjuster, and SQL query translator.
 
-There are three main problems that we face. The first one is the use of data structure in \texttt{ParseTree}. The second is what algorithms to use for each phase of the translation. The last problem is to specify the rules for different phases, such as what word should be mapped to the ``SELECT'' key word, and what rules should a legal parse tree follow before being translated to an SQL query.
+There are three com.dukenlidb.nlidb.main problems that we face. The first one is the use of data structure in \texttt{ParseTree}. The second is what algorithms to use for each phase of the translation. The last problem is to specify the rules for different phases, such as what word should be mapped to the ``SELECT'' key word, and what rules should a legal parse tree follow before being translated to an SQL query.
 
 %%%================================================================%%%
 \section{Algorithms}
@@ -90,7 +90,7 @@ More algorithms will be needed for parse tree adjustment and SQL query generatio
   \caption{System Diagram}
 \end{figure*}
 
-Our current system is implemented in Java, using maven as the project management tool. The source code are divided into three parts: model, control, and view. The model part takes care of how to realize major functions of the natural language database interface, like parsing natural language, mapping nodes, adjusting node tree structure, and translating the tree into SQL query. The controller wraps many models as attribute variables, and it takes charge of the interaction between database and the view (GUI). And the view part uses JavaFX to design a GUI.
+Our current system is implemented in Java, using maven as the project management tool. The source code are divided into three parts: com.dukenlidb.nlidb.model, control, and view. The com.dukenlidb.nlidb.model part takes care of how to realize major functions of the natural language database interface, like parsing natural language, mapping nodes, adjusting node tree structure, and translating the tree into SQL query. The controller wraps many models as attribute variables, and it takes charge of the interaction between database and the view (GUI). And the view part uses JavaFX to design a GUI.
 
 Figure 1 is a diagram of our system. The boxes with solid frame lines are the ones we've already written, and the boxes with dashed frame lines are to be completed in the future. 
 
@@ -147,7 +147,7 @@ Figure 4 is an example of a parse tree with nodes mapped to SQL components. The 
 \footnotetext{Taken from \cite{li2014}.}
 
 \subsection{Implicit Node}
-The main idea of inserting implicit node into parse tree is to make sure that two nodes which are being mapped have corresponding schema in database. Assuming invalid nodes are removed from the tree properly, there shoud be a tree with at most three branches. The leftmost tree should contain select node (SN) and name node (NN). If a name node in the left tree does not have ancestor, then it is the core node of the left tree. If the type of core node in left tree is different from right tree, the real core node in right tree is deemed hidden, i.e. implicit. The implicit core node may cause unresonable comparision between two variables of different types due to the change of semantic meaning. An example of implicit node: return all author who wrote more than 100 paper. In our previous process of the parse tree, the right subtree should contain only the number 100, which is a value node (VN). In order to make the tree semantically meaningful, nodes in left subtree are copied over to the right subtree.
+The com.dukenlidb.nlidb.main idea of inserting implicit node into parse tree is to make sure that two nodes which are being mapped have corresponding schema in database. Assuming invalid nodes are removed from the tree properly, there shoud be a tree with at most three branches. The leftmost tree should contain select node (SN) and name node (NN). If a name node in the left tree does not have ancestor, then it is the core node of the left tree. If the type of core node in left tree is different from right tree, the real core node in right tree is deemed hidden, i.e. implicit. The implicit core node may cause unresonable comparision between two variables of different types due to the change of semantic meaning. An example of implicit node: return all author who wrote more than 100 paper. In our previous process of the parse tree, the right subtree should contain only the number 100, which is a value node (VN). In order to make the tree semantically meaningful, nodes in left subtree are copied over to the right subtree.
 
 After inserting name node based on the core node comparision, next step is to check the constrain for both core node. For example: if left core node has constrain of year greater than 2007 and area of "Database" , right core node should also have the same constrain. If right node does not conform to this constrain, then constrains nodes should be copied from the left subtree to right subtree. 
 

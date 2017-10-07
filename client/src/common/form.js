@@ -4,7 +4,7 @@ import buttonStyle from '../styles/button';
 import newId from '../utils/new-id';
 
 const Wrapper = styled.form`
-  margin: 50px auto 30px;
+  margin: 20px;
   width: 230px;
 `;
 

@@ -1,0 +1,16 @@
+{
+  "family": "nlidb",
+  "containerDefinitions": [
+    {
+      "image": "%REPOSITORY_URI%:v_%BUILD_NUMBER%",
+      "name": "nlidb-main",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ]
+    }
+  ]
+}
