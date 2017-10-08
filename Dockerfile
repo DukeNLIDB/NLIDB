@@ -1,4 +1,4 @@
-FROM openjdk:latest
+FROM frolvlad/alpine-oraclejdk8
 
 # directory automatically created
 WORKDIR /usr/nlidb
