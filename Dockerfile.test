@@ -15,5 +15,4 @@ COPY . ./
 RUN cd client && npm run build
 RUN mv client/build/* src/main/resources/public
 
-EXPOSE 80
-RUN ./gradlew -Dspring.profiles.active=prod bootRun
+RUN ./gradlew test

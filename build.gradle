@@ -4,13 +4,15 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE')
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE'
+        classpath 'de.dynamicfiles.projects.gradle.plugins:javafx-gradle-plugin:8.8.2'
     }
 }
 
 apply plugin: 'application'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'javafx-gradle-plugin'
 
 mainClassName = "com.dukenlidb.nlidb.main.Application"
 

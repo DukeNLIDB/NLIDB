@@ -2,18 +2,18 @@
 
 # Natural Language Interface to DataBases (NLIDB)
 
-### [The final report is here](https://github.com/DukeNLIDB/NLIDB/blob/master/report/final/final.pdf).
+### [The final report is here](./doc/report/final/final.pdf).
 
 ### How it works.
 1. Parse the input and map nodes to SQL components and database attributes.
-![nodes_mapping_example](https://github.com/DukeNLIDB/NLIDB/blob/master/report/final/figures/nodes_mapping_example.png)
-![gui_nodes_mapping](https://github.com/DukeNLIDB/NLIDB/blob/master/report/final/figures/gui_nodes_mapping.png)
+![nodes_mapping_example](./doc/report/final/figures/nodes_mapping_example.png)
+![gui_nodes_mapping](./doc/report/final/figures/gui_nodes_mapping.png)
 
 2. Adjust the structure of the parse tree to make it syntactically valid.
-![gui_tree_adjustor](https://github.com/DukeNLIDB/NLIDB/blob/master/report/final/figures/gui_tree_adjustor1.png)
+![gui_tree_adjustor](./doc/report/final/figures/gui_tree_adjustor1.png)
 
 3. Translate the parse tree to an SQL query.
-![gui_translation](https://github.com/DukeNLIDB/NLIDB/blob/master/report/final/figures/gui_translation.png)
+![gui_translation](./doc/report/final/figures/gui_translation.png)
 
 *****
 
