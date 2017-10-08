@@ -13,7 +13,7 @@
 3. Translate the parse tree to an SQL query.
 ![gui_translation](./doc/report/final/figures/gui_translation.png)
 
-*****
+******
 
 change some thing to set CI
 
