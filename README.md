@@ -1,4 +1,3 @@
-
 # Natural Language Interface to DataBases (NLIDB)
 
 ### [The final report is here](./doc/report/final/final.pdf).
