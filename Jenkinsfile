@@ -4,7 +4,7 @@ pipeline {
     stage('Test') {
       steps {
         sh '''#!/bin/bash
-docker build -t nlidb/test ${WORKSPACE}
+docker build -t nlidb/test --file=Dockerfile.test ${WORKSPACE}
 docker run nlidb/test'''
       }
     }
