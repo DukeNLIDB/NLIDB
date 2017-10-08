@@ -8,5 +8,13 @@ docker build -t nlidb/test --file=Dockerfile.test ${WORKSPACE}
 docker run nlidb/test'''
       }
     }
+    stage('Deploy') {
+      when {
+        branch 'master'
+      }
+      steps {
+        echo 'Deploying'
+      }
+    }
   }
 }
