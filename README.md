@@ -38,7 +38,7 @@ One Query (Q) can must have one SClause and zero or more ComplexConditions.
 A ComplexCondition must have one ON, with a leftSubtree and a rightSubtree.  
 An NP is: one NN (since an SQL query has to select at least one attribute), whose children
 are multiple NNs and Conditions. (All other selected attributes and conditions are stacked
-here to form a wide "NP" tree.)
+here to form a wide "NP" tree.) 
 
 *****
 
