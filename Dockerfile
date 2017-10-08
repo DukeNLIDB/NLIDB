@@ -1,4 +1,4 @@
-FROM frolvlad/alpine-oraclejdk8
+FROM node:8.6-alpine
 
 # directory automatically created
 WORKDIR /usr/nlidb
@@ -9,11 +9,19 @@ COPY client/package.json client/
 RUN cd client && npm install
 
 # copy everything to filesystem of container
-COPY . ./
+COPY client client/
 
 # build react bundle
 RUN cd client && npm run build
-RUN mv client/build/* src/main/resources/public
+
+
+FROM frolvlad/alpine-oraclejdk8:full
+WORKDIR /usr/nlidb
+COPY src src
+COPY gradle gradle
+COPY gradlew ./
+COPY build.gradle ./
+COPY --from=0 /usr/nlidb/client/build/* src/main/resources/public/
 
 EXPOSE 80
-RUN ./gradlew -Dspring.profiles.active=prod bootRun
+CMD ["./gradlew", "-Dspring.profiles.active=prod", "bootRun"]
