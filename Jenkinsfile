@@ -8,14 +8,13 @@ docker build -t nlidb/test --file=Dockerfile.test ${WORKSPACE}
 docker run nlidb/test'''
       }
     }
-    
-    if (env.BRANCH_NAME == 'master') {
-      stage('Deploy') {
-        steps {
-          sh '''echo hello I am master'''
-        }
+    stage('Deploy') {
+      when {
+        branch 'master'
+      }
+      steps {
+        echo 'Deploying'
       }
     }
-    
   }
 }
