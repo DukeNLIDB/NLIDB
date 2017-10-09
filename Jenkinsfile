@@ -6,6 +6,8 @@ pipeline {
         sh '''#!/bin/bash
 docker build -t nlidb/test --file=Dockerfile.test ${WORKSPACE}
 docker run nlidb/test
+docker rm $(docker ps -aq --filter status=exited)
+docker rmi $(docker images -aq --filter dangling=true)
            '''
       }
     }
