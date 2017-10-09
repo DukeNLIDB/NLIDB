@@ -21,7 +21,7 @@ COPY src src
 COPY gradle gradle
 COPY gradlew ./
 COPY build.gradle ./
-COPY --from=0 /usr/nlidb/client/build/* src/main/resources/public/
+COPY --from=0 /usr/nlidb/client/build/ src/main/resources/public/
 
 EXPOSE 80
 CMD ["./gradlew", "-Dspring.profiles.active=prod", "bootRun"]
