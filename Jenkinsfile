@@ -26,7 +26,7 @@ ssh -o "StrictHostKeyChecking no" -i $HOME/.ssh/aws-keping94-us-east1.pem centos
 ssh -o "StrictHostKeyChecking no" -i $HOME/.ssh/aws-keping94-us-east1.pem centos@34.231.141.223 'docker rm $(docker ps -aq --filter ancestor=nlidb/main)'
 ssh -o "StrictHostKeyChecking no" -i $HOME/.ssh/aws-keping94-us-east1.pem centos@34.231.141.223 'docker rmi $(docker images -aq --filter dangling=true)'
 echo loading the new image and start the container
-ssh -o "StrictHostKeyChecking no" -i $HOME/.ssh/aws-keping94-us-east1.pem centos@34.231.141.223 'docker load -i nlidb-main.img; docker run -d -p 443:443 nlidb/main;'
+ssh -o "StrictHostKeyChecking no" -i $HOME/.ssh/aws-keping94-us-east1.pem centos@34.231.141.223 'docker load -i nlidb-main.img; docker run -d -p 8080:80 nlidb/main;'
            '''
       }
     }
