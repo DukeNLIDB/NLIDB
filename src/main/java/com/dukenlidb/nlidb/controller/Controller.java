@@ -1,5 +1,6 @@
 package com.dukenlidb.nlidb.controller;
 
+import com.dukenlidb.nlidb.core.ParseTree;
 import com.dukenlidb.nlidb.model.request.ExecuteSQLRequest;
 import com.dukenlidb.nlidb.model.request.TranslateNLRequest;
 import com.dukenlidb.nlidb.model.response.*;
@@ -18,6 +19,8 @@ import com.dukenlidb.nlidb.service.CookieService;
 import com.dukenlidb.nlidb.service.DBConnectionService;
 import com.dukenlidb.nlidb.service.RedisService;
 
+import com.dukenlidb.nlidb.core.NLParser;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,6 +36,8 @@ public class Controller {
     private RedisService redisService;
     private DBConnectionService dbConnectionService;
     private SQLExecutionService sqlExecutionService;
+
+    private boolean processing  = false;
 
     @Autowired
     public Controller(
@@ -113,8 +118,17 @@ public class Controller {
         if (userId.equals(USER_NONE) || !redisService.hasUser(userId)) {
             return ResponseEntity.status(401).body(new MessageResponse("You are not connected to a Database."));
         }
+
+        String input = req.getInput();
+
+        if (input.equals("")) {
+            return ResponseEntity.status(400).body(new MessageResponse("No input is specified"));
+        }
+
+        String sqlQuery = this.translate(input);
+
         return ResponseEntity.ok(new TranslateResponse(
-                "We are still writing the code to translate your natural language input..."
+                sqlQuery
         ));
     }
 
@@ -130,5 +144,16 @@ public class Controller {
         UserSession session = redisService.getUserSession(userId);
         String resultString = sqlExecutionService.executeSQL(session.getDbConnectionConfig(), req.getQuery());
         return ResponseEntity.ok(new QueryResponse(resultString));
+    }
+
+    private String translate(String rawInput) {
+        if (processing) {
+            return "Processing a previous sentence";
+        }
+        processing = true;
+        ParseTree parseTree = new ParseTree(rawInput, NLParser.getNLParser());
+        startMappingNodes();
+
+        return "Translating";
     }
 }
