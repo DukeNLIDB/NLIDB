@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dukenlidb.nlidb.service.CookieService;
 import com.dukenlidb.nlidb.service.DBConnectionService;
 import com.dukenlidb.nlidb.service.RedisService;
+import com.dukenlidb.nlidb.service.TranslationService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,18 +34,21 @@ public class Controller {
     private RedisService redisService;
     private DBConnectionService dbConnectionService;
     private SQLExecutionService sqlExecutionService;
+    private TranslationService translationService;
 
     @Autowired
     public Controller(
             CookieService cookieService,
             RedisService redisService,
             DBConnectionService dbConnectionService,
-            SQLExecutionService sqlExecutionService
+            SQLExecutionService sqlExecutionService,
+            TranslationService translationService
     ) {
         this.cookieService = cookieService;
         this.redisService = redisService;
         this.dbConnectionService = dbConnectionService;
         this.sqlExecutionService = sqlExecutionService;
+        this.translationService = translationService;
     }
 
     @RequestMapping("/api/connect/user")
@@ -108,13 +112,16 @@ public class Controller {
     public ResponseEntity translateNL(
             @CookieValue(value = COOKIE_NAME, defaultValue = USER_NONE) String userId,
             @RequestBody TranslateNLRequest req
-    ) {
+    ) throws IOException {
 
         if (userId.equals(USER_NONE) || !redisService.hasUser(userId)) {
             return ResponseEntity.status(401).body(new MessageResponse("You are not connected to a Database."));
         }
+        UserSession session = redisService.getUserSession(userId);
+        String resultString = translationService.translateToSQL(session.getDbConnectionConfig(), req.getInput());
         return ResponseEntity.ok(new TranslateResponse(
-                "We are still writing the code to translate your natural language input..."
+            resultString
+            //"We are still writing the code to translate your natural language input..."
         ));
     }
 
