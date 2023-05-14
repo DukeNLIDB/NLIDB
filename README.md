@@ -54,7 +54,7 @@ To get hands on the development, import it into eclipse, but first make sure you
 To use WordNet inside the project (I'm using MIT JWI as the interface, which is already included in maven `pom.xml`):
 
 1. Create a folder "lib" in the project base directory.
-2. Download [WordNet](https://wordnet.princeton.edu/wordnet/download/) into that "lib" directory just created.
+2. Download [WordNet](https://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz) into that "lib" directory just created.
 3. Extract the downloaded WordNet. 
 4. Finally just make sure "$(basedir)/lib/WordNet-3.0/dict/" exists. (Or you have to modify the path inside class `com.dukenlidb.nlidb.model.WordNet`.)
 
